@@ -1,0 +1,224 @@
+Starting kernel ...
+
+- UART enabled -
+- CPU 00000000 booting -
+- Xen starting in Hyp mode -
+- Zero BSS -
+- Setting up control registers -
+- Turning on paging -
+- Ready -
+(XEN) Checking for initrd in /chosen
+(XEN) RAM: 0000000080000000 - 00000000ffffffff
+(XEN) 
+(XEN) MODULE[0]: 000000008ffdd000 - 000000008fffd000 Device Tree 
+(XEN) MODULE[1]: 0000000084000000 - 000000008411e7c0 Ramdisk     
+(XEN) MODULE[2]: 0000000082000000 - 00000000823de658 Kernel      
+(XEN)  RESVD[0]: 0000000083000000 - 0000000083020000
+(XEN)  RESVD[1]: 000000008ffdd000 - 000000008fffd000
+(XEN) 
+(XEN) CMDLINE[0000000082000000]:chosen rw root=/dev/ram rdinit=/sbin/init console=hvc0 earlyprintk=serial,ttyS2 mem=512M t
+(XEN) 
+(XEN) Command line: dom0_mem=512M
+(XEN) Xen heap: 00000000fc000000-0000000100000000 (16384 pages)
+(XEN) Dom heap: 507904 pages
+(XEN) Domain heap initialised
+(XEN) Booting using Device Tree
+(XEN) Platform: TI DRA7
+(XEN) Taking dtuart configuration from /chosen/stdout-path
+(XEN) Looking for dtuart at "/ocp/interconnect@48000000/segment@0/target-module@20000/serial@0", options ""
+(XEN) omap-uart: Unable to retrieve the IRQ
+(XEN) Unable to initialize dtuart: -22
+(XEN) Bad console= option 'dtuart'
+ Xen 4.13-unstable
+(XEN) Xen version 4.13-unstable (reprofy@local) (arm-linux-gnueabihf-gcc (Debian 8.3.0-2) 8.3.0) debug=y  Mon Jun 24 17:09
+(XEN) Latest ChangeSet: Wed Jun 19 15:47:31 2019 +0200 git:ee1f4b9b96
+(XEN) build-id: 49b435b3f6cd6598e91cc799a3b87573368c3f2a
+(XEN) Processor: 412fc0f2: "ARM Limited", variant: 0x2, part 0xc0f, rev 0x2
+(XEN) 32-bit Execution:
+(XEN)   Processor Features: 00001131:00011011
+(XEN)     Instruction Sets: AArch32 A32 Thumb Thumb-2 ThumbEE Jazelle
+(XEN)     Extensions: GenericTimer Security
+(XEN)   Debug Features: 02010555
+(XEN)   Auxiliary Features: 00000000
+(XEN)   Memory Model Features: 10201105 20000000 01240000 02102211
+(XEN)  ISA Features: 02101110 13112111 21232041 11112131 10011142 00000000
+(XEN) Set AuxCoreBoot1 to 000000008500004c (0020004c)
+(XEN) Set AuxCoreBoot0 to 0x20
+(XEN) SMP: Allowing 2 CPUs
+(XEN) Generic Timer IRQ: phys=30 hyp=26 virt=27 Freq: 6144 KHz
+(XEN) GICv2 initialization:
+(XEN)         gic_dist_addr=0000000048211000
+(XEN)         gic_cpu_addr=0000000048212000
+(XEN)         gic_hyp_addr=0000000048214000
+(XEN)         gic_vcpu_addr=0000000048216000
+(XEN)         gic_maintenance_irq=25
+(XEN) GICv2: 192 lines, 2 cpus, secure (IID 0000043b).
+(XEN) Using scheduler: SMP Credit Scheduler rev2 (credit2)
+(XEN) Initializing Credit2 scheduler
+(XEN)  load_precision_shift: 18
+(XEN)  load_window_shift: 30
+(XEN)  underload_balance_tolerance: 0
+(XEN)  overload_balance_tolerance: -3
+(XEN)  runqueues arrangement: socket
+(XEN)  cap enforcement granularity: 10ms
+(XEN) load tracking window length 1073741824 ns
+(XEN) Adding cpu 0 to runqueue 0
+(XEN)  First cpu on runqueue, activating
+(XEN) Allocated console ring of 16 KiB.
+(XEN) VFP implementer 0x41 architecture 4 part 0x30 variant 0xf rev 0x0
+(XEN) Bringing up CPU1
+- CPU 00000001 booting -
+- Xen starting in Hyp mode -
+- Setting up control registers -
+- Turning on paging -
+- Ready -
+(XEN) Adding cpu 1 to runqueue 0
+(XEN) CPU 1 booted.
+(XEN) Brought up 2 CPUs
+(XEN) P2M: 40-bit IPA
+(XEN) P2M: 3 levels with order-1 root, VTCR 0x80003558
+(XEN) I/O virtualisation disabled
+(XEN) alternatives: Patching with alt table 002aa248 -> 002aa2b4
+(XEN) CPU0 will execute ICIALLU on guest exit
+(XEN) CPU1 will execute ICIALLU on guest exit
+(XEN) *** LOADING DOMAIN 0 ***
+(XEN) Loading d0 kernel from boot module @ 0000000082000000
+(XEN) Loading ramdisk from boot module @ 0000000084000000
+(XEN) Allocating 1:1 mappings totalling 512MB for dom0:
+(XEN) BANK[0] 0x000000a0000000-0x000000c0000000 (512MB)
+(XEN) Grant table range: 0x00000085000000-0x00000085040000
+(XEN) Allocating PPI 16 for event channel interrupt
+(XEN) Loading zImage from 0000000082000000 to 00000000a7c00000-00000000a7fde658
+(XEN) Loading dom0 initrd from 0000000084000000 to 0x00000000a8200000-0x00000000a831e7c0
+(XEN) Loading dom0 DTB to 0x00000000a8000000-0x00000000a801f685
+(XEN) Initial low memory virq threshold set at 0x4000 pages.
+(XEN) Scrubbing Free RAM in background
+(XEN) Std. Loglevel: All
+(XEN) Guest Loglevel: All
+(XEN) *** Serial input to DOM0 (type 'CTRL-a' three times to switch input)
+(XEN) Freed 348kB init memory.
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 5.1.9 (reprofy@debian) (gcc version 7.3.1 20180622 (release) [ARM/embedded-7-branch revision9
+[    0.000000] CPU: ARMv7 Processor [412fc0f2] revision 2 (ARMv7), cr=10c5387d
+[    0.000000] CPU: div instructions available: patching division code
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, PIPT instruction cache
+[    0.000000] OF: fdt: Machine model: TI AM5728 BeagleBoard-X15 rev C
+[    0.000000] printk: bootconsole [earlycon0] enabled
+[    0.000000] earlycon: xenboot0 at I/O port 0x0 (options '')
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 5.1.9 (reprofy@debian) (gcc version 7.3.1 20180622 (release) [ARM/embedded-7-branch revision9
+[    0.000000] Linux version 5.1.9 (reprofy@debian) (gcc version 7.3.1 20180622 (release) [ARM/embedded-7-branch revision9
+[    0.000000] CPU: ARMv7 Processor [412fc0f2] revision 2 (ARMv7), cr=10c5387d
+[    0.000000] CPU: ARMv7 Processor [412fc0f2] revision 2 (ARMv7), cr=10c5387d
+[    0.000000] CPU: div instructions available: patching division code
+[    0.000000] CPU: div instructions available: patching division code
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, PIPT instruction cache
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, PIPT instruction cache
+[    0.000000] OF: fdt: Machine model: TI AM5728 BeagleBoard-X15 rev C
+[    0.000000] OF: fdt: Machine model: TI AM5728 BeagleBoard-X15 rev C
+[    0.000000] printk: bootconsole [earlycon0] enabled
+[    0.000000] printk: bootconsole [earlycon0] enabled
+[    0.000000] earlycon: xenboot0 at I/O port 0x0 (options '')
+[    0.000000] earlycon: xenboot0 at I/O port 0x0 (options '')
+[    0.000000] printk: bootconsole [xenboot0] enabled
+[    0.000000] printk: bootconsole [xenboot0] enabled
+[    0.000000] Memory policy: Data cache writealloc
+[    0.000000] Memory policy: Data cache writealloc
+[    0.000000] Xen 4.13 support found
+[    0.000000] Xen 4.13 support found
+[    0.000000] cma: Reserved 16 MiB at 0xbe800000
+[    0.000000] cma: Reserved 16 MiB at 0xbe800000
+[    0.000000] OMAP4: Map 0xbfe00000 to (ptrval) for dram barrier
+[    0.000000] OMAP4: Map 0xbfe00000 to (ptrval) for dram barrier
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv1.1 detected in firmware.
+[    0.000000] psci: PSCIv1.1 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: Trusted OS migration not required
+[    0.000000] psci: Trusted OS migration not required
+[    0.000000] psci: SMC Calling Convention v1.1
+[    0.000000] psci: SMC Calling Convention v1.1
+[    0.000000] DRA752 ES2.0
+[    0.000000] DRA752 ES2.0
+(XEN) traps.c:1998:d0v0 HSR=0x93800007 pc=0xc012bd5c gva=0xfa243404 gpa=0x00000048243404
+[    0.000000] Unhandled fault: terminal exception (0x002) at 0xfa243404
+[    0.000000] Unhandled fault: terminal exception (0x002) at 0xfa243404
+[    0.000000] pgd = (ptrval)
+[    0.000000] pgd = (ptrval)
+[    0.000000] [fa243404] *pgd=bfdf3841, *pte=48243653, *ppte=48243453
+[    0.000000] [fa243404] *pgd=bfdf3841, *pte=48243653, *ppte=48243453
+[    0.000000] Internal error: : 2 [#1] SMP ARM
+[    0.000000] Internal error: : 2 [#1] SMP ARM
+[    0.000000] Modules linked in:
+[    0.000000] Modules linked in:
+[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.1.9 #1
+[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.1.9 #1
+[    0.000000] Hardware name: Generic DRA74X (Flattened Device Tree)
+[    0.000000] Hardware name: Generic DRA74X (Flattened Device Tree)
+[    0.000000] PC is at omap4_prminst_read_inst_reg+0x2c/0x40
+[    0.000000] PC is at omap4_prminst_read_inst_reg+0x2c/0x40
+[    0.000000] LR is at omap4_pwrdm_wait_transition+0x44/0x70
+[    0.000000] LR is at omap4_pwrdm_wait_transition+0x44/0x70
+[    0.000000] pc : [<c012bd54>]    lr : [<c012ba0c>]    psr: a00000d3
+[    0.000000] pc : [<c012bd54>]    lr : [<c012ba0c>]    psr: a00000d3
+[    0.000000] sp : c0d01ee8  ip : c0db3ce0  fp : fffff000
+[    0.000000] sp : c0d01ee8  ip : c0db3ce0  fp : fffff000
+[    0.000000] r10: c0d08d80  r9 : c0a0ef30  r8 : c0a0eefc
+[    0.000000] r10: c0d08d80  r9 : c0a0ef30  r8 : c0a0eefc
+[    0.000000] r7 : c0a96c5c  r6 : 000346dc  r5 : c0d16cc0  r4 : 000186a1
+[    0.000000] r7 : c0a96c5c  r6 : 000346dc  r5 : c0d16cc0  r4 : 000186a1
+[    0.000000] r3 : fa243404  r2 : 00000004  r1 : 00000404  r0 : c0db3d1c
+[    0.000000] r3 : fa243404  r2 : 00000004  r1 : 00000404  r0 : c0db3d1c
+[    0.000000] Flags: NzCv  IRQs off  FIQs off  Mode SVC_32  ISA ARM  Segment none
+[    0.000000] Flags: NzCv  IRQs off  FIQs off  Mode SVC_32  ISA ARM  Segment none
+[    0.000000] Control: 10c5387d  Table: a000406a  DAC: 00000051
+[    0.000000] Control: 10c5387d  Table: a000406a  DAC: 00000051
+[    0.000000] Process swapper (pid: 0, stack limit = 0x(ptrval))
+[    0.000000] Process swapper (pid: 0, stack limit = 0x(ptrval))
+[    0.000000] Stack: (0xc0d01ee8 to 0xc0d02000)
+[    0.000000] Stack: (0xc0d01ee8 to 0xc0d02000)
+[    0.000000] 1ee0:                   000186a1 c012ba0c c0d16cc0 c0d106a8 c0db3d50 c0c6f6c4
+[    0.000000] 1ee0:                   000186a1 c012ba0c c0d16cc0 c0d106a8 c0db3d50 c0c6f6c4
+[    0.000000] 1f00: c0a0eefc c012d854 c0c5be64 1fe00000 c0db2f40 c0d0dae4 00000001 c0d08e84
+[    0.000000] 1f00: c0a0eefc c012d854 c0c5be64 1fe00000 c0db2f40 c0d0dae4 00000001 c0d08e84
+[    0.000000] 1f20: c0d08d80 c0c1135c c0c5be64 c0c0bbe0 c0c5be64 c0c055ec c0d01f50 c0d01f58
+[    0.000000] 1f20: c0d08d80 c0c1135c c0c5be64 c0c0bbe0 c0c5be64 c0c055ec c0d01f50 c0d01f58
+[    0.000000] 1f40: c0a06cf0 c0a960d8 c0d08d4c c0a08944 00000000 00000000 00000000 00000000
+[    0.000000] 1f40: c0a06cf0 c0a960d8 c0d08d4c c0a08944 00000000 00000000 00000000 00000000
+[    0.000000] 1f60: c0d08d4c 00000000 00000000 00000000 00000001 00000000 00000000 00000000
+[    0.000000] 1f60: c0d08d4c 00000000 00000000 00000000 00000001 00000000 00000000 00000000
+[    0.000000] 1f80: c0d08d4c 00000000 c0d08d40 ffffffff c0d08d4c c0db2400 412fc0f2 00000001
+[    0.000000] 1f80: c0d08d4c 00000000 c0d08d40 ffffffff c0d08d4c c0db2400 412fc0f2 00000001
+[    0.000000] 1fa0: 00000000 c0c00a90 00000000 00000000 00000000 00000000 00000000 00000000
+[    0.000000] 1fa0: 00000000 c0c00a90 00000000 00000000 00000000 00000000 00000000 00000000
+[    0.000000] 1fc0: 00000000 c0c6be4c 00000000 00000000 00000000 c0c00330 00000051 10c0387d
+[    0.000000] 1fc0: 00000000 c0c6be4c 00000000 00000000 00000000 c0c00330 00000051 10c0387d
+[    0.000000] 1fe0: ffffffff a8000000 412fc0f2 10c5387d 00000000 00000000 00000000 00000000
+[    0.000000] 1fe0: ffffffff a8000000 412fc0f2 10c5387d 00000000 00000000 00000000 00000000
+[    0.000000] [<c012bd54>] (omap4_prminst_read_inst_reg) from [<c012ba0c>] (omap4_pwrdm_wait_transition+0x44/0x70)
+[    0.000000] [<c012bd54>] (omap4_prminst_read_inst_reg) from [<c012ba0c>] (omap4_pwrdm_wait_transition+0x44/0x70)
+[    0.000000] [<c012ba0c>] (omap4_pwrdm_wait_transition) from [<c012d854>] (pwrdm_register_pwrdms+0x138/0x1ec)
+[    0.000000] [<c012ba0c>] (omap4_pwrdm_wait_transition) from [<c012d854>] (pwrdm_register_pwrdms+0x138/0x1ec)
+[    0.000000] [<c012d854>] (pwrdm_register_pwrdms) from [<c0c1135c>] (dra7xx_powerdomains_init+0x1c/0x80)
+[    0.000000] [<c012d854>] (pwrdm_register_pwrdms) from [<c0c1135c>] (dra7xx_powerdomains_init+0x1c/0x80)
+[    0.000000] [<c0c1135c>] (dra7xx_powerdomains_init) from [<c0c0bbe0>] (dra7xx_init_early+0x34/0x58)
+[    0.000000] [<c0c1135c>] (dra7xx_powerdomains_init) from [<c0c0bbe0>] (dra7xx_init_early+0x34/0x58)
+[    0.000000] [<c0c0bbe0>] (dra7xx_init_early) from [<c0c055ec>] (setup_arch+0xc50/0xca4)
+[    0.000000] [<c0c0bbe0>] (dra7xx_init_early) from [<c0c055ec>] (setup_arch+0xc50/0xca4)
+[    0.000000] [<c0c055ec>] (setup_arch) from [<c0c00a90>] (start_kernel+0x74/0x4b0)
+[    0.000000] [<c0c055ec>] (setup_arch) from [<c0c00a90>] (start_kernel+0x74/0x4b0)
+[    0.000000] [<c0c00a90>] (start_kernel) from [<00000000>] (  (null))
+[    0.000000] [<c0c00a90>] (start_kernel) from [<00000000>] (  (null))
+[    0.000000] Code: e020c093 e5903004 e3530000 0a000003 (e0811002) 
+[    0.000000] Code: e020c093 e5903004 e3530000 0a000003 (e0811002) 
+[    0.000000] random: get_random_bytes called from print_oops_end_marker+0x40/0x54 with crng_init=0
+[    0.000000] random: get_random_bytes called from print_oops_end_marker+0x40/0x54 with crng_init=0
+[    0.000000] ---[ end trace 0000000000000000 ]---
+[    0.000000] ---[ end trace 0000000000000000 ]---
+[    0.000000] Kernel panic - not syncing: Attempted to kill the idle task!
+[    0.000000] Kernel panic - not syncing: Attempted to kill the idle task!
+[    0.000000] ---[ end Kernel panic - not syncing: Attempted to kill the idle task! ]---
+[    0.000000] ---[ end Kernel panic - not syncing: Attempted to kill the idle task! ]---

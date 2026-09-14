@@ -1,0 +1,1211 @@
+DDR version 1.06 20170424
+In
+LPDDR3
+786MHz
+Bus Width=32 Col=11 Bank=8 Row=15/15 CS=2 Die Bus-Width=32 Size=4096MB
+ddrconfig:7
+OUT
+
+U-Boot SPL 2017.09-ga0a2b48 (Mar 29 2018 - 11:01:55)
+setup_ddr_param  1
+booted from SD
+Trying to boot from MMC2
+NOTICE:  BL31: v1.3(release):f947c7e
+NOTICE:  BL31: Built : 11:01:54, Mar 29 2018
+NOTICE:  BL31:Rockchip release version: v1.3
+
+
+U-Boot 2017.09-ga0a2b48 (Mar 29 2018 - 11:02:10 +0000), Build: jenkins-linux-build-rock-64-196
+
+Model: Pine64 Rock64
+DRAM:  4 GiB
+MMC:   rksdmmc@ff520000: 0, rksdmmc@ff500000: 1
+*** Warning - bad CRC, using default environment
+
+In:    serial@ff130000
+Out:   serial@ff130000
+Err:   serial@ff130000
+Model: Pine64 Rock64
+misc_init_r
+cpuid=55524b50303630303000000000031020
+serial=efc659775797323
+Net:   eth0: ethernet@ff540000
+Hit any key to stop autoboot:  2  1  0 
+Card did not respond to voltage select!
+mmc_init: -95, time 10
+switch to partitions #0, OK
+mmc1 is current device
+Scanning mmc 1:6...
+Found /extlinux/extlinux.conf
+Retrieving file: /extlinux/extlinux.conf
+reading /extlinux/extlinux.conf
+688 bytes read in 6 ms (111.3 KiB/s)
+select kernel
+1:	kernel-latest
+2:	kernel-previous
+Enter choice: 1:	kernel-latest
+Retrieving file: /initrd.img
+reading /initrd.img
+3521760 bytes read in 1189 ms (2.8 MiB/s)
+Retrieving file: /Image
+reading /Image
+19372040 bytes read in 6517 ms (2.8 MiB/s)
+append: rw root=LABEL=linux-root rootwait rootfstype=ext4 panic=10 init=/sbin/init coherent_pool=1M ethaddr=52:aa:d9:e3:ea:07 eth1addr=52:aa:d9:e3:ea:27 serial=efc659775797323 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1
+Retrieving file: /dtb
+reading /dtb
+59320 bytes read in 26 ms (2.2 MiB/s)
+## Flattened Device Tree blob at 01f00000
+   Booting using the fdt blob at 0x1f00000
+   Loading Ramdisk to fcba5000, end fcf00ce0 ... OK
+   Loading Device Tree to 00000000fcb93000, end 00000000fcba47b7 ... OK
+
+Starting kernel ...
+
+ERROR:   rockchip_plat_sip_handler: unhandled SMC (0x82000003)
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Initializing cgroup subsys cpuset
+[    0.000000] Initializing cgroup subsys cpu
+[    0.000000] Initializing cgroup subsys cpuacct
+[    0.000000] Linux version 4.4.120-rockchip-ayufan-196 (root@e86d8cf8e48b) (gcc version 7.2.0 (Ubuntu/Linaro 7.2.0-6ubuntu1) ) #1 SMP Thu Mar 29 11:05:04 UTC 2018
+[    0.000000] Boot CPU: AArch64 Processor [410fd034]
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv1.0 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: MIGRATE_INFO_TYPE not supported.
+[    0.000000] PERCPU: Embedded 21 pages/cpu @ffffffc0fef27000 s46248 r8192 d31576 u86016
+[    0.000000] Detected VIPT I-cache on CPU0
+[    0.000000] CPU features: enabling workaround for ARM erratum 845719
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 1027656
+[    0.000000] Kernel command line: earlyprintk=uart8250-32bit,0xff130000 rw root=LABEL=linux-root rootwait rootfstype=ext4 panic=10 init=/sbin/init coherent_pool=1M ethaddr=52:aa:d9:e3:ea:07 eth1addr=52:aa:d9:e3:ea:27 serial=efc659775797323 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1
+[    0.000000] PID hash table entries: 4096 (order: 3, 32768 bytes)
+[    0.000000] Dentry cache hash table entries: 524288 (order: 10, 4194304 bytes)
+[    0.000000] Inode-cache hash table entries: 262144 (order: 9, 2097152 bytes)
+[    0.000000] software IO TLB [mem 0xf6000000-0xfa000000] (64MB) mapped at [ffffffc0f6000000-ffffffc0f9ffffff]
+[    0.000000] Memory: 4014140K/4175872K available (11838K kernel code, 1574K rwdata, 4328K rodata, 1152K init, 752K bss, 161732K reserved, 0K cma-reserved)
+[    0.000000] Virtual kernel memory layout:
+[    0.000000]     modules : 0xffffff8000000000 - 0xffffff8008000000   (   128 MB)
+[    0.000000]     vmalloc : 0xffffff8008000000 - 0xffffffbdbfff0000   (   246 GB)
+[    0.000000]       .init : 0xffffff8009050000 - 0xffffff8009170000   (  1152 KB)
+[    0.000000]       .text : 0xffffff8008080000 - 0xffffff8008c10000   ( 11840 KB)
+[    0.000000]     .rodata : 0xffffff8008c10000 - 0xffffff8009050000   (  4352 KB)
+[    0.000000]       .data : 0xffffff8009170000 - 0xffffff80092f9808   (  1575 KB)
+[    0.000000]     vmemmap : 0xffffffbdc0000000 - 0xffffffbfc0000000   (     8 GB maximum)
+[    0.000000]               0xffffffbdc0008000 - 0xffffffbdc3fc0000   (    63 MB actual)
+[    0.000000]     fixed   : 0xffffffbffe7fb000 - 0xffffffbffec00000   (  4116 KB)
+[    0.000000]     PCI I/O : 0xffffffbffee00000 - 0xffffffbfffe00000   (    16 MB)
+[    0.000000]     memory  : 0xffffffc000200000 - 0xffffffc0ff000000   (  4078 MB)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] Hierarchical RCU implementation.
+[    0.000000] 	Build-time adjustment of leaf fanout to 64.
+[    0.000000] 	RCU restricting CPUs from NR_CPUS=8 to nr_cpu_ids=4.
+[    0.000000] RCU: Adjusting geometry for rcu_fanout_leaf=64, nr_cpu_ids=4
+[    0.000000] NR_IRQS:64 nr_irqs:64 0
+[    0.000000] GIC: Using split EOI/Deactivate mode
+[    0.000000] rockchip_mmc_get_phase: invalid clk rate
+[    0.000000] rockchip_mmc_get_phase: invalid clk rate
+[    0.000000] rockchip_mmc_get_phase: invalid clk rate
+[    0.000000] rockchip_mmc_get_phase: invalid clk rate
+[    0.000000] rockchip_mmc_get_phase: invalid clk rate
+[    0.000000] rockchip_mmc_get_phase: invalid clk rate
+[    0.000000] rockchip_mmc_get_phase: invalid clk rate
+[    0.000000] rockchip_mmc_get_phase: invalid clk rate
+[    0.000000] Architected cp15 timer(s) running at 24.00MHz (phys).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x588fe9dc0, max_idle_ns: 440795202592 ns
+[    0.000007] sched_clock: 56 bits at 24MHz, resolution 41ns, wraps every 4398046511097ns
+[    0.001070] Console: colour dummy device 80x25
+[    0.003076] console [tty0] enabled
+[    0.003129] Calibrating delay loop (skipped), value calculated using timer frequency.. 48.00 BogoMIPS (lpj=24000)
+[    0.003213] pid_max: default: 32768 minimum: 301
+[    0.003390] Security Framework initialized
+[    0.003436] Yama: becoming mindful.
+[    0.003496] AppArmor: AppArmor disabled by boot time parameter
+[    0.003596] Mount-cache hash table entries: 8192 (order: 4, 65536 bytes)
+[    0.003648] Mountpoint-cache hash table entries: 8192 (order: 4, 65536 bytes)
+[    0.004607] Initializing cgroup subsys io
+[    0.004664] Initializing cgroup subsys memory
+[    0.004733] Initializing cgroup subsys devices
+[    0.004784] Initializing cgroup subsys freezer
+[    0.004833] Initializing cgroup subsys net_cls
+[    0.004882] Initializing cgroup subsys perf_event
+[    0.004932] Initializing cgroup subsys net_prio
+[    0.004987] Initializing cgroup subsys hugetlb
+[    0.005034] Initializing cgroup subsys pids
+[    0.005118] ftrace: allocating 44478 entries in 174 pages
+[    0.130596] sched-energy: CPU device node has no sched-energy-costs
+[    0.130656] Invalid sched_group_energy for CPU0
+[    0.130697] CPU0: update cpu_capacity 1024
+[    0.130799] ASID allocator initialised with 32768 entries
+[    0.136249] Detected VIPT I-cache on CPU1
+[    0.136308] Invalid sched_group_energy for CPU1
+[    0.136314] CPU1: update cpu_capacity 1024
+[    0.136320] CPU1: Booted secondary processor [410fd034]
+[    0.137006] Detected VIPT I-cache on CPU2
+[    0.137052] Invalid sched_group_energy for CPU2
+[    0.137057] CPU2: update cpu_capacity 1024
+[    0.137063] CPU2: Booted secondary processor [410fd034]
+[    0.137735] Detected VIPT I-cache on CPU3
+[    0.137780] Invalid sched_group_energy for CPU3
+[    0.137786] CPU3: update cpu_capacity 1024
+[    0.137791] CPU3: Booted secondary processor [410fd034]
+[    0.137892] Brought up 4 CPUs
+[    0.138351] SMP: Total of 4 processors activated.
+[    0.138399] CPU: All CPU(s) started at EL2
+[    0.138491] alternatives: patching kernel code
+[    0.138771] Invalid sched_group_energy for CPU3
+[    0.138817] Invalid sched_group_energy for Cluster3
+[    0.138857] Invalid sched_group_energy for CPU2
+[    0.138897] Invalid sched_group_energy for Cluster2
+[    0.138938] Invalid sched_group_energy for CPU1
+[    0.138978] Invalid sched_group_energy for Cluster1
+[    0.139019] Invalid sched_group_energy for CPU0
+[    0.139059] Invalid sched_group_energy for Cluster0
+[    0.139850] devtmpfs: initialized
+[    0.160830] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
+[    0.160934] futex hash table entries: 1024 (order: 4, 65536 bytes)
+[    0.161508] xor: measuring software checksum speed
+[    0.170878]    8regs     :  1080.000 MB/sec
+[    0.180963]    8regs_prefetch:   968.000 MB/sec
+[    0.191044]    32regs    :  1456.000 MB/sec
+[    0.201132]    32regs_prefetch:  1224.000 MB/sec
+[    0.201176] xor: using function: 32regs (1456.000 MB/sec)
+[    0.201245] pinctrl core: initialized pinctrl subsystem
+[    0.202638] NET: Registered protocol family 16
+[    0.207246] cpuidle: using governor ladder
+[    0.211273] cpuidle: using governor menu
+[    0.211332] Registered FIQ tty driver
+[    0.212098] vdso: 2 pages (1 code @ ffffff8008c16000, 1 data @ ffffff8009174000)
+[    0.212205] hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
+[    0.212732] DMA: preallocated 1024 KiB pool for atomic allocations
+[    0.281515] raid6: int64x1  gen()   203 MB/s
+[    0.298467] raid6: int64x1  xor()   169 MB/s
+[    0.315659] raid6: int64x2  gen()   328 MB/s
+[    0.332853] raid6: int64x2  xor()   273 MB/s
+[    0.350065] raid6: int64x4  gen()   480 MB/s
+[    0.367135] raid6: int64x4  xor()   322 MB/s
+[    0.384348] raid6: int64x8  gen()   386 MB/s
+[    0.401527] raid6: int64x8  xor()   304 MB/s
+[    0.418678] raid6: neonx1   gen()   363 MB/s
+[    0.435871] raid6: neonx1   xor()   365 MB/s
+[    0.453121] raid6: neonx2   gen()   554 MB/s
+[    0.470243] raid6: neonx2   xor()   462 MB/s
+[    0.487385] raid6: neonx4   gen()   742 MB/s
+[    0.504569] raid6: neonx4   xor()   570 MB/s
+[    0.521758] raid6: neonx8   gen()   761 MB/s
+[    0.538946] raid6: neonx8   xor()   568 MB/s
+[    0.538988] raid6: using algorithm neonx8 gen() 761 MB/s
+[    0.539030] raid6: .... xor() 568 MB/s, rmw enabled
+[    0.539071] raid6: using intx1 recovery algorithm
+[    0.539543] mpp venc_srv: mpp_probe enter
+[    0.539612] mpp venc_srv: init success
+[    0.539978] rockchip-pm rockchip-suspend: not set sleep mode config
+[    0.540029] rockchip-pm rockchip-suspend: not set wakeup-config
+[    0.540076] rockchip-pm rockchip-suspend: not set pwm-regulator-config
+[    0.542669] vcc_sd: regulator get failed, ret=-517
+[    0.543153] vcc_host_5v: supplied by vcc_sys
+[    0.543972] vcc_host1_5v: supplied by vcc_sys
+[    0.545249] iommu: Adding device ff350000.vpu_service to group 0
+[    0.545389] iommu: Adding device ff351000.avsd to group 1
+[    0.545509] iommu: Adding device ff360000.rkvdec to group 2
+[    0.545633] iommu: Adding device ff330000.h265e to group 3
+[    0.545754] iommu: Adding device ff340000.vepu to group 4
+[    0.545882] iommu: Adding device ff370000.vop to group 5
+[    0.546016] iommu: Adding device ff3a0000.iep to group 6
+[    0.547104] rk_iommu ff360480.iommu: can't get aclk
+[    0.547193] rk_iommu ff360480.iommu: can't get hclk
+[    0.548909] SCSI subsystem initialized
+[    0.549283] usbcore: registered new interface driver usbfs
+[    0.549399] usbcore: registered new interface driver hub
+[    0.549559] usbcore: registered new device driver usb
+[    0.549746] media: Linux media interface: v0.10
+[    0.549840] Linux video capture interface: v2.00
+[    0.549990] pps_core: LinuxPPS API ver. 1 registered
+[    0.550032] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.550128] PTP clock support registered
+[    0.551994] Advanced Linux Sound Architecture Driver Initialized.
+[    0.552948] Bluetooth: Core ver 2.21
+[    0.553038] NET: Registered protocol family 31
+[    0.553080] Bluetooth: HCI device and connection manager initialized
+[    0.553132] Bluetooth: HCI socket layer initialized
+[    0.553180] Bluetooth: L2CAP socket layer initialized
+[    0.553281] Bluetooth: SCO socket layer initialized
+[    0.553972] NetLabel: Initializing
+[    0.554017] NetLabel:  domain hash size = 128
+[    0.554055] NetLabel:  protocols = UNLABELED CIPSOv4
+[    0.554157] NetLabel:  unlabeled traffic allowed by default
+[    0.554721] rockchip-cpuinfo cpuinfo: Serial		: efc6597757973231
+[    0.555915] clocksource: Switched to clocksource arch_sys_counter
+[    0.656104] NET: Registered protocol family 2
+[    0.656888] TCP established hash table entries: 32768 (order: 6, 262144 bytes)
+[    0.657471] TCP bind hash table entries: 32768 (order: 8, 1048576 bytes)
+[    0.658982] TCP: Hash tables configured (established 32768 bind 32768)
+[    0.659145] UDP hash table entries: 2048 (order: 5, 196608 bytes)
+[    0.659432] UDP-Lite hash table entries: 2048 (order: 5, 196608 bytes)
+[    0.660068] NET: Registered protocol family 1
+[    0.660607] RPC: Registered named UNIX socket transport module.
+[    0.660656] RPC: Registered udp transport module.
+[    0.660697] RPC: Registered tcp transport module.
+[    0.660738] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    0.661141] Trying to unpack rootfs image as initramfs...
+[    0.959892] Freeing initrd memory: 3436K
+[    0.961105] hw perfevents: enabled with armv8_cortex_a53 PMU driver, 7 counters available
+[    0.962518] kvm [1]: 8-bit VMID
+[    0.962561] kvm [1]: Hyp mode initialized successfully
+[    0.963100] kvm [1]: interrupt-controller@ff814000 IRQ46
+[    0.963465] kvm [1]: timer IRQ3
+[    0.967348] audit: initializing netlink subsys (disabled)
+[    0.967441] audit: type=2000 audit(0.893:1): initialized
+[    0.968644] HugeTLB registered 2 MB page size, pre-allocated 0 pages
+[    0.981296] VFS: Disk quotas dquot_6.6.0
+[    0.981598] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    0.984537] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.986656] NFS: Registering the id_resolver key type
+[    0.986752] Key type id_resolver registered
+[    0.986793] Key type id_legacy registered
+[    0.986854] Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+[    0.988063] fuse init (API version 7.23)
+[    0.989377] JFS: nTxBlock = 8192, nTxLock = 65536
+[    0.996430] SGI XFS with ACLs, security attributes, realtime, no debug enabled
+[    0.999263] Key type big_key registered
+[    0.999400] 
+[    0.999400] TEE Core Framework initialization (ver 1:0.1)
+[    0.999500] TEE armv7 Driver initialization
+[    1.000045] tz_tee_probe: name="armv7sec", id=0, pdev_name="armv7sec.0"
+[    1.000096] TEE core: Alloc the misc device "opteearmtz00" (id=0)
+[    1.000450] TEE Core: Register the misc device "opteearmtz00" (id=0,minor=62)
+[    1.006105] NET: Registered protocol family 38
+[    1.006198] Key type asymmetric registered
+[    1.006249] Asymmetric key parser 'x509' registered
+[    1.006609] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 247)
+[    1.006885] io scheduler noop registered
+[    1.006975] io scheduler deadline registered (default)
+[    1.007082] io scheduler cfq registered
+[    1.010038] phy phy-ff450000.syscon:usb2-phy@100.1: Failed to get VBUS supply regulator
+[    1.011005] rockchip-u3phy ff470000.usb3-phy: Failed to get VBUS supply regulator
+[    1.013725] rockchip-u3phy ff470000.usb3-phy: Rockchip u3phy initialized successfully
+[    1.017468] rk-vcodec vpu_combo: no regulator for vcodec
+[    1.017783] rk-vcodec vpu_combo: failed on clk_get clk_cabac
+[    1.017838] rk-vcodec vpu_combo: failed on clk_get clk_core
+[    1.018013] platform ff350000.vpu_service: probe device
+[    1.018112] platform ff350000.vpu_service: vpu mmu dec ffffffc0f5444810
+[    1.018437] platform ff350000.vpu_service: allocator is drm
+[    1.018562] platform ff350000.vpu_service: checking hw id 0
+[    1.019421] platform ff351000.avsd: probe device
+[    1.019570] platform ff351000.avsd: vpu mmu dec ffffffc0f5444810
+[    1.019944] platform ff351000.avsd: allocator is drm
+[    1.020032] platform ff351000.avsd: checking hw id 6731
+[    1.022121] rk-vcodec vpu_combo: could not find power_model node
+[    1.022176] rk-vcodec vpu_combo: init success
+[    1.022592] rk-vcodec ff360000.rkvdec: vcodec regulator not ready, retry
+[    1.023597] probe device ff330000.h265e
+[    1.024026] mpp_dev ff330000.h265e: try to get iommu dev ffffffc0f5446410
+[    1.024520] mpp_dev ff330000.h265e: resource ready, register device
+[    1.025087] probe device ff340000.vepu
+[    1.025465] mpp_dev ff340000.vepu: try to get iommu dev ffffffc0f5446c10
+[    1.025893] mpp_dev ff340000.vepu: resource ready, register device
+[    1.029198] dma-pl330 ff1f0000.dmac: Loaded driver for PL330 DMAC-241330
+[    1.029259] dma-pl330 ff1f0000.dmac: 	DBUFF-128x8bytes Num_Chans-8 Num_Peri-20 Num_Events-16
+[    1.030380] Serial: 8250/16550 driver, 5 ports, IRQ sharing disabled
+[    1.033170] ff130000.serial: ttyS2 at MMIO 0xff130000 (irq = 13, base_baud = 1500000) is a 16550A
+[    1.151948] console [ttyS2] enabled
+[    1.153981] [drm] Initialized drm 1.1.0 20060810
+[    1.158285] [drm] Rockchip DRM driver version: v1.0.0
+[    1.159024] rockchip-drm display-subsystem: devfreq is not set
+[    1.160034] rockchip-vop ff370000.vop: invalid resource
+[    1.160537] rockchip-vop ff370000.vop: failed to get vop lut registers
+[    1.161171] rockchip-vop ff370000.vop: invalid resource
+[    1.161670] rockchip-vop ff370000.vop: failed to get vop cabc lut registers
+[    1.162593] rockchip-drm display-subsystem: bound ff370000.vop (ops 0xffffff8008cdc348)
+[    1.163771] i2c i2c-4: of_i2c: modalias failure on /hdmi@ff3c0000/ports
+[    1.164426] dwhdmi-rockchip ff3c0000.hdmi: registered DesignWare HDMI I2C bus driver
+[    1.165314] dwhdmi-rockchip ff3c0000.hdmi: Detected HDMI TX controller v2.11a with HDCP (inno_dw_hdmi_phy2)
+[    1.167382] rockchip-drm display-subsystem: bound ff3c0000.hdmi (ops 0xffffff8008cd3210)
+[    1.168193] [drm] Supports vblank timestamp caching Rev 2 (21.10.2013).
+[    1.168811] [drm] No driver support for vblank timestamp query.
+[    1.169471] rockchip-drm display-subsystem: failed to parse display resources
+[    1.170198] rockchip-drm display-subsystem: No connectors reported connected with modes
+[    1.171041] [drm] Cannot find any crtc or sizes - going 1024x768
+[    1.197119] Console: switching to colour frame buffer device 128x48
+[    1.217180] rockchip-drm display-subsystem: fb0:  frame buffer device
+[    1.224667] usbcore: registered new interface driver udl
+[    1.228390] Unable to detect cache hierarchy for CPU 0
+[    1.230338] brd: module loaded
+[    1.239779] loop: module loaded
+[    1.240614] lkdtm: No crash points registered, enable through debugfs
+[    1.243378] rockchip-spi ff190000.spi: no high_speed pinctrl state
+[    1.245141] m25p80 spi32766.0: unrecognized JEDEC id bytes: 08, 40, 10
+[    1.248484] force_sf_dma_mode is ignored if force_thresh_dma_mode is set.
+[    1.249552] rk_gmac-dwmac ff540000.ethernet: clock input or output? (input).
+[    1.250472] rk_gmac-dwmac ff540000.ethernet: TX delay(0x24).
+[    1.251215] rk_gmac-dwmac ff540000.ethernet: RX delay(0x18).
+[    1.251963] rk_gmac-dwmac ff540000.ethernet: integrated PHY? (no).
+[    1.253007] rk_gmac-dwmac ff540000.ethernet: cannot get clock clk_mac_speed
+[    1.253888] rk_gmac-dwmac ff540000.ethernet: clock input from PHY
+[    1.259693] rk_gmac-dwmac ff540000.ethernet: init for RGMII
+[    1.260581] stmmac - user ID: 0x10, Synopsys ID: 0x35
+[    1.261242]  Ring mode enabled
+[    1.261638]  DMA HW capability register supported
+[    1.262237]  Normal descriptors
+[    1.262675]  RX Checksum Offload Engine supported (type 2)
+[    1.263385]  Wake-Up On Lan supported
+[    1.263934]  Enable RX Mitigation via HW Watchdog Timer
+[    1.346444] libphy: stmmac: probed
+[    1.354768] eth%d: PHY ID 001cc916 at 0 IRQ POLL (stmmac-0:00) active
+[    1.363472] eth%d: PHY ID 001cc916 at 1 IRQ POLL (stmmac-0:01)
+[    1.373586] Rockchip WiFi SYS interface (V1.00) ... 
+[    1.382233] usbcore: registered new interface driver cdc_ether
+[    1.390923] usbcore: registered new interface driver rndis_host
+[    1.401609] phy phy-ff470000.usb3-phy.2: u3phy u2 power on
+[    1.410237] phy phy-ff470000.usb3-phy.3: u3phy u3 power on
+[    1.419873] ff580000.usb supply vusb_d not found, using dummy regulator
+[    1.428659] ff580000.usb supply vusb_a not found, using dummy regulator
+[    1.449647] dwc2 ff580000.usb: DWC OTG Controller
+[    1.457861] dwc2 ff580000.usb: new USB bus registered, assigned bus number 1
+[    1.466275] dwc2 ff580000.usb: irq 43, io mem 0xff580000
+[    1.474621] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002
+[    1.482835] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    1.491004] usb usb1: Product: DWC OTG Controller
+[    1.498810] usb usb1: Manufacturer: Linux 4.4.120-rockchip-ayufan-196 dwc2_hsotg
+[    1.506894] usb usb1: SerialNumber: ff580000.usb
+[    1.515520] hub 1-0:1.0: USB hub found
+[    1.523197] hub 1-0:1.0: 1 port detected
+[    1.532001] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    1.539895] ehci-pci: EHCI PCI platform driver
+[    1.547518] ehci-platform: EHCI generic platform driver
+[    1.557735] ehci-platform ff5c0000.usb: EHCI Host Controller
+[    1.565637] ehci-platform ff5c0000.usb: new USB bus registered, assigned bus number 2
+[    1.573595] ehci-platform ff5c0000.usb: irq 44, io mem 0xff5c0000
+[    1.586953] ehci-platform ff5c0000.usb: USB 2.0 started, EHCI 1.00
+[    1.594749] usb usb2: New USB device found, idVendor=1d6b, idProduct=0002
+[    1.602372] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    1.610104] usb usb2: Product: EHCI Host Controller
+[    1.617552] usb usb2: Manufacturer: Linux 4.4.120-rockchip-ayufan-196 ehci_hcd
+[    1.625275] usb usb2: SerialNumber: ff5c0000.usb
+[    1.633536] hub 2-0:1.0: USB hub found
+[    1.640839] hub 2-0:1.0: 1 port detected
+[    1.648651] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    1.656153] ohci-platform: OHCI generic platform driver
+[    1.664154] ohci-platform ff5d0000.usb: Generic Platform OHCI controller
+[    1.672224] ohci-platform ff5d0000.usb: new USB bus registered, assigned bus number 3
+[    1.680298] ohci-platform ff5d0000.usb: irq 45, io mem 0xff5d0000
+[    1.743207] usb usb3: New USB device found, idVendor=1d6b, idProduct=0001
+[    1.751178] usb usb3: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    1.759168] usb usb3: Product: Generic Platform OHCI controller
+[    1.767037] usb usb3: Manufacturer: Linux 4.4.120-rockchip-ayufan-196 ohci_hcd
+[    1.775137] usb usb3: SerialNumber: ff5d0000.usb
+[    1.783887] hub 3-0:1.0: USB hub found
+[    1.791668] hub 3-0:1.0: 1 port detected
+[    1.800594] xhci-hcd xhci-hcd.9.auto: xHCI Host Controller
+[    1.808791] xhci-hcd xhci-hcd.9.auto: new USB bus registered, assigned bus number 4
+[    1.817153] xhci-hcd xhci-hcd.9.auto: hcc params 0x0220fe64 hci version 0x110 quirks 0x00210010
+[    1.825476] xhci-hcd xhci-hcd.9.auto: irq 181, io mem 0xff600000
+[    1.833771] usb usb4: New USB device found, idVendor=1d6b, idProduct=0002
+[    1.841964] usb usb4: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    1.850178] usb usb4: Product: xHCI Host Controller
+[    1.858242] usb usb4: Manufacturer: Linux 4.4.120-rockchip-ayufan-196 xhci-hcd
+[    1.866599] usb usb4: SerialNumber: xhci-hcd.9.auto
+[    1.875689] hub 4-0:1.0: USB hub found
+[    1.883795] hub 4-0:1.0: 1 port detected
+[    1.892430] xhci-hcd xhci-hcd.9.auto: xHCI Host Controller
+[    1.901092] xhci-hcd xhci-hcd.9.auto: new USB bus registered, assigned bus number 5
+[    1.909764] usb usb5: We don't know the algorithms for LPM for this host, disabling LPM.
+[    1.918619] usb usb5: New USB device found, idVendor=1d6b, idProduct=0003
+[    1.927138] usb usb5: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    1.935707] usb usb5: Product: xHCI Host Controller
+[    1.943989] usb usb5: Manufacturer: Linux 4.4.120-rockchip-ayufan-196 xhci-hcd
+[    1.952549] usb usb5: SerialNumber: xhci-hcd.9.auto
+[    1.961700] hub 5-0:1.0: USB hub found
+[    1.969951] hub 5-0:1.0: 1 port detected
+[    1.980246] usbcore: registered new interface driver iforce
+[    1.988741] usbcore: registered new interface driver xpad
+[    1.997483] usbcore: registered new interface driver usbtouchscreen
+[    2.006757] i2c /dev entries driver
+[    2.017561] rk808 1-0018: Pmic Chip id: 0x8050
+[    2.026745] rk808 1-0018: source: on=0x40, off=0x00
+[    2.041362] DCDC_REG1: supplied by vcc_sys
+[    2.052547] DCDC_REG2: supplied by vcc_sys
+[    2.063063] DCDC_REG3: supplied by vcc_sys
+[    2.072546] DCDC_REG4: supplied by vcc_sys
+[    2.081812] vcc_sd: supplied by vcc_io
+[    2.089360] LDO_REG1: supplied by vcc_io
+[    2.100053] LDO_REG2: supplied by vcc_io
+[    2.110737] LDO_REG3: supplied by vcc_sys
+[    2.121281] rk808 1-0018: register rk8050 regulators
+[    2.129041] rk8xx-gpio rk8xx-gpio: register rk8050 gpio successful
+[    2.138592] input: rk8xx_pwrkey as /devices/platform/ff160000.i2c/i2c-1/1-0018/input/input0
+[    2.156572] rk808-rtc rk808-rtc: rtc core: registered rk808-rtc as rtc0
+[    2.165192] rk3x-i2c ff160000.i2c: Initialized RK3xxx I2C bus at ffffff8009e2a000
+[    2.175043] IR NEC protocol handler initialized
+[    2.182640] IR RC5(x/sz) protocol handler initialized
+[    2.182655] IR RC6 protocol handler initialized
+[    2.182667] IR JVC protocol handler initialized
+[    2.182681] IR Sony protocol handler initialized
+[    2.182694] IR SANYO protocol handler initialized
+[    2.182708] IR Sharp protocol handler initialized
+[    2.182721] IR MCE Keyboard/mouse protocol handler initialized
+[    2.182734] IR XMP protocol handler initialized
+[    2.183384] usbcore: registered new interface driver uvcvideo
+[    2.183387] USB Video Class driver (1.1.1)
+[    2.189742] device-mapper: ioctl: 4.34.0-ioctl (2015-10-28) initialised: dm-devel@redhat.com
+[    2.189764] Bluetooth: Virtual HCI driver ver 1.5
+[    2.190014] Bluetooth: HCI UART driver ver 2.3
+[    2.190022] Bluetooth: HCI UART protocol H4 registered
+[    2.190026] Bluetooth: HCI UART protocol LL registered
+[    2.190030] Bluetooth: HCI UART protocol ATH3K registered
+[    2.190146] usbcore: registered new interface driver bfusb
+[    2.190262] usbcore: registered new interface driver btusb
+[    2.190652] cpu cpu0: cpu_leakage=15
+[    2.190687] cpu cpu0: cpu_leakage=15
+[    2.190702] cpu cpu0: cpu_leakage-volt-sel=1
+[    2.193534] sdhci: Secure Digital Host Controller Interface driver
+[    2.193538] sdhci: Copyright(c) Pierre Ossman
+[    2.193547] Synopsys Designware Multimedia Card Interface Driver
+[    2.194995] dwmmc_rockchip ff520000.dwmmc: IDMAC supports 32-bit address mode.
+[    2.195029] dwmmc_rockchip ff520000.dwmmc: Using internal DMA controller.
+[    2.195044] dwmmc_rockchip ff520000.dwmmc: Version ID is 270a
+[    2.195114] dwmmc_rockchip ff520000.dwmmc: DW MMC controller at irq 40,32 bit host data width,256 deep fifo
+[    2.195141] dwmmc_rockchip ff520000.dwmmc: 'clock-freq-min-max' property was deprecated.
+[    2.206971] mmc_host mmc0: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[    2.218045] dwmmc_rockchip ff520000.dwmmc: 1 slots initialized
+[    2.218757] dwmmc_rockchip ff500000.dwmmc: IDMAC supports 32-bit address mode.
+[    2.218793] dwmmc_rockchip ff500000.dwmmc: Using internal DMA controller.
+[    2.218808] dwmmc_rockchip ff500000.dwmmc: Version ID is 270a
+[    2.218873] dwmmc_rockchip ff500000.dwmmc: DW MMC controller at irq 41,32 bit host data width,256 deep fifo
+[    2.218929] dwmmc_rockchip ff500000.dwmmc: 'clock-freq-min-max' property was deprecated.
+[    2.230958] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[    2.242069] dwmmc_rockchip ff500000.dwmmc: 1 slots initialized
+[    2.242216] sdhci-pltfm: SDHCI platform and OF driver helper
+[    2.243812] hidraw: raw HID events driver (C) Jiri Kosina
+[    2.244512] usbcore: registered new interface driver usbhid
+[    2.244513] usbhid: USB HID core driver
+[    2.244767] ashmem: initialized
+[    2.245536] rockchip-dmc dmc: unable to get devfreq-event device : dfi
+[    2.247058] usbcore: registered new interface driver snd-usb-audio
+[    2.248099] rk3328-codec ff410000.codec: spk_depop_time use default value.
+[    2.250846] rockchip-pinctrl pinctrl: pin gpio0-27 already requested by vcc-host1-5v-regulator; cannot claim for ff030000.spdif
+[    2.250852] rockchip-pinctrl pinctrl: pin-27 (ff030000.spdif) status -22
+[    2.250858] rockchip-pinctrl pinctrl: could not request pin 27 (gpio0-27) from group spdifm0-tx  on device rockchip-pinctrl
+[    2.250861] rockchip-spdif ff030000.spdif: Error applying setting, reverse things back
+[    2.252030] u32 classifier
+[    2.252043] Netfilter messages via NETLINK v0.30.
+[    2.252088] ip_set: protocol 6
+[    2.252249] Initializing XFRM netlink socket
+[    2.252770] NET: Registered protocol family 10
+[    2.253651] NET: Registered protocol family 17
+[    2.253672] NET: Registered protocol family 15
+[    2.253703] bridge: automatic filtering via arp/ip/ip6tables has been deprecated. Update your scripts to load br_netfilter if you need this.
+[    2.253725] Bridge firewalling registered
+[    2.253832] Bluetooth: RFCOMM socket layer initialized
+[    2.253857] Bluetooth: RFCOMM ver 1.11
+[    2.253879] Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+[    2.253894] Bluetooth: HIDP socket layer initialized
+[    2.253968] 8021q: 802.1Q VLAN Support v1.8
+[    2.253989] [WLAN_RFKILL]: Enter rfkill_wlan_init
+[    2.254224] [BT_RFKILL]: Enter rfkill_rk_init
+[    2.254372] Key type dns_resolver registered
+[    2.257731] Registered cp15_barrier emulation handler
+[    2.261454] Registered setend emulation handler
+[    2.262121] registered taskstats version 1
+[    2.263974] Btrfs loaded, integrity-checker=on
+[    2.264054] BTRFS: selftest: Running btrfs free space cache tests
+[    2.264076] BTRFS: selftest: Running extent only tests
+[    2.264091] BTRFS: selftest: Running bitmap only tests
+[    2.264107] BTRFS: selftest: Running bitmap and extent tests
+[    2.264130] BTRFS: selftest: Running space stealing from bitmap to extent
+[    2.264990] BTRFS: selftest: Free space cache tests finished
+[    2.264994] BTRFS: selftest: Running extent buffer operation tests
+[    2.264994] BTRFS: selftest: Running btrfs_split_item tests
+[    2.265030] BTRFS: selftest: Running find delalloc tests
+[    2.281117] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[    2.281171] mmc1: new high speed SDHC card at address 59b4
+[    2.281632] mmcblk1: mmc1:59b4 BA1MW 14.9 GiB 
+[    2.282545] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[    2.282550] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[    2.296979] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[    2.328681] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[    2.328727] mmc1: tried to reset card
+[    2.329060] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[    2.329065] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[    2.329069] mmcblk1: retrying using single block read
+[    2.329460] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[    2.329466] blk_update_request: I/O error, dev mmcblk1, sector 0
+[    2.329975] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[    2.329979] blk_update_request: I/O error, dev mmcblk1, sector 1
+[    2.330379] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[    2.330383] blk_update_request: I/O error, dev mmcblk1, sector 2
+[    2.330790] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[    2.330794] blk_update_request: I/O error, dev mmcblk1, sector 3
+[    2.332249] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[    2.332647] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[    2.332651] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[    2.346971] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[    2.378746] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[    2.378818] mmc1: tried to reset card
+[    2.379178] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[    2.379183] mmcblk1: retrying using single block read
+[    2.379553] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[    2.379559] blk_update_request: I/O error, dev mmcblk1, sector 0
+[    2.380074] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[    2.380079] blk_update_request: I/O error, dev mmcblk1, sector 1
+[    2.380487] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[    2.380491] blk_update_request: I/O error, dev mmcblk1, sector 2
+[    2.380895] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[    2.380924] blk_update_request: I/O error, dev mmcblk1, sector 3
+[    2.382453] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[    2.382890] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0xb00
+[    2.397971] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[    2.429688] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[    2.429746] mmc1: tried to reset card
+[    2.430083] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[    2.430087] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[    2.430091] mmcblk1: retrying using single block read
+[    2.430480] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[    2.430486] blk_update_request: I/O error, dev mmcblk1, sector 0
+[    2.430994] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[    2.430999] blk_update_request: I/O error, dev mmcblk1, sector 1
+[    2.431400] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[    2.431803] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[    2.433283] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[    2.433315]  mmcblk1: unable to read partition table
+[    2.483207] BTRFS: selftest: Running btrfs_get_extent tests
+[    2.483390] BTRFS: selftest: Running hole first btrfs_get_extent test
+[    2.483419] BTRFS: selftest: Running outstanding_extents tests
+[    2.483473] BTRFS: selftest: Running qgroup tests
+[    2.483475] BTRFS: selftest: Qgroup basic add
+[    2.483537] BTRFS: selftest: Qgroup multiple refs test
+[    2.845547] rk-vcodec ff360000.rkvdec: parent devfreq retry
+[    2.851932] rockchip-dmc dmc: current ATF version 0x101!
+[    2.857554] rockchip-dmc dmc: read tf version 0x101!
+[    2.866796] rockchip-dmc dmc: ddr_leakage=12
+[    2.874995] rockchip-dmc dmc: ddr_leakage-volt-sel=1
+[    2.883648] rockchip-dmc dmc: failed to get vop bandwidth to dmc rate
+[    2.892193] asoc-simple-card hdmi-sound: i2s-hifi <-> ff000000.i2s mapping ok
+[    2.920936] asoc-simple-card sound: rk3328-hifi <-> ff010000.i2s mapping ok
+[    2.928249] asoc-simple-card sound: snd-soc-dummy-dai <-> ff010000.i2s mapping ok
+[    2.935740] asoc-simple-card spdif-sound: dit-hifi <-> ff030000.spdif mapping ok
+[    2.942377] rk-vcodec ff360000.rkvdec: parent devfreq is ok
+[    2.948327] rk-vcodec ff360000.rkvdec: rkvdec_leakage=12
+[    2.953385] rk-vcodec ff360000.rkvdec: rkvdec_leakage-volt-sel=1
+[    2.958752] rk-vcodec ff360000.rkvdec: probe device
+[    2.963629] rk-vcodec ff360000.rkvdec: vpu mmu dec ffffffc0f5445c10
+[    2.968844] rk-vcodec ff360000.rkvdec: allocator is drm
+[    2.973624] rk-vcodec ff360000.rkvdec: checking hw id 3410
+[    2.978971] rk-vcodec ff360000.rkvdec: init success
+[    2.985560] rk808-rtc rk808-rtc: setting system clock to 2016-01-21 08:50:19 UTC (1453366219)
+[    2.990487] of_cfs_init
+[    2.994755] of_cfs_init: OK
+[    3.009709] I : [File] : drivers/gpu/arm/mali400/mali/linux/mali_kernel_linux.c; [Line] : 415; [Func] : mali_module_init(); svn_rev_string_from_arm of this mali_ko is '-232b62b4', rk_ko_ver is '5', built at '11:03:08', on 'Mar 29 2018'.
+[    3.019986] mali-utgard ff300000.gpu: mali_platform_device->num_resources = 9
+[    3.024770] mali-utgard ff300000.gpu: resource[0].start = 0x0x00000000ff300000
+[    3.029469] mali-utgard ff300000.gpu: resource[1].start = 0x0x00000000ff300000
+[    3.034079] mali-utgard ff300000.gpu: resource[2].start = 0x0x0000000000000012
+[    3.038578] mali-utgard ff300000.gpu: resource[3].start = 0x0x0000000000000013
+[    3.042957] mali-utgard ff300000.gpu: resource[4].start = 0x0x0000000000000014
+[    3.047277] mali-utgard ff300000.gpu: resource[5].start = 0x0x0000000000000015
+[    3.051473] mali-utgard ff300000.gpu: resource[6].start = 0x0x0000000000000016
+[    3.055561] mali-utgard ff300000.gpu: resource[7].start = 0x0x0000000000000017
+[    3.059564] mali-utgard ff300000.gpu: resource[8].start = 0x0x0000000000000018
+[    3.063463] D : [File] : drivers/gpu/arm/mali400/mali/platform/rk/rk.c; [Line] : 617; [Func] : mali_platform_device_init(); to add platform_specific_data to platform_device_of_mali.
+[    3.071664] mali-utgard ff300000.gpu: gpu_leakage=12
+[    3.075398] mali-utgard ff300000.gpu: gpu_leakage-volt-sel=1
+[    3.080959] Mali: Mali device driver loaded
+[    3.085775] ALSA device list:
+[    3.089226]   #0: HDMI
+[    3.092488]   #1: I2S
+[    3.095652]   #2: SPDIF
+[    3.098982] of_dma_request_slave_channel: dma-names property of node '/serial@ff130000' missing or empty
+[    3.102927] ttyS2 - failed to request DMA
+[    3.106839] Freeing unused kernel memory: 1152K
+Loading, please wait...
+starting version 229
+[    3.148679] random: systemd-udevd: uninitialized urandom read (16 bytes read, 8 bits of entropy available)
+[    3.151571] random: udevadm: uninitialized urandom read (16 bytes read, 8 bits of entropy available)
+[    3.151656] random: udevadm: uninitialized urandom read (16 bytes read, 8 bits of entropy available)
+[    3.162004] random: systemd-udevd: uninitialized urandom read (16 bytes read, 8 bits of entropy available)
+[    3.166662] random: systemd-udevd: uninitialized urandom read (16 bytes read, 8 bits of entropy available)
+[    3.171273] random: systemd-udevd: uninitialized urandom read (16 bytes read, 8 bits of entropy available)
+[    3.179001] devfreq ff300000.gpu: Couldn't update frequency transition information.
+[    3.202038] random: systemd-udevd: uninitialized urandom read (16 bytes read, 8 bits of entropy available)
+[    3.206559] random: systemd-udevd: uninitialized urandom read (16 bytes read, 8 bits of entropy available)
+[    3.210974] random: systemd-udevd: uninitialized urandom read (16 bytes read, 8 bits of entropy available)
+[    3.216224] random: systemd-udevd: uninitialized urandom read (16 bytes read, 8 bits of entropy available)
+[    3.409527] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0xb00
+[    3.428011] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[    3.465023] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[    3.469524] mmc1: tried to reset card
+[    3.474075] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[    3.478631] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[    3.483207] mmcblk1: retrying using single block read
+[    3.487836] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[    3.493069] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[    3.498248] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[    3.503307] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[    3.509702] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[    3.514188] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[    3.532971] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[    3.568654] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[    3.573080] mmc1: tried to reset card
+[    3.577332] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[    3.581783] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[    3.586343] mmcblk1: retrying using single block read
+[    3.591013] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[    3.596322] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[    3.601620] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[    3.606929] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[    3.613280] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+Begin: Loading essential drivers ... done.
+Begin: Running /scripts/init-premount ... done.
+Begin: Mounting root file system ... Begin: Running /scripts/local-top ... done.
+Begin: Running /scripts/local-premount ... done.
+[    5.259998] vendor storage:20160801 ret = -1
+[   13.652031] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   13.665484] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   13.694032] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   13.740842] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   13.754936] mmc1: tried to reset card
+[   13.768835] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   13.783223] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   13.797943] mmcblk1: retrying using single block read
+[   13.808361] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   13.818812] blk_update_request: 10 callbacks suppressed
+[   13.826229] blk_update_request: I/O error, dev mmcblk1, sector 0
+[   13.834302] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   13.842181] blk_update_request: I/O error, dev mmcblk1, sector 1
+[   13.848891] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   13.855562] blk_update_request: I/O error, dev mmcblk1, sector 2
+[   13.862417] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   13.869233] blk_update_request: I/O error, dev mmcblk1, sector 3
+[   13.877865] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   13.884824] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   13.904953] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   13.943834] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   13.960553] mmc1: tried to reset card
+[   13.977230] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   13.994089] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   14.005750] mmcblk1: retrying using single block read
+[   14.017473] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   14.024786] blk_update_request: I/O error, dev mmcblk1, sector 0
+[   14.032295] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   14.039644] blk_update_request: I/O error, dev mmcblk1, sector 1
+[   14.046150] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   14.052468] blk_update_request: I/O error, dev mmcblk1, sector 2
+[   14.059103] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   14.065674] blk_update_request: I/O error, dev mmcblk1, sector 3
+[   14.073179] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[   14.084722] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   14.091010] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   14.112047] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   14.155737] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   14.168494] mmc1: tried to reset card
+[   14.186377] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   14.204535] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   14.217119] mmcblk1: retrying using single block read
+[   14.229678] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   14.237641] blk_update_request: I/O error, dev mmcblk1, sector 0
+[   14.245949] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   14.254205] blk_update_request: I/O error, dev mmcblk1, sector 1
+[   14.261460] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   14.269089] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   14.278032] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   14.284525] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   14.305953] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   14.343733] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   14.356957] mmc1: tried to reset card
+[   14.369839] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   14.382945] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   14.392782] mmcblk1: retrying using single block read
+[   14.402586] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   14.412973] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   14.421566] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   14.430006] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   14.439357] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+Begin: Waiting for root file system ... Begin: Running /scripts/local-block ... done.
+[   15.464558] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   15.482572] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   15.514987] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   15.558836] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   15.576844] mmc1: tried to reset card
+[   15.594486] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   15.612328] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   15.624770] mmcblk1: retrying using single block read
+[   15.637148] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   15.645425] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   15.653556] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   15.661557] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   15.669813] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   15.676057] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   15.696952] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   15.734811] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   15.751666] mmc1: tried to reset card
+[   15.768093] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   15.784731] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   15.796244] mmcblk1: retrying using single block read
+[   15.807785] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   15.815541] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   15.823151] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   15.830607] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   15.838076] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[   15.849293] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   15.855193] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   15.875984] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   15.923834] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   15.939685] mmc1: tried to reset card
+[   15.955106] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   15.970750] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   15.981587] mmcblk1: retrying using single block read
+[   15.992389] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   15.999860] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   16.007188] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   16.014400] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   16.021977] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   16.027593] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   16.047951] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   16.084813] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   16.099895] mmc1: tried to reset card
+[   16.114611] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   16.129539] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   16.144788] mmcblk1: retrying using single block read
+[   16.155597] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   16.167258] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   16.178644] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   16.189814] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   16.199315] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+Begin: Running /scripts/local-block ... done.
+[   17.226439] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   17.241499] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   17.271041] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   17.318831] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   17.333896] mmc1: tried to reset card
+[   17.348600] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   17.363533] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   17.374129] mmcblk1: retrying using single block read
+[   17.384933] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   17.392410] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   17.399744] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   17.406961] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   17.414565] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   17.420189] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   17.439952] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   17.476628] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   17.482373] mmc1: tried to reset card
+[   17.497058] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   17.511990] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   17.518634] mmcblk1: retrying using single block read
+[   17.525392] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   17.532860] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   17.539206] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   17.545421] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   17.552598] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[   17.563600] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   17.569265] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   17.589960] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   17.627840] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   17.642936] mmc1: tried to reset card
+[   17.657609] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   17.672552] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   17.683169] mmcblk1: retrying using single block read
+[   17.693982] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   17.701461] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   17.708788] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   17.716004] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   17.723597] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   17.729217] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   17.748952] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   17.785631] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   17.791374] mmc1: tried to reset card
+[   17.806068] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   17.821000] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   17.827641] mmcblk1: retrying using single block read
+[   17.834397] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   17.841856] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   17.848195] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   17.854410] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   17.861567] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+Begin: Running /scripts/local-block ... done.
+[   18.886059] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   18.901111] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   18.931039] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   18.978831] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   18.993944] mmc1: tried to reset card
+[   19.008633] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   19.023588] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   19.034206] mmcblk1: retrying using single block read
+[   19.045023] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   19.051947] blk_update_request: 38 callbacks suppressed
+[   19.058448] blk_update_request: I/O error, dev mmcblk1, sector 0
+[   19.065522] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   19.071419] blk_update_request: I/O error, dev mmcblk1, sector 1
+[   19.077559] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   19.083491] blk_update_request: I/O error, dev mmcblk1, sector 2
+[   19.089635] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   19.095220] blk_update_request: I/O error, dev mmcblk1, sector 3
+[   19.102462] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   19.108058] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   19.127953] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   19.164810] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   19.181987] mmc1: tried to reset card
+[   19.198701] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   19.215622] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   19.227378] mmcblk1: retrying using single block read
+[   19.239077] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   19.246441] blk_update_request: I/O error, dev mmcblk1, sector 0
+[   19.253990] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   19.261353] blk_update_request: I/O error, dev mmcblk1, sector 1
+[   19.267881] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   19.274221] blk_update_request: I/O error, dev mmcblk1, sector 2
+[   19.280768] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   19.287244] blk_update_request: I/O error, dev mmcblk1, sector 3
+[   19.294662] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[   19.306216] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   19.312540] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   19.332982] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   19.376735] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   19.389568] mmc1: tried to reset card
+[   19.407535] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   19.425732] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   19.438352] mmcblk1: retrying using single block read
+[   19.450966] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   19.458817] blk_update_request: I/O error, dev mmcblk1, sector 0
+[   19.467100] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   19.475305] blk_update_request: I/O error, dev mmcblk1, sector 1
+[   19.482635] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   19.490260] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   19.499215] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   19.505707] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   19.526957] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   19.564737] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   19.577949] mmc1: tried to reset card
+[   19.590820] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   19.603900] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   19.613728] mmcblk1: retrying using single block read
+[   19.623537] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   19.632192] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   19.640768] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   19.649201] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   19.657428] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+Begin: Running /scripts/local-block ... done.
+[   20.682854] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   20.700951] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   20.733988] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   20.777833] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   20.795835] mmc1: tried to reset card
+[   20.813468] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   20.831297] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   20.843714] mmcblk1: retrying using single block read
+[   20.856081] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   20.864356] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   20.872474] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   20.880467] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   20.888736] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   20.894977] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   20.915953] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   20.953814] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   20.970673] mmc1: tried to reset card
+[   20.987096] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   21.003718] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   21.015238] mmcblk1: retrying using single block read
+[   21.026774] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   21.034534] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   21.042147] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   21.049608] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   21.057070] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[   21.068293] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   21.074218] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   21.094967] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   21.133837] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   21.149703] mmc1: tried to reset card
+[   21.165151] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   21.180814] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   21.191672] mmcblk1: retrying using single block read
+[   21.202476] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   21.209957] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   21.217297] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   21.224511] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   21.232111] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   21.237735] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   21.257954] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   21.294633] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   21.300373] mmc1: tried to reset card
+[   21.315077] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   21.330023] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   21.336665] mmcblk1: retrying using single block read
+[   21.343424] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   21.350889] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   21.357238] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   21.363447] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   21.370604] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+Begin: Running /scripts/local-block ... done.
+[   22.395065] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0xb00
+[   22.425033] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   22.472844] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   22.487924] mmc1: tried to reset card
+[   22.502634] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   22.517562] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   22.532487] mmcblk1: retrying using single block read
+[   22.543070] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   22.554506] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   22.563259] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   22.571856] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   22.581782] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   22.588292] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   22.608965] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   22.647853] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   22.662931] mmc1: tried to reset card
+[   22.677617] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   22.692552] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   22.702932] mmcblk1: retrying using single block read
+[   22.713515] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   22.720860] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   22.728178] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   22.735348] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   22.742525] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[   22.753539] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   22.759160] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   22.778965] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   22.815637] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   22.821330] mmc1: tried to reset card
+[   22.836035] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   22.850960] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   22.857471] mmcblk1: retrying using single block read
+[   22.864102] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   22.871427] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   22.878737] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   22.885940] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   22.894474] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   22.900069] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   22.919956] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   22.957834] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   22.972931] mmc1: tried to reset card
+[   22.987629] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   23.002588] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   23.013001] mmcblk1: retrying using single block read
+[   23.023600] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   23.030952] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   23.038284] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   23.045467] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   23.052632] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+Begin: Running /scripts/local-block ... done.
+[   24.076768] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   24.091828] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   24.121043] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   24.168838] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   24.183895] mmc1: tried to reset card
+[   24.198603] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   24.213529] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   24.224134] mmcblk1: retrying using single block read
+[   24.234961] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   24.241879] blk_update_request: 38 callbacks suppressed
+[   24.248370] blk_update_request: I/O error, dev mmcblk1, sector 0
+[   24.255446] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   24.261343] blk_update_request: I/O error, dev mmcblk1, sector 1
+[   24.267469] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   24.273400] blk_update_request: I/O error, dev mmcblk1, sector 2
+[   24.279541] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   24.285130] blk_update_request: I/O error, dev mmcblk1, sector 3
+[   24.292362] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   24.297954] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   24.317953] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   24.354813] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   24.371930] mmc1: tried to reset card
+[   24.388617] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   24.405525] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   24.417270] mmcblk1: retrying using single block read
+[   24.428980] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   24.436334] blk_update_request: I/O error, dev mmcblk1, sector 0
+[   24.443871] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   24.451229] blk_update_request: I/O error, dev mmcblk1, sector 1
+[   24.457756] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   24.464094] blk_update_request: I/O error, dev mmcblk1, sector 2
+[   24.470636] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   24.477113] blk_update_request: I/O error, dev mmcblk1, sector 3
+[   24.484534] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[   24.496108] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   24.502426] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   24.522972] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   24.566738] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   24.579561] mmc1: tried to reset card
+[   24.597513] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   24.615694] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   24.628295] mmcblk1: retrying using single block read
+[   24.640874] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   24.648717] blk_update_request: I/O error, dev mmcblk1, sector 0
+[   24.656897] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   24.665036] blk_update_request: I/O error, dev mmcblk1, sector 1
+[   24.672314] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   24.679931] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   24.688867] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   24.695355] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   24.715955] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   24.753734] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   24.766927] mmc1: tried to reset card
+[   24.779787] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   24.792861] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   24.802670] mmcblk1: retrying using single block read
+[   24.812494] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   24.821144] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   24.829713] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   24.838140] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   24.846368] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+Begin: Running /scripts/local-block ... done.
+[   25.872548] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   25.890542] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   25.922988] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   25.966830] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   25.984796] mmc1: tried to reset card
+[   26.002401] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   26.020229] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   26.032659] mmcblk1: retrying using single block read
+[   26.045037] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   26.053309] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   26.061427] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   26.069421] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   26.077687] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   26.083928] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   26.104953] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   26.142815] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   26.159653] mmc1: tried to reset card
+[   26.176071] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   26.192693] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   26.204207] mmcblk1: retrying using single block read
+[   26.215738] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   26.223496] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   26.231112] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   26.238579] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   26.246046] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[   26.257268] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   26.263163] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   26.283980] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   26.331832] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   26.347679] mmc1: tried to reset card
+[   26.363125] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   26.378782] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   26.389636] mmcblk1: retrying using single block read
+[   26.400438] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   26.407916] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   26.415250] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   26.422468] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   26.430057] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   26.435679] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   26.455952] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   26.492631] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   26.498372] mmc1: tried to reset card
+[   26.513077] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   26.528019] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   26.534666] mmcblk1: retrying using single block read
+[   26.541432] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   26.548897] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   26.555253] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   26.561476] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   26.568646] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+Begin: Running /scripts/local-block ... done.
+[   27.592900] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   27.608020] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   27.637957] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   27.675821] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   27.690885] mmc1: tried to reset card
+[   27.705574] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   27.720497] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   27.735735] mmcblk1: retrying using single block read
+[   27.746524] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   27.758170] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   27.766937] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   27.775536] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   27.785420] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   27.791963] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   27.812963] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   27.851831] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   27.866924] mmc1: tried to reset card
+[   27.881599] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   27.896540] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   27.907144] mmcblk1: retrying using single block read
+[   27.917968] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   27.925439] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   27.932730] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   27.939884] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   27.947058] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[   27.957968] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   27.963610] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   27.983981] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   28.031837] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   28.046927] mmc1: tried to reset card
+[   28.061588] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   28.076512] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   28.087116] mmcblk1: retrying using single block read
+[   28.097922] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   28.105388] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   28.112717] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   28.119931] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   28.127507] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   28.133124] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   28.152960] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   28.189646] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   28.195346] mmc1: tried to reset card
+[   28.200834] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   28.206422] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   28.212115] mmcblk1: retrying using single block read
+[   28.217945] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   28.224060] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   28.230027] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   28.235870] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   28.242668] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+Begin: Running /scripts/local-block ... done.
+[   29.266174] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   29.281165] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   29.310987] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   29.352830] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   29.367880] mmc1: tried to reset card
+[   29.382548] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   29.397449] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   29.412650] mmcblk1: retrying using single block read
+[   29.423421] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   29.434481] blk_update_request: 38 callbacks suppressed
+[   29.442393] blk_update_request: I/O error, dev mmcblk1, sector 0
+[   29.450864] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   29.459149] blk_update_request: I/O error, dev mmcblk1, sector 1
+[   29.466253] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   29.473160] blk_update_request: I/O error, dev mmcblk1, sector 2
+[   29.480269] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   29.486235] blk_update_request: I/O error, dev mmcblk1, sector 3
+[   29.493835] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   29.499804] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   29.520955] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   29.559831] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   29.576993] mmc1: tried to reset card
+[   29.593670] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   29.610572] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   29.622310] mmcblk1: retrying using single block read
+[   29.634005] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   29.641350] blk_update_request: I/O error, dev mmcblk1, sector 0
+[   29.648888] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   29.656238] blk_update_request: I/O error, dev mmcblk1, sector 1
+[   29.662754] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   29.669087] blk_update_request: I/O error, dev mmcblk1, sector 2
+[   29.675617] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   29.682082] blk_update_request: I/O error, dev mmcblk1, sector 3
+[   29.689498] Buffer I/O error on dev mmcblk1, logical block 0, async page read
+[   29.701008] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   29.707291] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   29.727981] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   29.771734] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   29.784527] mmc1: tried to reset card
+[   29.802457] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   29.820584] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   29.833165] mmcblk1: retrying using single block read
+[   29.845724] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   29.853559] blk_update_request: I/O error, dev mmcblk1, sector 0
+[   29.861730] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   29.869854] blk_update_request: I/O error, dev mmcblk1, sector 1
+[   29.877128] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   29.884730] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   29.893642] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   29.900126] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x1600
+[   29.920953] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[   29.958734] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[   29.971920] mmc1: tried to reset card
+[   29.984772] mmcblk1: error -84 sending stop command, original cmd response 0x900, card status 0x900
+[   29.997849] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   30.007660] mmcblk1: retrying using single block read
+[   30.017495] mmcblk1: error -84 transferring data, sector 0, nr 8, cmd response 0x900, card status 0x0
+[   30.026154] mmcblk1: error -84 transferring data, sector 1, nr 7, cmd response 0x900, card status 0x0
+[   30.034736] mmcblk1: error -84 transferring data, sector 2, nr 6, cmd response 0x900, card status 0x0
+[   30.043175] mmcblk1: error -84 transferring data, sector 3, nr 5, cmd response 0x900, card status 0x0
+[   30.051409] Buffer I/O error on dev mmcblk1, logical block 0, async page read

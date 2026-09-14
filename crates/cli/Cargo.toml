@@ -1,0 +1,96 @@
+[package]
+name = "bootintel-cli"
+description = "Interactive UART capture + streaming boot-log analysis. Free scan + share; server-side CVE matching + exploit paths via bootintel.com API."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+# Not published to crates.io — bootintel is distributed via binary
+# releases (install.sh / install.ps1 / Homebrew / Nix). Marked here
+# so cargo-deny's wildcard-dep check accepts the path dep on
+# bootintel-detectors (crates.io rejects wildcard path deps for
+# published crates; that's not our distribution path).
+publish = false
+
+[[bin]]
+name = "bootintel"
+path = "src/main.rs"
+
+[dependencies]
+bootintel-detectors = { path = "../detectors" }
+clap = { version = "4.5", features = ["derive", "wrap_help", "env"] }
+# Shell-completion emitters for `bootintel completions <shell>`. Version
+# tracks the clap major/minor (4.5). No default features — we only use
+# the shell generators, not the runtime dyn-completion helpers.
+clap_complete = { version = "4.5", default-features = false }
+# Man-page emitter for `bootintel manpage`. Same version-tracking
+# rule as clap_complete (mirror the clap major/minor). Same
+# no-runtime-deps profile too — mangen is pure formatter, no I/O.
+clap_mangen = { version = "0.3", default-features = false }
+# Regex support for the `scan --gate 'Label~=regex'` DSL. bootintel-
+# detectors already pulls it in transitively via detectors — this
+# entry just makes the direct dep explicit.
+regex = "1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+# Small pure-Rust lz-string implementation that produces
+# encoded-URI-component output bit-compatible with lz-string's
+# `compressToEncodedURIComponent`. Verified against the browser
+# share URLs produced by the bootintel.com frontend via a round-trip
+# integration test.
+lz-str = "0.2"
+anyhow = "1.0"
+serialport = { version = "4.10", default-features = false }
+# crossterm handles raw-mode + keyboard events on all platforms
+# (Linux/macOS/Windows). Small binary cost (~150 KiB) is well worth
+# not writing termios/POSIX/Windows-console handling by hand.
+crossterm = "0.29"
+# Clipboard for `bootintel analyze` Ctrl-A u (copy share URL). Optional
+# — enable the `clipboard` feature to include it. Adds ~200 KiB and
+# X11/Wayland/Cocoa/WinAPI backend deps on the respective platforms.
+# When absent, Ctrl-A u prints the URL to stderr instead. Default ON
+# so the interactive feature works out of the box for local users;
+# disable via `--no-default-features` for headless CI builds.
+arboard = { version = "3.4", optional = true, default-features = false }
+# Sync HTTP client for `--api` server integration. ureq is a
+# focused, blocking client — no async runtime — which fits the
+# thread architecture (main thread + serial thread + keyboard thread).
+# Explicitly enable ["tls", "gzip", "json"]. `tls` on ureq 2.x pulls
+# in rustls + webpki-roots (cross-platform, no OpenSSL). We spell all
+# three out with default-features = false so a future refactor can't
+# accidentally strip TLS by adding `default-features = false` to add
+# a new feature — HTTPS calls would fail with a scheme error at runtime
+# and tests wouldn't catch it (mock server is http://).
+ureq = { version = "2.10", default-features = false, features = ["json", "tls", "gzip"] }
+# TUI. Split-screen dashboard behind `--tui`. ratatui uses the
+# crossterm backend we already pull in, so no extra terminal deps.
+# Kept OFF by default so headless CI builds (Docker image, GH Action)
+# stay small — enable with `--features tui`. Adds ~500 KiB when on.
+ratatui = { version = "0.30", optional = true, default-features = false, features = ["crossterm"] }
+# Cross-platform per-user config-dir + state-dir resolver. Used by the
+# `config` subcommand (config.toml path) and `history` subcommand
+# (history.jsonl path). Follows XDG on Linux, `Library/Application
+# Support` on macOS, and `%APPDATA%` / `%LOCALAPPDATA%` on Windows —
+# saves us reinventing platform-branched path logic per feature.
+dirs = "6"
+# Minimal-feature TOML parser + serializer for the per-user config
+# file at `$XDG_CONFIG_HOME/bootintel/config.toml`. `parse` reads,
+# `display` writes back a human-shaped file for `bootintel config
+# set` roundtrips. Pulls in `toml_edit` transitively but we only use
+# the flat serde API — the config schema is 3 keys, no nested
+# tables, so we don't need in-place preservation of comments.
+toml = { version = "0.8", default-features = false, features = ["parse", "display"] }
+
+# Only used on Unix — for O_CLOEXEC when opening the history file. A
+# transitive dep already (via ureq/rustls) so this is free at build time.
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[features]
+default = ["clipboard"]
+clipboard = ["dep:arboard"]
+tui = ["dep:ratatui"]

@@ -1,0 +1,156 @@
+U-Boot 1.1.3 (Nov  7 2013 - 17:33:35)
+
+RT-AC51U bootloader version: 1.0.0.0
+Board: Ralink APSoC DRAM:  64 MB
+ASUS RT-AC51U gpio init : wps / reset pin
+enable ephy clock...done. rf reg 29 = 5
+SSC enabled. swing=5000, upperbound=0
+******************************
+Software System Reset Occurred
+******************************
+Ralink SPI flash driver, SPI clock: 48MHz
+spi device id: ef 40 18 0 0 (40180000)
+find flash: W25Q128FV
+raspi_read: from:30000 len:1000
+Maximum malloc length: 1024 KBytes
+mem_malloc_start/brk/end: 0x83eaf000/83eb1000/83fb0000
+*** Warning - bad CRC, using default environment
+
+============================================
+Ralink UBoot Version: 4.1.1.0
+--------------------------------------------
+ASIC 7620_MP (Port5<->None)
+DRAM component: 512 Mbits DDR, width 16
+DRAM bus: 16 bit
+Total memory: 64 MBytes
+Flash component: SPI Flash
+Date:Nov  7 2013  Time:17:33:35
+============================================
+icache: sets:512, ways:4, linesz:32 ,total:65536
+dcache: sets:256, ways:4, linesz:32 ,total:32768
+
+Please choose the operation:
+   0: Load System code then write to Flash via Serial.
+   1: Load System code to SDRAM via TFTP.
+   2: Load System code then write to Flash via TFTP.
+   3: Boot System code via Flash (default).
+   4: Entr boot command line interface.
+   5: Load Boot Loader code to SDRAM via Serial.
+   7: Load Boot Loader code then write to Flash via Serial.
+   8: Load Boot Loader code to SDRAM via TFTP.
+   9: Load Boot Loader code then write to Flash via TFTP.
+ 0
+
+3: System Boot System code via Flash.
+raspi_read: from:4018a len:4
+
+RT-AC51U bootloader version: 1.0.0.0
+raspi_read: from:40004 len:6
+MAC Address: 1C:B7:2C:7B:42:70
+raspi_read: from:40004 len:6
+
+## Checking 1st firmware at bc050000 ...
+raspi_read: from:50000 len:40
+   Image Name:
+   Image Type:   MIPS Linux Kernel Image (lzma compressed)
+   Data Size:    3145690 Bytes =  3 MB
+   Load Address: 80000000
+   Entry Point:  8000c150
+raspi_read: from:50040 len:2fffda
+   Verifying Checksum ... OK
+   Uncompressing Kernel Image ... OK
+## Giving linux ramsize: 67108864 (64 MB)
+
+Starting kernel ...
+
+[    0.000000] Linux version 3.18.21 (vico@Vico-OpenWRT) (gcc version 4.8.3 (OpenWrt/Linaro GCC 4.8-2014.04 r46832) ) #1 Mon Sep 28 12:30:43 CEST 2015
+[    0.000000] Board has DDR2
+[    0.000000] Analog PMU set to hw control
+[    0.000000] Digital PMU set to hw control
+[    0.000000] SoC Type: MediaTek MT7620A ver:2 eco:6
+[    0.000000] bootconsole [early0] enabled
+[    0.000000] CPU0 revision is: 00019650 (MIPS 24KEc)
+[    0.000000] MIPS: machine is Ralink MT7620A evaluation board
+[    0.000000] Determined physical RAM map:
+[    0.000000]  memory: 04000000 @ 00000000 (usable)
+[    0.000000] Initrd not found or empty - disabling initrd
+[    0.000000] Initmem setup node 0 [mem 0x00000000-0x03ffffff]
+[    0.000000] Kernel command line: console=ttyS0,57600 rootfstype=squashfs,jffs2
+[    0.000000] PID hash table entries: 256 (order: -2, 1024 bytes)
+[    0.000000] Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+[    0.000000] Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Writing ErrCtl register=0004f7f0
+[    0.000000] Readback ErrCtl register=0004f7f0
+[    0.000000] SLUB: HWalign=32, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+[    0.000000] NR_IRQS:256
+[    0.000000] CPU Clock: 580MHz
+[    0.000000] systick: running - mult: 214748, shift: 32
+[    0.000000] Calibrating delay loop... 383.38 BogoMIPS (lpj=1916928)
+[    0.060000] pid_max: default: 32768 minimum: 301
+[    0.060000] Mount-cache hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.070000] Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.070000] pinctrl core: initialized pinctrl subsystem
+[    0.080000] NET: Registered protocol family 16
+[    0.340000] PCI host bridge /pcie@10140000 ranges:
+[    0.340000]  MEM 0x0000000020000000..0x000000002fffffff
+[    0.350000]   IO 0x0000000010160000..0x000000001016ffff
+[    0.360000] rt2880_gpio 10000600.gpio: registering 24 gpios
+[    0.370000] rt2880_gpio 10000600.gpio: registering 24 irq handlers
+[    0.370000] PCI host bridge to bus 0000:00
+[    0.380000] pci_bus 0000:00: root bus resource [mem 0x20000000-0x2fffffff]
+[    0.380000] pci_bus 0000:00: root bus resource [io  0xffffffff]
+[    0.390000] pci_bus 0000:00: No busn resource found for root bus, will use [bus 00-ff]
+[    0.390000] pci 0000:00:00.0: BAR 0: no space for [mem size 0x80000000]
+[    0.400000] pci 0000:00:00.0: BAR 0: failed to assign [mem size 0x80000000]
+[    0.400000] pci 0000:00:00.0: BAR 8: assigned [mem 0x20000000-0x201fffff]
+[    0.410000] pci 0000:00:00.0: BAR 1: assigned [mem 0x20200000-0x2020ffff]
+[    0.410000] pci 0000:01:00.0: BAR 0: assigned [mem 0x20000000-0x200fffff]
+[    0.420000] pci 0000:01:00.1: BAR 0: assigned [mem 0x20100000-0x201fffff]
+[    0.420000] pci 0000:00:00.0: PCI bridge to [bus 01]
+[    0.430000] pci 0000:00:00.0:   bridge window [mem 0x20000000-0x201fffff]
+[    0.430000] pci 0000:00:00.0: card - bus=0x0, slot = 0x0 irq=0
+[    0.440000] pci 0000:01:00.0: card - bus=0x1, slot = 0x0 irq=4
+[    0.440000] pci 0000:01:00.1: card - bus=0x1, slot = 0x0 irq=4
+[    0.450000] Switched to clocksource systick
+[    0.450000] NET: Registered protocol family 2
+[    0.460000] TCP established hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.460000] TCP bind hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.470000] TCP: Hash tables configured (established 1024 bind 1024)
+[    0.470000] TCP: reno registered
+[    0.480000] UDP hash table entries: 256 (order: 0, 4096 bytes)
+[    0.480000] UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+[    0.490000] NET: Registered protocol family 1
+[    0.490000] rt-timer 10000100.timer: maximum frequency is 2441Hz
+[    0.500000] futex hash table entries: 256 (order: -1, 3072 bytes)
+[    0.530000] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.530000] jffs2: version 2.2 (NAND) (SUMMARY) (LZMA) (RTIME) (CMODE_PRIORITY) (c) 2001-2006 Red Hat, Inc.
+[    0.540000] msgmni has been set to 119
+[    0.550000] io scheduler noop registered
+[    0.550000] io scheduler deadline registered (default)
+[    0.560000] Serial: 8250/16550 driver, 2 ports, IRQ sharing disabled
+[    0.570000] console [ttyS0] disabled
+[    0.570000] 10000c00.uartlite: ttyS0 at MMIO 0x10000c00 (irq = 20, base_baud = 2500000) is a 16550A
+[    0.660000] console [ttyS0] enabled
+[    0.670000] bootconsole [early0] disabled
+[    0.670000] bootconsole [early0] disabled
+[    0.690000] m25p80 spi32766.0: found w25q128, expected en25q64
+[    0.710000] m25p80 spi32766.0: w25q128 (16384 Kbytes)
+[    0.720000] 4 ofpart partitions found on MTD device spi32766.0
+[    0.730000] Creating 4 MTD partitions on "spi32766.0":
+[    0.740000] 0x000000000000-0x000000030000 : "u-boot"
+[    0.750000] 0x000000030000-0x000000040000 : "u-boot-env"
+[    0.760000] 0x000000040000-0x000000050000 : "factory"
+[    0.770000] 0x000000050000-0x000000800000 : "firmware"
+[    0.850000] gsw: setting port4 to ephy mode
+[    0.860000] ralink_soc_eth 10100000.ethernet: generated random MAC address 02:99:f4:53:29:84
+[    0.870000] ralink_soc_eth 10100000.ethernet: loaded mt7620 driver
+[    0.890000] ralink_soc_eth 10100000.ethernet eth0: ralink at 0xb0100000, irq 5
+[    0.900000] rt2880_wdt 10000120.watchdog: Initialized
+[    0.910000] TCP: cubic registered
+[    0.920000] NET: Registered protocol family 10
+[    0.930000] NET: Registered protocol family 17
+[    0.940000] bridge: automatic filtering via arp/ip/ip6tables has been deprecated. Update your scripts to load br_netfilter if you need this.
+[    0.970000] 8021q: 802.1Q VLAN Support v1.8
+[    0.980000] Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(0,0)
+[    0.980000] ---[ end Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(0,0)
+[   82.550000] random: nonblocking pool is initialized

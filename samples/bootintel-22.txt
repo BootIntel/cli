@@ -1,0 +1,332 @@
+
+U-Boot SPL 2017.09 (Dec 05 2017 - 17:00:45)
+/work/aries/release/mcvevk/tmp/work/mcvevk-poky-linux-gnueabi/u-boot/1_2017.09-r0/git/drivers/ddr/altera/sequencer.c: Preparing to start memory calibration
+/work/aries/release/mcvevk/tmp/work/mcvevk-poky-linux-gnueabi/u-boot/1_2017.09-r0/git/drivers/ddr/altera/sequencer.c: CALIBRATION PASSED
+/work/aries/release/mcvevk/tmp/work/mcvevk-poky-linux-gnueabi/u-boot/1_2017.09-r0/git/drivers/ddr/altera/sequencer.c: Calibration complete
+Trying to boot from MMC1
+
+
+U-Boot 2017.09 (Dec 05 2017 - 17:00:45 +0100)
+
+CPU:   Altera SoCFPGA Platform
+FPGA:  Altera Cyclone V, SE/A6 or SX/C6 or ST/D6, version 0x0
+BOOT:  SD/MMC Internal Transceiver (3.0V)
+       Watchdog enabled
+I2C:   ready
+DRAM:  1 GiB
+MMC:   dwmmc0@ff704000: 0
+*** Warning - bad CRC, using default environment
+
+In:    serial
+Out:   serial
+Err:   serial
+Model: Aries MCVEVK
+Net:   
+Error: ethernet@ff700000 address not set.
+No ethernet found.
+Hit any key to stop autoboot:  0 
+3666596 bytes read in 249 ms (14 MiB/s)
+## Loading kernel from FIT Image at 10000000 ...
+   Using 'conf@socfpga_cyclone5_mcvevk.dtb' configuration
+   Trying 'kernel@1' kernel subimage
+     Description:  Linux kernel
+     Created:      2017-12-05  15:47:10 UTC
+     Type:         Kernel Image
+     Compression:  uncompressed
+     Data Start:   0x1000011c
+     Data Size:    3638576 Bytes = 3.5 MiB
+     Architecture: ARM
+     OS:           Linux
+     Load Address: 0x00008000
+     Entry Point:  0x00008000
+     Hash algo:    sha1
+     Hash value:   867ce5f1e3aa5eff24f507066be43981818f3303
+   Verifying Hash Integrity ... sha1+ OK
+## Loading fdt from FIT Image at 10000000 ...
+   Using 'conf@socfpga_cyclone5_mcvevk.dtb' configuration
+   Trying 'fdt@socfpga_cyclone5_mcvevk.dtb' fdt subimage
+     Description:  Flattened Device Tree blob
+     Created:      2017-12-05  15:47:10 UTC
+     Type:         Flat Device Tree
+     Compression:  uncompressed
+     Data Start:   0x10378758
+     Data Size:    26032 Bytes = 25.4 KiB
+     Architecture: ARM
+     Hash algo:    sha1
+     Hash value:   2b3a9d68c6aa9cc3ed67951682a0ba63dae2fbf4
+   Verifying Hash Integrity ... sha1+ OK
+   Booting using the fdt blob at 0x10378758
+   Loading Kernel Image ... OK
+   reserving fdt memory region: addr=0 size=1000
+   Loading Device Tree to 03ff6000, end 03fff5af ... OK
+
+Starting kernel ...
+
+Booting Linux on physical CPU 0x0
+Linux version 4.12.14-yocto-standard (oe-user@oe-host) (gcc version 7.2.0 (GCC) ) #1 SMP PREEMPT Tue Dec 5 16:46:56 CET 2017
+CPU: ARMv7 Processor [413fc090] revision 0 (ARMv7), cr=10c5387d
+CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+OF: fdt: Machine model: Aries/DENX MCV EVK
+Memory policy: Data cache writealloc
+Ignoring RAM at 0x30000000-0x40000000
+Consider using a HIGHMEM enabled kernel.
+cma: Reserved 16 MiB at 0x2f000000
+percpu: Embedded 17 pages/cpu @ee8fb000 s40076 r8192 d21364 u69632
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 194880
+Kernel command line: root=/dev/mmcblk0p3 rw rootwait console=ttyS0,115200 nohlt panic=1
+PID hash table entries: 4096 (order: 2, 16384 bytes)
+Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+Memory: 748364K/786432K available (8192K kernel code, 617K rwdata, 2276K rodata, 1024K init, 728K bss, 21684K reserved, 16384K cma-reserved)
+Virtual kernel memory layout:
+    vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+    fixmap  : 0xffc00000 - 0xfff00000   (3072 kB)
+    vmalloc : 0xf0800000 - 0xff800000   ( 240 MB)
+    lowmem  : 0xc0000000 - 0xf0000000   ( 768 MB)
+    modules : 0xbf000000 - 0xc0000000   (  16 MB)
+      .text : 0xc0008000 - 0xc0900000   (9184 kB)
+      .init : 0xc0c00000 - 0xc0d00000   (1024 kB)
+      .data : 0xc0d00000 - 0xc0d9a520   ( 618 kB)
+       .bss : 0xc0da34b8 - 0xc0e59740   ( 729 kB)
+SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=2, Nodes=1
+ftrace: allocating 28509 entries in 84 pages
+Preemptible hierarchical RCU implementation.
+NR_IRQS:16 nr_irqs:16 16
+L2C-310 enabling early BRESP for Cortex-A9
+L2C-310 full line of zeros enabled for Cortex-A9
+L2C-310 ID prefetch enabled, offset 8 lines
+L2C-310 dynamic clock gating enabled, standby mode enabled
+L2C-310 cache controller enabled, 8 ways, 512 kB
+L2C-310: CACHE_ID 0x410030c9, AUX_CTRL 0x76460001
+GIC: PPI13 is secure or misconfigured
+GIC: PPI13 is secure or misconfigured
+clocksource: timer1: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604467 ns
+sched_clock: 32 bits at 100MHz, resolution 10ns, wraps every 21474836475ns
+Switching to timer-based delay loop, resolution 10ns
+Console: colour dummy device 80x30
+Calibrating delay loop (skipped), value calculated using timer frequency.. 200.00 BogoMIPS (lpj=1000000)
+pid_max: default: 32768 minimum: 301
+Security Framework initialized
+Mount-cache hash table entries: 2048 (order: 1, 8192 bytes)
+Mountpoint-cache hash table entries: 2048 (order: 1, 8192 bytes)
+CPU: Testing write buffer coherency: ok
+CPU0: thread -1, cpu 0, socket 0, mpidr 80000000
+Setting up static identity map for 0x100000 - 0x100060
+smp: Bringing up secondary CPUs ...
+GIC: PPI13 is secure or misconfigured
+CPU1: thread -1, cpu 1, socket 0, mpidr 80000001
+smp: Brought up 1 node, 2 CPUs
+SMP: Total of 2 processors activated (400.00 BogoMIPS).
+CPU: All CPU(s) started in SVC mode.
+devtmpfs: initialized
+VFP support v0.3: implementor 41 architecture 3 part 30 variant 9 rev 4
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+futex hash table entries: 512 (order: 3, 32768 bytes)
+xor: measuring software checksum speed
+   arm4regs  :  1216.800 MB/sec
+   8regs     :   926.400 MB/sec
+   32regs    :   979.200 MB/sec
+xor: using function: arm4regs (1216.800 MB/sec)
+NET: Registered protocol family 16
+DMA: preallocated 256 KiB pool for atomic coherent allocations
+cpuidle: using governor ladder
+cpuidle: using governor menu
+No ATAGs?
+hw-breakpoint: found 5 (+1 reserved) breakpoint and 1 watchpoint registers.
+hw-breakpoint: maximum watchpoint size is 4 bytes.
+raid6: int32x1  gen()   141 MB/s
+raid6: int32x1  xor()   115 MB/s
+raid6: int32x2  gen()   139 MB/s
+raid6: int32x2  xor()   131 MB/s
+raid6: int32x4  gen()   135 MB/s
+raid6: int32x4  xor()    95 MB/s
+raid6: int32x8  gen()   137 MB/s
+raid6: int32x8  xor()    97 MB/s
+raid6: using algorithm int32x1 gen() 141 MB/s
+raid6: .... xor() 115 MB/s, rmw enabled
+raid6: using intx1 recovery algorithm
+SCSI subsystem initialized
+usbcore: registered new interface driver usbfs
+usbcore: registered new interface driver hub
+usbcore: registered new device driver usb
+stmpe-i2c 0-0041: stmpe811 configured in no-irq mode by platform data
+stmpe-i2c 0-0041: stmpe811 does not support no-irq mode!
+pps_core: LinuxPPS API ver. 1 registered
+pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+PTP clock support registered
+FPGA manager framework
+fpga-region soc:base_fpga_region: FPGA Region probed
+clocksource: Switched to clocksource timer1
+NET: Registered protocol family 2
+TCP established hash table entries: 8192 (order: 3, 32768 bytes)
+TCP bind hash table entries: 8192 (order: 4, 65536 bytes)
+TCP: Hash tables configured (established 8192 bind 8192)
+UDP hash table entries: 512 (order: 2, 16384 bytes)
+UDP-Lite hash table entries: 512 (order: 2, 16384 bytes)
+NET: Registered protocol family 1
+RPC: Registered named UNIX socket transport module.
+RPC: Registered udp transport module.
+RPC: Registered tcp transport module.
+RPC: Registered tcp NFSv4.1 backchannel transport module.
+hw perfevents: enabled with armv7_cortex_a9 PMU driver, 7 counters available
+workingset: timestamp_bits=14 max_order=18 bucket_order=4
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+fuse init (API version 7.26)
+Block layer SCSI generic (bsg) driver version 0.4 loaded (major 249)
+io scheduler noop registered
+io scheduler deadline registered
+io scheduler cfq registered (default)
+io scheduler mq-deadline registered
+io scheduler kyber registered
+Serial: 8250/16550 driver, 2 ports, IRQ sharing disabled
+console [ttyS0] disabled
+ffc02000.serial0: ttyS0 at MMIO 0xffc02000 (irq = 45, base_baud = 6250000) is a 16550A
+console [ttyS0] enabled
+ffc03000.serial1: ttyS1 at MMIO 0xffc03000 (irq = 46, base_baud = 6250000) is a 16550A
+brd: module loaded
+libphy: Fixed MDIO Bus: probed
+tun: Universal TUN/TAP device driver, 1.6
+CAN device driver interface
+c_can_platform ffc00000.can: c_can_platform device registered (regs=f0959000, irq=28)
+c_can_platform ffc01000.can: c_can_platform device registered (regs=f095b000, irq=32)
+socfpga-dwmac ff700000.ethernet: PTP uses main clock
+stmmac - user ID: 0x10, Synopsys ID: 0x37
+socfpga-dwmac ff700000.ethernet: Ring mode enabled
+socfpga-dwmac ff700000.ethernet: DMA HW capability register supported
+socfpga-dwmac ff700000.ethernet: Enhanced/Alternate descriptors
+socfpga-dwmac ff700000.ethernet: Enabled extended descriptors
+socfpga-dwmac ff700000.ethernet: RX Checksum Offload Engine supported
+socfpga-dwmac ff700000.ethernet: COE Type 2
+socfpga-dwmac ff700000.ethernet: TX Checksum insertion supported
+socfpga-dwmac ff700000.ethernet: Enable RX Mitigation via HW Watchdog Timer
+libphy: stmmac: probed
+socfpga-dwmac ff700000.ethernet (unnamed net_device) (uninitialized): PHY ID 00221622 at 0 IRQ POLL (stmmac-0:00) active
+dwc2 ffb40000.usb: ffb40000.usb supply vusb_d not found, using dummy regulator
+dwc2 ffb40000.usb: ffb40000.usb supply vusb_a not found, using dummy regulator
+dwc2 ffb40000.usb: EPs: 16, dedicated fifos, 8064 entries in SPRAM
+dwc2 ffb40000.usb: DWC OTG Controller
+dwc2 ffb40000.usb: new USB bus registered, assigned bus number 1
+dwc2 ffb40000.usb: irq 47, io mem 0xffb40000
+usb usb1: New USB device found, idVendor=1d6b, idProduct=0002
+usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+usb usb1: Product: DWC OTG Controller
+usb usb1: Manufacturer: Linux 4.12.14-yocto-standard dwc2_hsotg
+usb usb1: SerialNumber: ffb40000.usb
+hub 1-0:1.0: USB hub found
+hub 1-0:1.0: 1 port detected
+usbcore: registered new interface driver usb-storage
+g_serial gadget: Gadget Serial v2.4
+g_serial gadget: g_serial ready
+dwc2 ffb40000.usb: bound driver g_serial
+i2c /dev entries driver
+Synopsys Designware Multimedia Card Interface Driver
+dw_mmc ff704000.dwmmc0: IDMAC supports 32-bit address mode.
+dw_mmc ff704000.dwmmc0: Using internal DMA controller.
+dw_mmc ff704000.dwmmc0: Version ID is 240a
+dw_mmc ff704000.dwmmc0: DW MMC controller at irq 40,32 bit host data width,1024 deep fifo
+mmc_host mmc0: card is polling.
+mmc_host mmc0: Bus speed (slot 0) = 50000000Hz (slot req 400000Hz, actual 396825HZ div = 63)
+dw_mmc ff704000.dwmmc0: 1 slots initialized
+ledtrig-cpu: registered to indicate activity on CPUs
+usbcore: registered new interface driver usbhid
+usbhid: USB HID core driver
+fpga_manager fpga0: Altera SOCFPGA FPGA Manager registered
+altera_hps2fpga_bridge ff400000.fpga_bridge: fpga bridge [lwhps2fpga] registered
+altera_hps2fpga_bridge ff500000.fpga_bridge: fpga bridge [hps2fpga] registered
+oprofile: using arm/armv7-ca9
+u32 classifier
+    Actions configured
+NET: Registered protocol family 10
+Segment Routing with IPv6
+sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+NET: Registered protocol family 17
+can: controller area network core (rev 20170425 abi 9)
+NET: Registered protocol family 29
+can: raw protocol (rev 20170425)
+can: broadcast manager protocol (rev 20170425 t)
+can: netlink gateway (rev 20170425) max_hops=1
+Key type dns_resolver registered
+Registering SWP/SWPB emulation handler
+Btrfs loaded, crc32c=crc32c-generic
+Key type encrypted registered
+console [netcon0] enabled
+netconsole: network logging started
+mmc_host mmc0: Bus speed (slot 0) = 50000000Hz (slot req 52000000Hz, actual 50000000HZ div = 0)
+mmc0: new high speed MMC card at address 0001
+mmcblk0: mmc0:0001 P1XXXX 3.60 GiB 
+hctosys: unable to open rtc device (rtc0)
+mmcblk0boot0: mmc0:0001 P1XXXX partition 1 16.0 MiB
+of_cfs_init
+of_cfs_init: OK
+OF: Duplicate name in testcase-data, renamed to "duplicate-name#1"
+mmcblk0boot1: mmc0:0001 P1XXXX partition 2 16.0 MiB
+ mmcblk0: p1 p2 p3
+### dt-test ### start of unittest - you will see error messages
+OF: /testcase-data/phandle-tests/consumer-a: could not get #phandle-cells-missing for /testcase-data/phandle-tests/provider1
+OF: /testcase-data/phandle-tests/consumer-a: could not get #phandle-cells-missing for /testcase-data/phandle-tests/provider1
+OF: /testcase-data/phandle-tests/consumer-a: could not find phandle
+OF: /testcase-data/phandle-tests/consumer-a: could not find phandle
+OF: /testcase-data/phandle-tests/consumer-a: arguments longer than property
+OF: /testcase-data/phandle-tests/consumer-a: arguments longer than property
+irq: no irq domain found for /testcase-data/interrupts/intc0 !
+OF: overlay: overlay_is_topmost: #5 clashes #6 @/testcase-data/overlay-node/test-bus/test-unittest8
+OF: overlay: overlay #5 is not topmost
+OF: resolver: overlay phandle fixup failed: -22
+### dt-test ### resolve ot phandles (ret=-22), 1
+### dt-test ### FAIL of_unittest_overlay_high_level():2231 Adding overlay 'overlay' failed
+### dt-test ### FAIL of_unittest_overlay_high_level():2234 Adding overlay 'overlay_bad_phandle' failed
+### dt-test ### end of unittest - 148 passed, 2 failed
+ttyS0 - failed to request DMA
+EXT4-fs (mmcblk0p3): couldn't mount as ext3 due to feature incompatibilities
+random: fast init done
+random: crng init done
+EXT4-fs (mmcblk0p3): recovery complete
+EXT4-fs (mmcblk0p3): mounted filesystem with ordered data mode. Opts: (null)
+VFS: Mounted root (ext4 filesystem) on device 179:3.
+devtmpfs: mounted
+Freeing unused kernel memory: 1024K
+INIT: version 2.88 booting
+Framebuffer /dev/fb0 not detected
+Boot splashscreen disabled
+EXT4-fs (mmcblk0p2): recovery complete
+EXT4-fs (mmcblk0p2): mounted filesystem with ordered data mode. Opts: (null)
+Starting udev
+udevd[130]: starting version 3.2.2
+udevd[131]: starting eudev-3.2.2
+EXT4-fs (mmcblk0p3): re-mounted. Opts: (null)
+hwclock: can't open '/dev/misc/rtc': No such file or directory
+Tue Dec  5 16:08:53 UTC 2017
+hwclock: can't open '/dev/misc/rtc': No such file or directory
+INIT: Entering runlevel: 5
+Configuring network interfaces... socfpga-dwmac ff700000.ethernet eth0: device MAC address 8e:78:2a:41:58:4f
+Micrel KSZ9031 Gigabit PHY stmmac-0:00: attached PHY driver [Micrel KSZ9031 Gigabit PHY] (mii_bus:phy_addr=stmmac-0:00, irq=-1)
+socfpga-dwmac ff700000.ethernet eth0: IEEE 1588-2008 Advanced Timestamp supported
+socfpga-dwmac ff700000.ethernet eth0: registered PTP clock
+IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+udhcpc (v1.24.1) started
+Sending discover...
+Sending discover...
+Sending discover...
+No lease, forking to background
+done.
+Starting system message bus: dbus.
+Starting OpenBSD Secure Shell server: sshd
+done.
+Starting rpcbind daemon...done.
+starting statd: done
+Starting atd: OK
+hwclock: can't open '/dev/misc/rtc': No such file or directory
+exportfs: can't open /etc/exports for reading
+NFS daemon support not enabled in kernel
+Starting system log daemon...0
+Starting kernel log daemon...0
+Starting crond: OK
+umount: /mnt/.psplash: not mounted.
+
+Poky (Yocto Project Reference Distro) 2.4 mcvevk /dev/ttyS0
+
+mcvevk login: root
+root@mcvevk:~#

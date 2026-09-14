@@ -1,0 +1,72 @@
+name: Bug report
+description: Something the CLI does wrong (crash, unexpected output, wrong behavior).
+title: "bug: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. A minimal, reproducible example saves us both a lot of back-and-forth.
+
+        **Security vulnerabilities:** please do NOT file them here. See [SECURITY.md](https://github.com/bootintel/cli/blob/main/SECURITY.md) — email `hello@bootintel.com` instead.
+
+  - type: input
+    id: version
+    attributes:
+      label: bootintel version
+      description: Output of `bootintel version`. Include OS + arch too.
+      placeholder: |
+        bootintel 0.2.0
+        target: linux-x86_64
+        features: clipboard, tui
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS + shell
+      description: Distro / kernel / macOS version / Windows build + shell you're running from.
+      placeholder: "Ubuntu 24.04, kernel 6.8, bash 5.2"
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: |
+        Exact commands + minimal input to trigger the bug. If it involves a boot log, either
+        attach it, paste an excerpt, or point at one of the built-in samples (`./samples/bootintel-N.txt`).
+        For interactive `term` / `analyze` bugs, a `socat` PTY pair recipe is fine.
+      render: shell
+      placeholder: |
+        $ bootintel scan ./samples/bootintel-4.txt --format json | jq .findings
+        # unexpected: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened? Include full error output and (if possible) `-v` / `-vv` verbose output.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Anything else — screenshots, related issues, workaround you found, hardware you're testing against.
+    validations:
+      required: false

@@ -1,0 +1,43 @@
+# bootintel-cli Rust workspace.
+#
+# Two crates:
+#   * bootintel-detectors — pure detector library, no I/O, no async, no
+#     network. Deps: only `regex`. Kept isolated so it can be reused in
+#     other contexts later (a WASM build for browser use, a plugin for
+#     third-party tools).
+#   * bootintel-cli — the `bootintel` binary. Depends on
+#     bootintel-detectors + `clap` + `serde_json` + `serialport` +
+#     `lz-str` (for /decode-compatible share URLs).
+#
+# Ships `bootintel scan / share / ports / version / term / analyze`
+# with the 9-detector streaming subset + json/text/sarif/junit output.
+# Client-side identification is offline + free; full CVE matching runs
+# server-side via bootintel.com's API (opt-in via --api).
+
+[workspace]
+members = ["crates/detectors", "crates/cli"]
+resolver = "2"
+
+[workspace.package]
+version = "0.3.1"
+edition = "2021"
+rust-version = "1.90"
+license = "Apache-2.0"
+authors = ["Zenofex LLC <hello@bootintel.com>"]
+repository = "https://github.com/bootintel/cli"
+homepage = "https://bootintel.com"
+
+# Small binary is a real requirement — this ships to Homebrew, apt,
+# etc., and distribution size matters. LTO + a single codegen unit +
+# `abort` on panic together bring the release binary under 4 MiB
+# stripped on x86_64-linux-musl in local testing.
+[profile.release]
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = "symbols"
+opt-level = "z"
+
+[profile.dev]
+# Faster iteration; the default is slow enough that dev cycles stall.
+opt-level = 1

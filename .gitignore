@@ -1,0 +1,6 @@
+/target
+/Cargo.lock.bak
+# We DO commit Cargo.lock — this is an application (binary crate),
+# not a library, and pinning transitive deps makes builds
+# reproducible across contributors' machines. Only libraries should
+# gitignore Cargo.lock.

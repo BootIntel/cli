@@ -1,0 +1,429 @@
+bus_id 0 
+bus_mfp 0 
+pmu_id 3 
+vddr_pmu_dcdc_cfg 5 
+ddr_clk 588 
+ddr_cap 1024 
+ddr_bits_width 0 
+rank 1 
+ddr_type 0 
+row_col 0 
+rdodt 1 
+wrodt 1 
+zpzq 12 
+uart_id 3 
+uart_baudrate 115200 
+uart_pad 0 
+jtag_pad 0 
+bootdev 34 
+version 1.1 
+scan 0 
+busid = 0bus_mfp = 0pmu_id = 3vddr_pmu_dcdc_cfg = 5
+ddr_clk = 0x24c ddr_cap = 400 ddr_bits_width = 0 rank = 1 ddr_type = 0 row_col  
+consolse init :port  3, baudrate 115200 mfp 0 
+pmu init
+busid = 0bus_mfp = 0pmu_id = 3vddr_pmu_dcdc_cfg = 5
+g_current_bus = 00x51:0x8b4:0x8b4
+0x39:0x325b:0x325b
+0x14:0x88a
+VERSION A:set val = 0x85af
+0x14:0x85af:0x85af
+0x62:0x0
+0x15:0x6cae:0x6cae
+0x16:0x334b:0x334b
+ATC2609A_PMU_SYS_CTL3 = 16512
+ ,s2 flag = 0
+enter from s40x3f:0x1e3:0x1e3
+check adfu
+reg_val = 0x0ddr init
+ddr_cap = 400  row_col = 0 row_col_detect = 68  
+DRAM init mode0,type0,1cs,x32,588MHz,0x334d.@150616_R...Ok:1024MByte Cap.
+ddr size=1024MB
+load app 
+load uboot: load address is 0x8000000, entry point is 0x8000040
+in fourth 
+dvfs = 0xc583bb75
+ddr scan = 0
+dvfs maigc = 0x44564653, dvfs = 0xc583bb75
+
+U-Boot 2015.04-g4f0c247-dirty (Sep 29 2015 - 05:56:28)Actions-Semi
+
+DRAM:  mem-size=1024MB
+1 GiB
+PLL:core=0x311,dev=0x1164,bus=0x1c710000,bus1=0x2e004,display=0x164, spead=0x0
+set kinfo addr = 3f700000
+gpio=23,mode=0,val=0
+gpio=25,mode=0,val=0
+gpio=55,mode=0,val=0
+pwm_init, blob 3defee08
+PWM init, node 3872
+not find HOSC dat = 0xffff
+not find HOSC dat = 0xca
+ret = 7104
+owl: begin analysis pmu in device tree
+node = 9464
+owl: have for pmu in device tree , node =9464
+pmu_config.bus_id = 0
+pmu_config.dcdc_en_bm  = 14
+pmu_config.dcdc_cfgs[0] = 0
+pmu_config.dcdc_cfgs[1] = 11
+pmu_config.dcdc_cfgs[2] = 10
+pmu_config.dcdc_cfgs[3] = 5
+pmu_config.ldo_en_bm  = 131
+pmu_config.ldo_cfgs[0] = 1
+pmu_config.ldo_cfgs[1] = 2
+pmu_config.ldo_cfgs[2] = 0
+pmu_config.ldo_cfgs[3] = 0
+pmu_config.ldo_cfgs[4] = 0
+pmu_config.ldo_cfgs[5] = 0
+pmu_config.ldo_cfgs[6] = 0
+pmu_config.ldo_cfgs[7] = 3
+pmu_config.ldo_cfgs[8] = 0
+pmu_config.ldo_cfgs[9] = 0
+pmu_config.ldo_cfgs[10] = 0
+pmu_config.ldo_cfgs[11] = 0
+pmu_type = 2
+pmu_config.pwm_config[0].pwm_val = 0x0
+pmu_config.pwm_config[0].mfp.shift = 0
+pmu_config.pwm_config[0].mfp.mask = 0
+,pmu_config.pwm_config[0].mfp.val = 0
+pmu_config.pwm_config[0].mfp.no = 0
+pmu_config.pwm_config[1].pwm_val = 0x102c3f
+pmu_config.pwm_config[1].mfp.shift = 38
+pmu_config.pwm_config[1].mfp.mask = 7
+,pmu_config.pwm_config[1].mfp.val = 3
+pmu_config.pwm_config[1].mfp.no = 1
+pmu_config.pwm_config[2].pwm_val = 0x10343f
+pmu_config.pwm_config[2].mfp.shift = 38
+pmu_config.pwm_config[2].mfp.mask = 7
+,pmu_config.pwm_config[2].mfp.val = 3
+pmu_config.pwm_config[2].mfp.no = 1
+pwm1 val=0x102c3f
+pwm2 val=0x10343f
+0x51:0x8b4:0x8b4
+0x39:0x325b:0x325b
+dcdc_cfgs[1] = 11
+0x11:0xe5cf:0xe5cf
+0x12:0x2cae:0x2cae
+0x13:0x334b:0x334b
+0x17:0x8acf:0x8acf
+0x18:0x254c:0x254c
+0x19:0x338a:0x338a
+pmu init finish!
+begin to check power!
+wall_mv=4270
+----------the plug_stat is 0-NO_PLUG,1-WALL_PLUG,2-USB_PLUG:1
+----------bat_voltage = 1019
+bat_mv:1019
+node_path[2]=/i2c@b0170000/atc2603c@65/atc260x-power
+support type: both DCIN and USB
+low_power_boot_choice is 0 
+support_minicharger:1
+MMC:   error: SDC0 send CMD8, No rsp
+error: SDC0 send CMD55, No rsp
+error: SDC0 send CMD1, No rsp
+Card did not respond to voltage select!
+slot:0, error mmc_init
+error:-1,owl_sd_init fail
+error: SDC2 send CMD8, No rsp
+error: SDC2 send CMD55, No rsp
+SD0: 0, eMMC: 1 (eMMC)
+Using default environment
+
+bootmode = 0
+emmc boot
+** get_partition_info mmc1:6
+** Partition 6 not valid on device 1 **
+error: SDC0 send CMD8, No rsp
+error: SDC0 send CMD55, No rsp
+error: SDC0 send CMD1, No rsp
+Card did not respond to voltage select!
+Failed to find mmc:0
+bootlogo: if=mmc, dev=1
+reading boot_logo.bmp.gz
+reading new_gamma_data
+Fail to load gamma
+OWL VIDEO: power on
+OWL VIDEO: wait res 998, 113301
+OWL LCD: lcd init
+fdtdec_get_lcd_par
+fdtdec_pwm_get: fdtdec_pwm_get(3defee08, 8700, pwms, 0)
+pwm_node=f20, pwm_chip.pwm_node=f20
+pwm id = 0
+pwm period = 50000
+pwm polarity = 1
+get_pwr_ctl backlight_en_gpios  0
+OWL dsi: dsi init
+buf->vaddr  0x3df04370 buf->paddr  0x3df04370
+fdtdec_get_dsi_par0
+Can't get dsi mode node
+OWL dsi: fdt No dsi par
+fdtdec_get_hdmi_par
+fdtdec_get_hdmi_par: resolution  = 1080P60HZ
+fdtdec enable lcd
+get_pwr_ctl lcd_power_gpios  0
+get_pwr_ctl lcd_reset_gpios  0
+reset ok lcd_reset_gpios
+pwm:request duty = 29296
+pwm:request period_ns = 50000
+open bl 1
+fdtdec enable lcd ok 1
+In:    serial
+Out:   serial
+Err:   serial
+adckey: AUX0, channel=0
+adckey: keynum=4
+adc_val=50
+Net:   owl_mac_parse_fdtdec,phy_addr 1
+owl_mac_parse_fdtdec,power-gpio 43
+owl_mac_parse_fdtdec,reset-gpio 127
+owl_mac
+Error: owl_mac address 73:00:73:65:74:65 illegal value
+, usb_ether
+Error: usb_ether address not set.
+
+Hit any key to stop autoboot:  0 
+try boot from mmc card ...
+error: SDC0 send CMD8, No rsp
+error: SDC0 send CMD55, No rsp
+error: SDC0 send CMD1, No rsp
+Card did not respond to voltage select!
+** Bad device mmc 0 **
+error: SDC0 send CMD8, No rsp
+error: SDC0 send CMD55, No rsp
+error: SDC0 send CMD1, No rsp
+Card did not respond to voltage select!
+** Bad device mmc 0 **
+error: SDC0 send CMD8, No rsp
+error: SDC0 send CMD55, No rsp
+error: SDC0 send CMD1, No rsp
+Card did not respond to voltage select!
+** Bad device mmc 0 **
+error: SDC0 send CMD8, No rsp
+error: SDC0 send CMD55, No rsp
+error: SDC0 send CMD1, No rsp
+Card did not respond to voltage select!
+** Bad device mmc 0 **
+Wrong Image Format for bootm command
+ERROR: can't get kernel image!
+error: SDC0 send CMD8, No rsp
+error: SDC0 send CMD55, No rsp
+error: SDC0 send CMD1, No rsp
+Card did not respond to voltage select!
+** Bad device mmc 0 **
+boot from emmc card ...
+reading uEnv.txt
+200 bytes read in 2 ms (97.7 KiB/s)
+Loaded environment from uEnv.txt
+Running uenvcmd ...
+reading boot.scr
+** Unable to read file boot.scr **
+reading uImage
+5657976 bytes read in 250 ms (21.6 MiB/s)
+reading kernel.dtb
+34464 bytes read in 5 ms (6.6 MiB/s)
+## Booting kernel from Legacy Image at 00007fc0 ...
+   Image Name:   Linux-3.10.37
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    5657912 Bytes = 5.4 MiB
+   Load Address: 00008000
+   Entry Point:  00008000
+   Verifying Checksum ... OK
+## Flattened Device Tree blob at 04000000
+   Booting using the fdt blob at 0x4000000
+   XIP Kernel Image ... OK
+   Using Device Tree in place at 04000000, end 0400b69f
+owl_boot_fdt_setup linux
+devpart 1:1
+boot_dev=sd2read_mi_head, line 429, magic 0x0, length 0, item num 0
+read Head null
+read SN failed
+cmdline: console=ttyS3 earlyprintk clk_ignore_unused selinux=0 scandelay root=/2
+
+Starting kernel ...
+
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Initializing cgroup subsys cpu
+[    0.000000] Initializing cgroup subsys cpuacct
+[    0.000000] Linux version 3.10.37 (peter@ubuntu) (gcc version 4.7.3 201303285
+[    0.000000] CPU: ARMv7 Processor [414fc091] revision 1 (ARMv7), cr=10c53c7d
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instructie
+[    0.000000] Machine: gs705a, model: Actions GS705A board
+
+[    0.000000] bootconsole [earlycon0] enabled
+[    0.530220] i2c i2c-2: of_i2c: invalid reg on /i2c@b0178000/mpu6515@68
+[    0.570306] owl pinctrl: 1gpio_request_check_pinmux
+[    0.575226] owl pinctrl: 1CHECK PMX:P_KS_IN2 has already been requested by gt
+[    0.595828] atc260x_i2c 0-0065: icm_ohm not config, use default value
+[    0.639482] atc260x-switch-ldo atc2603c-switch1.1: pmic_ver=0
+[    0.659514] atc260x-pm atc2603c-pm.0: _set_s2_mode() can not get of_property 
+[    0.928331] owl_dss LCDC: error!lcdchw_parse_params, fail to get lcd standbyo
+[    0.936043] owl pinctrl: 1gpio_request_check_pinmux
+[    0.941112] owl pinctrl: 1CHECK PMX:P_LVDS_OBN has already been requested by0
+[    0.952195] OWL_HDMI_ERR: cat not get vid480p_tx1 
+[    1.006717] no blk dev
+[    1.009113] read MiscInfoHeader failed
+[    1.012882] read Head failed
+[    1.015780] OWL_HDMI_ERR: failed to read hdcp key from secure storage
+[    1.067923] aotg_hcd b0600000.usb: can't find usbh-1 dts node
+[    1.073741] aotg_hcd b0600000.usb: aotg_hub_probe: usb probe hcd  failed, er9
+[    1.082255] aotg_hcd b0700000.usb: can't find usbh-1 dts node
+[    1.088120] aotg_hcd b0700000.usb: aotg_hub_probe: usb probe hcd  failed, er9
+[    1.113461] atc260x-rtc atc2603c-rtc.0: invalid year(0), reset to year 2011
+[    1.131089] pinctrl-owl pinctrl.1: pin P_SD0_D0 already requested by b012a00c
+[    1.141697] pinctrl-owl pinctrl.1: pin-74 (b0230000.mmc) status -22
+[    1.148102] pinctrl-owl pinctrl.1: could not request pin 74 on device pinctr1
+[    1.155475] gl520x_mmc b0230000.mmc: Error applying setting, reverse things k
+[    1.171387] owl pinctrl: 1gpio_request_check_pinmux
+[    1.176493] owl pinctrl: 1CHECK PMX:P_LVDS_ODP has already been requested by0
+[    1.205531] [SNDRV]:[atc2603a_get_cfg] Fail to get device_node
+[    1.205531] 
+[    1.213072] [SNDRV]:[atc2603a_init] audio get cfg failed!
+[    1.213072] 
+[    1.220290] [SNDRV]:[atc2603c_get_cfg] get gpio[speaker_en_gpios] fail
+[    1.220290] 
+[    1.229291] [SNDRV]:[atc2603c_platform_probe] atc2603c_platform_probe
+[    1.229291] 
+[    1.237466] [SNDRV]:[atc2603c_platform_probe] what's my lucky draw 227
+[    1.237466] 
+[    1.246864] [SNDRV]:[atm7059_dai_probe] it's ok 0
+[    1.246864] 
+[    1.254355] [SNDRV]:[atm7059_link_init] atm7059_link_init
+[    1.254355] 
+[    1.262021] [SNDRV]:[atm7059_audio_gpio_init] find earphone_detect_gpios prol
+[    1.262021] 
+[    1.271732] [SNDRV]:[atm7059_audio_gpio_init] find speaker_en_gpios propertyl
+[    1.271732] 
+[    1.281006] [SNDRV]:[atm7059_link_init] maybe using irq
+[    1.432657] atc2603c-audio atc260x-audio: ASoC: Failed to add route AOUT FL x
+[    1.474029] train_Msize:1024, train_ces:1
+[    1.516152] start:0xc0008000, end:0xc0a28bc8, checksum:0x1c8991c7
+[    1.634721] store_mirror_to_hdmi 1
+[    1.677167] store_mirror_to_hdmi 1
+[    1.681096] store_mirror_to_hdmi 1
+[    1.695378] store_mirror_to_hdmi 1
+[    1.709290] store_mirror_to_hdmi 1
+[    1.722913] store_mirror_to_hdmi 1
+[    1.736135] store_mirror_to_hdmi 1
+
+Welcome to Debian GNU/Linux 8 (jessie)!
+
+         Expecting device dev-ttyS3.device...
+[  OK  ] Reached target Remote File Systems (Pre).
+[  OK  ] Reached target Paths.
+[  OK  ] Reached target Encrypted Volumes.
+[  OK  ] Reached target Swap.
+[  OK  ] Created slice Root Slice.
+[  OK  ] Created slice User and Session Slice.
+[  OK  ] Listening on Delayed Shutdown Socket.
+[  OK  ] Listening on /dev/initctl Compatibility Named Pipe.
+[  OK  ] Listening on Journal Socket (/dev/log).
+[  OK  ] Listening on udev Control Socket.
+[  OK  ] Listening on udev Kernel Socket.
+[  OK  ] Listening on Journal Socket.
+[  OK  ] Created slice System Slice.
+[  OK  ] Created slice system-getty.slice.
+[  OK  ] Created slice system-serial\x2dgetty.slice.
+         Starting Increase datagram queue length...
+         Starting Create list of required static device nodes...rrent kernel...
+         Starting udev Coldplug all Devices...
+         Starting Load Kernel Modules...
+         Mounting Debug File System...
+[  OK  ] Reached target Slices.
+[  OK  ] Mounted Debug File System.
+[  OK  ] Started Increase datagram queue length.
+[  OK  ] Started Create list of required static device nodes ...current kernel.
+[  OK  ] Started Load Kernel Modules.
+[  OK  ] Started udev Coldplug all Devices.
+         Mounting Configuration File System...
+         Mounting FUSE Control File System...
+         Starting Apply Kernel Variables...
+         Starting Create Static Device Nodes in /dev...
+[  OK  ] Listening on Syslog Socket.
+         Starting Journal Service...
+[  OK  ] Started Journal Service.
+[  OK  ] Mounted FUSE Control File System.
+[  OK  ] Mounted Configuration File System.
+[  OK  ] Started Apply Kernel Variables.
+[  OK  ] Started Create Static Device Nodes in /dev.
+         Starting udev Kernel Device Manager...
+[  OK  ] Started udev Kernel Device Manager.
+         Starting Copy rules generated while the root was ro...
+         Starting LSB: Set preliminary keymap...
+[  OK  ] Started Copy rules generated while the root was ro.
+[  OK  ] Started LSB: Set preliminary keymap.
+         Starting Remount Root and Kernel File Systems...
+[  OK  ] Started Remount Root and Kernel File Systems.
+[  OK  ] Found device /dev/ttyS3.
+[    3.421168] atc260x-irkeypad atc2603c-irkeypad.0: Get ir_ch failed ret = -22 
+         Starting Load/Save Random Seed...
+[  OK  ] Reached target Local File Systems (Pre).
+[  OK  ] Reached target Local File Systems.
+[    3.504332] owl pinctrl: 1gpio_request_check_pinmux
+         Starting[    3.512467] owl pinctrl: 1CHECK PMX:P_UART3_CTSB has alreada
+[    3.523325] owl pinctrl: 1gpio_request_check_pinmux
+nd Directories...
+[    3.534357] owl pinctrl: 1CHECK PMX:P_UART3_RTSB has already been requested l
+[    3.544006] [owl_camera] (ERR) line:1935--gpio_init() <isp>no config gpios
+[  OK  ] Reached target Remote File Systems.
+[    3.566171] read_mi_head, line 429, magic 0x0, length 0, item num 0
+[    3.575982] read Head null
+         Starting Trigger Flushing of Journal to Persistent Storage...
+         Starting LSB: Set console font and keymap...
+[  OK  ] Started Load/Save Random Seed.
+[  OK  ] Started LSB: Set console font and keymap.
+[  OK  ] Started Create Volatile Files and Directories.
+[  OK  ] Started Trigger Flushing of Journal to Persistent Storage.
+[  OK  ] Created slice system-systemd\x2drfkill.slice.
+         Starting Load/Save RF Kill Switch Status of rfkill0...
+[  OK  ] Reached target Sound Card.
+[  OK  ] Created slice system-systemd\x2dbacklight.slice.
+         Starting Load/Save Screen Backlight Brightness of ba...:backlight.2...
+         Starting Update UTMP about System Boot/Shutdown...
+         Starting LSB: Raise network interfaces....
+[  OK  ] Started Load/Save RF Kill Switch Status of rfkill0.
+[  OK  ] Started Load/Save Screen Backlight Brightness of bac...ht:backlight.2.
+[  OK  ] Started Update UTMP about System Boot/Shutdown.
+[  OK  ] Started LSB: Raise network interfaces..
+[  OK  ] Reached target Network.
+[  OK  ] Reached target Network is Online.
+[  OK  ] Reached target System Initialization.
+[  OK  ] Listening on D-Bus System Message Bus Socket.
+[  OK  ] Reached target Sockets.
+[  OK  ] Reached target Timers.
+         Starting Restore Sound Card State...
+[  OK  ] Reached target Basic System.
+         Starting Regular background program processing daemon...
+[  OK  ] Started Regular background program processing daemon.
+         Starting OpenBSD Secure Shell server...
+[  OK  ] Started OpenBSD Secure Shell server.
+         Starting Deferred execution scheduler...
+[  OK  ] Started Deferred execution scheduler.
+         Starting /etc/rc.local Compatibility...
+         Starting Login Service...
+         Starting LSB: Start NTP daemon...
+         Starting D-Bus System Message Bus...
+[  OK  ] Started D-Bus System Message Bus.
+         Starting System Logging Service...
+         Starting Permit User Sessions...
+[  OK  ] Started Restore Sound Card State.
+[  OK  ] Started /etc/rc.local Compatibility.
+[  OK  ] Started LSB: Start NTP daemon.
+[  OK  ] Started Permit User Sessions.
+[  OK  ] Started System Logging Service.
+         Starting Light Display Manager...
+         Starting Getty on tty1...
+[  OK  ] Started Getty on tty1.
+         Starting Serial Getty on ttyS3...
+[  OK  ] Started Serial Getty on ttyS3.
+[  OK  ] Reached target Login Prompts.
+[  OK  ] Started Login Service.
+[  OK  ] Reached target Multi-User System.
+[  OK  ] Started Light Display Manager.
+[  OK  ] Reached target Graphical Interface.
+         Starting Update UTMP about System Runlevel Changes...
+[  OK  ] Started Update UTMP about System Runlevel Changes.
+
+Debian GNU/Linux 8 Lemuntu ttyS3
+
+Lemuntu login:

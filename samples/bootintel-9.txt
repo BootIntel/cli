@@ -1,0 +1,545 @@
+persist 2011.06-rc2 (Sep 19 2012 - 13:00:55)
+
+Board: RTL8672 mips CPU: RTL8672 proc_id=0xcf01
+DRAM:  32 MiB
+*** Warning - bad CRC, using default environment
+
+In:    serial
+Out:   serial
+Err:   serial
+
+
+persist 2011.06-rc2 (Sep 19 2012 - 13:00:55)
+
+Board: RTL8672 mips CPU: RTL8672 proc_id=0xcf01
+DRAM:  32 MiB
+*** Warning - bad CRC, using default environment
+
+In:    serial
+Out:   serial
+Err:   serial
+Wrong Image Format for bootm command
+ERROR: can't get kernel image!
+RTL8672 #
+RTL8672 #
+RTL8672 #
+RTL8672 #
+RTL8672 # à€þü<ÿü?ÿÀ€ÿþÿàüøþøÿÿ?ÿþÿþÿü
+RTL8672 #
+RTL8672 #
+RTL8672 #
+RTL8672 #
+RTL8672 #
+RTL8672 # printenv
+addmisc=setenv bootargs 'console=ttyS0,115200 mem=32M root=/dev/sda1 rootdelay=10'
+addmtd=setenv bootargs 'console=ttyS0,115200 mem=32M root=31:3'
+baudrate=115200
+bootargs=console=ttyS0,115200 mem=32M root=/dev/sda1 rootdelay=10
+bootcmd=run addmisc; bootm 0xBD040000
+bootdelay=6
+bootfile=/tftpboot/vmlinux
+bootmtd=run addmtd; bootm 0xBD040000
+ethaddr=00:C0:01:00:00:01
+ipaddr=2.2.2.1
+load=tftp 80500000 ${u-boot}
+serverip=2.2.2.4
+stderr=serial
+stdin=serial
+stdout=serial
+upbootldr=sf probe 0xbd000000; mw 0x81000000 0 0x20000; tftpboot 0x81000000 2.2.2.4:boot.owrt.bin; s
+f erase 0xbd000000 ${filesize}; sf write 0x81000000 0xbd000000 ${filesize};
+upfw=sf probe 0xbd000000; mw 0x81000000 0 0x100000;tftpboot 0x81000000 2.2.2.4:z.img;sf erase 0xBD04
+0000 ${filesize};sf write 0x81000000 0xBD040000 ${filesize};
+
+Environment size: 843/65532 bytes
+RTL8672 # run upfw
+TFTP from server 2.2.2.4; our IP address is 2.2.2.1
+Filename 'z.img'.
+Load address: 0x81000000
+Loading: #################################################################
+         #################################################################
+         #################################################################
+         ################################
+done
+Bytes transferred = 3324784 (32bb70 hex)
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+............
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+....................................................................................................
+............
+RTL8672 # reboot
+Unknown command 'reboot' - try 'help'
+RTL8672 # reset
+
+
+persist 2011.06-rc2 (Sep 19 2012 - 13:00:55)
+
+Board: RTL8672 mips CPU: RTL8672 proc_id=0xcf01
+DRAM:  32 MiB
+*** Warning - bad CRC, using default environment
+
+In:    serial
+Out:   serial
+Err:   serial
+## Booting kernel from Legacy Image at bd040000 ...
+   Image Name:   Multi-FW
+   Created:      2012-09-26   9:20:07 UTC
+   Image Type:   MIPS Linux Multi-File Image (uncompressed)
+   Data Size:    3324720 Bytes = 3.2 MiB
+   Load Address: 00000000
+   Entry Point:  00000000
+   Contents:
+      Image 0: 1824538 Bytes = 1.7 MiB
+      Image 1: 1500168 Bytes = 1.4 MiB
+   Verifying Checksum ... OK
+## Loading init Ramdisk from multi component Legacy Image at bd040000 ...
+   Uncompressing Kernel Image ... OK
+
+Starting kernel ...
+
+arrow, after rtl8672 console init
+[    0.000000] Linux version 3.3.8 (arrow@basic) (gcc version 4.6.3 20120201 (prerelease) (Linaro GC
+C 4.6-2012.02) ) #13 Mon Sep 24 18:43:00 CST 2012
+[    0.000000] bootconsole [early0] enabled
+[    0.000000] CPU revision is: 0000ff00 (Mips3k)
+[    0.000000] Determined physical RAM map:
+[    0.000000]  memory: 02000000 @ 00000000 (usable)
+[    0.000000] User-defined physical RAM map:
+[    0.000000]  memory: 02000000 @ 00000000 (usable)
+[    0.000000] Zone PFN ranges:
+[    0.000000]   Normal   0x00000000 -> 0x00002000
+[    0.000000] Movable zone start PFN for each node
+[    0.000000] Early memory PFN ranges
+[    0.000000]     0: 0x00000000 -> 0x00002000
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 8128
+[    0.000000] Kernel command line:  root=/dev/mtdblock3 rootfstype=squashfs,jffs2 noinitrd console=
+ttyS0,115200 mem=32M panic=20 initcall_debug=0
+[    0.000000] PID hash table entries: 128 (order: -3, 512 bytes)
+[    0.000000] Dentry cache hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Inode-cache hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.000000] Checking for 'wait' instruction...  disabled.
+[    0.000000] Primary instruction cache 16kB, linesize 16 bytes.
+[    0.000000] Primary data cache 8kB, linesize 16 bytes.
+[    0.000000] Memory: 27456k/32768k available (3914k kernel code, 5312k reserved, 774k data, 180k i
+nit, 0k highmem)
+[    0.000000] NR_IRQS:128
+[    0.000000] arrow, rtl8672_clockevent_init: 93
+[    0.000000] arrow, rtl8672_clockevent_init: 103, pass
+[    0.000000] console [ttyS0] enabled, bootconsole disabled
+[    0.000000] console [ttyS0] enabled, bootconsole disabled
+[    0.010000] Calibrating delay loop... 398.13 BogoMIPS (lpj=1990656)
+[    0.060000] pid_max: default: 32768 minimum: 301
+[    0.060000] Mount-cache hash table entries: 512
+[    0.070000] NET: Registered protocol family 16
+[    0.170000] bio: create slab <bio-0> at 0
+[    0.190000] SCSI subsystem initialized
+[    0.190000] usbcore: registered new interface driver usbfs
+[    0.200000] usbcore: registered new interface driver hub
+[    0.210000] usbcore: registered new device driver usb
+[    0.220000] cfg80211: Calling CRDA to update world regulatory domain
+[    0.240000] NET: Registered protocol family 2
+[    0.250000] IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.260000] TCP established hash table entries: 1024 (order: 1, 8192 bytes)
+[    0.270000] TCP bind hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.270000] TCP: Hash tables configured (established 1024 bind 1024)
+[    0.280000] TCP reno registered
+[    0.280000] UDP hash table entries: 256 (order: 0, 4096 bytes)
+[    0.290000] UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+[    0.300000] NET: Registered protocol family 1
+[    0.300000] memmap_pid load
+[    0.370000] VFS: Disk quotas dquot_6.5.2
+[    0.370000] Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
+[    0.380000] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.390000] JFFS2 version 2.2 (NAND) (SUMMARY) (LZMA) (RTIME) (CMODE_PRIORITY) (c) 2001-2006 Red
+Hat, Inc.
+[    0.400000] msgmni has been set to 53
+[    0.400000] io scheduler noop registered
+[    0.410000] io scheduler deadline registered (default)
+[    0.420000] Serial: 8250/16550 driver, 1 ports, IRQ sharing disabled
+[    0.420000] serial8250: ttyS0 at MMIO 0x0 (irq = 12) is a 16550A
+[    0.440000] flash device: 0x800000 at 0xbd000000
+[    0.460000] SFCR:0xb8001200 SFCSR:0xb8001208 SFDR:0xb800120c
+[    0.460000] can not get SPI chip driver!
+[    0.470000]
+[    0.470000] MXIC matched!!get SPI chip driver!
+[    0.480000] Creating 7 MTD partitions on "Physically mapped flash":
+[    0.480000] 0x000000000000-0x000000020000 : "boot"
+[    0.490000] 0x000000020000-0x000000040000 : "nvram"
+[    0.510000] 0x000000040000-0x000000600000 : "fwmtd"
+[    0.520000] 0x00000004004c-0x0000005fffbe : "rootfs"
+[    0.520000] mtd: partition "rootfs" must either start or end on erase block boundary or be smalle
+r than an erase block -- forcing read-only
+[    0.530000] mtd: partition "rootfs" set to be root filesystem
+[    0.540000] 0x000000600000-0x0000007c0000 : "rootfs_data"
+[    0.550000] 0x0000007c0000-0x0000007e0000 : "data_store"
+[    0.560000] 0x0000007e0000-0x000000800000 : "data_store_bk"
+[    0.580000] tun: Universal TUN/TAP device driver, 1.6
+[    0.590000] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+[    0.590000] PPP generic driver version 2.4.2
+[    0.600000] NET: Registered protocol family 24
+[    0.610000] usbcore: registered new interface driver dm9601
+[    0.610000] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    0.620000] usbcore: registered new interface driver usblp
+[    0.630000] Initializing USB Mass Storage driver...
+[    0.640000] usbcore: registered new interface driver usb-storage
+[    0.640000] USB Mass Storage support registered.
+[    0.650000] usbcore: registered new interface driver usbserial
+[    0.660000] usbserial: USB Serial Driver core
+[    0.660000] USB Serial support registered for ch341-uart
+[    0.670000] usbcore: registered new interface driver ch341
+[    0.680000] USB Serial support registered for GSM modem (1-port)
+[    0.680000] usbcore: registered new interface driver option
+[    0.690000] option: v0.7.2:USB Driver for GSM modems
+[    0.700000] Mirror/redirect action on
+[    0.700000] u32 classifier
+[    0.710000]     Performance counters on
+[    0.710000]     input device check on
+[    0.720000]     Actions configured
+[    0.720000] Netfilter messages via NETLINK v0.30.
+[    0.720000] nf_conntrack version 0.5.0 (429 buckets, 1716 max)
+[    0.730000] xt_time: kernel timezone is -0000
+[    0.740000] IPv4 over IPv4 tunneling driver
+[    0.740000] ip_tables: (C) 2000-2006 Netfilter Core Team
+[    0.750000] TCP cubic registered
+[    0.760000] NET: Registered protocol family 10
+[    0.770000] ip6_tables: (C) 2000-2006 Netfilter Core Team
+[    0.770000] IPv6 over IPv4 tunneling driver
+[    0.780000] NET: Registered protocol family 17
+[    0.790000] 8021q: 802.1Q VLAN Support v1.8
+[    0.800000] VFS: Mounted root (squashfs filesystem) readonly on device 31:3.
+[    0.810000] Freeing unused kernel memory: 180k freed
+- preinit -
+Press the [f] key and hit [enter] to enter failsafe mode
+- regular preinit -
+[    5.680000] JFFS2 notice: (322) jffs2_build_xattr_subsystem: complete building xattr subsystem, 0
+ of xdatum (0 unchecked, 0 orphan) and 0 of xref (0 dead, 0 orphan) found.
+switching to jffs2
+- init -
+init started: BusyBox v1.19.4 ()
+
+Please press Enter to activate this console.
+
+
+BusyBox v1.19.4 () built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+- W I R E L E S S    F R E E D O M -
+- rtl8672  (v, a, t, s) MIPS go on -
+- persist                   create -
+------------------------------------
+root@rtl8672:/# [   13.830000] device eth0 entered promiscuous mode
+[   14.010000] br-lan: port 1(eth0) entered forwarding state
+[   14.020000] br-lan: port 1(eth0) entered forwarding state
+sysinit: Loading defaults
+
+[   16.020000] br-lan: port 1(eth0) entered forwarding state
+sysinit: Loading synflood protection
+
+sysinit: Adding custom chains
+
+sysinit: Loading zones
+
+sysinit: Loading forwardings
+
+sysinit: Loading rules
+
+sysinit: Loading redirects
+
+sysinit: Loading includes
+
+sysinit: Optimizing conntrack
+
+sysinit: Loading interfaces
+
+sysinit: Generating RSA private key, 1024 bit long modulus
+
+
+root@rtl8672:/# help
+Built-in commands:
+------------------
+        . : [ [[ alias bg break cd chdir command continue echo eval exec
+        exit export false fg getopts hash help jobs kill let local printf
+        pwd read readonly return set shift source test times trap true
+        type ulimit umask unalias unset wait
+
+root@rtl8672:/# sysinit: Generating selfsigned certificate with subject 'C=DE;ST=Berlin;L=Berlin;CN=
+OpenWrt;' and validity 2001-09-09 01:46:40-2003-09-09 01:46:40
+
+
+root@rtl8672:/# sysinit: service: file '/usr/sbin/ntpd' is not executable
+
+
+root@rtl8672:/# dmesg
+[    0.000000] Linux version 3.3.8 (arrow@basic) (gcc version 4.6.3 20120201 (prerelease) (Linaro GC
+C 4.6-2012.02) ) #13 Mon Sep 24 18:43:00 CST 2012
+[    0.000000] bootconsole [early0] enabled
+[    0.000000] CPU revision is: 0000ff00 (Mips3k)
+[    0.000000] Determined physical RAM map:
+[    0.000000]  memory: 02000000 @ 00000000 (usable)
+[    0.000000] User-defined physical RAM map:
+[    0.000000]  memory: 02000000 @ 00000000 (usable)
+[    0.000000] Zone PFN ranges:
+[    0.000000]   Normal   0x00000000 -> 0x00002000
+[    0.000000] Movable zone start PFN for each node
+[    0.000000] Early memory PFN ranges
+[    0.000000]     0: 0x00000000 -> 0x00002000
+[    0.000000] On node 0 totalpages: 8192
+[    0.000000] free_area_init_node: node 0, pgdat 80493b40, node_mem_map 81000000
+[    0.000000]   Normal zone: 64 pages used for memmap
+[    0.000000]   Normal zone: 0 pages reserved
+[    0.000000]   Normal zone: 8128 pages, LIFO batch:0
+[    0.000000] pcpu-alloc: s0 r0 d32768 u32768 alloc=1*32768
+[    0.000000] pcpu-alloc: [0] 0
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 8128
+[    0.000000] Kernel command line:  root=/dev/mtdblock3 rootfstype=squashfs,jffs2 noinitrd console=
+ttyS0,115200 mem=32M panic=20 initcall_debug=0
+[    0.000000] PID hash table entries: 128 (order: -3, 512 bytes)
+[    0.000000] Dentry cache hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Inode-cache hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.000000] Checking for 'wait' instruction...  disabled.
+[    0.000000] Primary instruction cache 16kB, linesize 16 bytes.
+[    0.000000] Primary data cache 8kB, linesize 16 bytes.
+[    0.000000] Memory: 27456k/32768k available (3914k kernel code, 5312k reserved, 774k data, 180k i
+nit, 0k highmem)
+[    0.000000] NR_IRQS:128
+[    0.000000] arrow, rtl8672_clockevent_init: 93
+[    0.000000] arrow, rtl8672_clockevent_init: 103, pass
+[    0.000000] console [ttyS0] enabled, bootconsole disabled
+[    0.010000] Calibrating delay loop... 398.13 BogoMIPS (lpj=1990656)
+[    0.060000] pid_max: default: 32768 minimum: 301
+[    0.060000] Mount-cache hash table entries: 512
+[    0.070000] NET: Registered protocol family 16
+[    0.170000] bio: create slab <bio-0> at 0
+[    0.190000] SCSI subsystem initialized
+[    0.190000] usbcore: registered new interface driver usbfs
+[    0.200000] usbcore: registered new interface driver hub
+[    0.210000] usbcore: registered new device driver usb
+[    0.220000] cfg80211: Calling CRDA to update world regulatory domain
+[    0.240000] NET: Registered protocol family 2
+[    0.250000] IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.260000] TCP established hash table entries: 1024 (order: 1, 8192 bytes)
+[    0.270000] TCP bind hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.270000] TCP: Hash tables configured (established 1024 bind 1024)
+[    0.280000] TCP reno registered
+[    0.280000] UDP hash table entries: 256 (order: 0, 4096 bytes)
+[    0.290000] UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+[    0.300000] NET: Registered protocol family 1
+[    0.300000] PCI: CLS 0 bytes, default 64
+[    0.300000] memmap_pid load
+[    0.370000] VFS: Disk quotas dquot_6.5.2
+[    0.370000] Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
+[    0.380000] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.390000] JFFS2 version 2.2 (NAND) (SUMMARY) (LZMA) (RTIME) (CMODE_PRIORITY) (c) 2001-2006 Red
+Hat, Inc.
+[    0.400000] msgmni has been set to 53
+[    0.400000] io scheduler noop registered
+[    0.410000] io scheduler deadline registered (default)
+[    0.420000] Serial: 8250/16550 driver, 1 ports, IRQ sharing disabled
+[    0.420000] serial8250: ttyS0 at MMIO 0x0 (irq = 12) is a 16550A
+[    0.440000] flash device: 0x800000 at 0xbd000000
+[    0.460000] SFCR:0xb8001200 SFCSR:0xb8001208 SFDR:0xb800120c
+[    0.460000] can not get SPI chip driver!
+[    0.470000]
+[    0.470000] MXIC matched!!get SPI chip driver!
+[    0.480000] Creating 7 MTD partitions on "Physically mapped flash":
+[    0.480000] 0x000000000000-0x000000020000 : "boot"
+[    0.490000] 0x000000020000-0x000000040000 : "nvram"
+[    0.510000] 0x000000040000-0x000000600000 : "fwmtd"
+[    0.520000] 0x00000004004c-0x0000005fffbe : "rootfs"
+[    0.520000] mtd: partition "rootfs" must either start or end on erase block boundary or be smalle
+r than an erase block -- forcing read-only
+[    0.530000] mtd: partition "rootfs" set to be root filesystem
+[    0.540000] 0x000000600000-0x0000007c0000 : "rootfs_data"
+[    0.550000] 0x0000007c0000-0x0000007e0000 : "data_store"
+[    0.560000] 0x0000007e0000-0x000000800000 : "data_store_bk"
+[    0.580000] tun: Universal TUN/TAP device driver, 1.6
+[    0.590000] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+[    0.590000] PPP generic driver version 2.4.2
+[    0.600000] NET: Registered protocol family 24
+[    0.610000] usbcore: registered new interface driver dm9601
+[    0.610000] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    0.620000] ehci_hcd: block sizes: qh 64 qtd 96 itd 160 sitd 96
+[    0.620000] usbcore: registered new interface driver usblp
+[    0.630000] Initializing USB Mass Storage driver...
+[    0.640000] usbcore: registered new interface driver usb-storage
+[    0.640000] USB Mass Storage support registered.
+[    0.650000] usbcore: registered new interface driver usbserial
+[    0.660000] usbserial: USB Serial Driver core
+[    0.660000] USB Serial support registered for ch341-uart
+[    0.670000] usbcore: registered new interface driver ch341
+[    0.680000] USB Serial support registered for GSM modem (1-port)
+[    0.680000] usbcore: registered new interface driver option
+[    0.690000] option: v0.7.2:USB Driver for GSM modems
+[    0.700000] Mirror/redirect action on
+[    0.700000] u32 classifier
+[    0.710000]     Performance counters on
+[    0.710000]     input device check on
+[    0.720000]     Actions configured
+[    0.720000] Netfilter messages via NETLINK v0.30.
+[    0.720000] nf_conntrack version 0.5.0 (429 buckets, 1716 max)
+[    0.730000] xt_time: kernel timezone is -0000
+[    0.740000] IPv4 over IPv4 tunneling driver
+[    0.740000] ip_tables: (C) 2000-2006 Netfilter Core Team
+[    0.750000] TCP cubic registered
+[    0.760000] NET: Registered protocol family 10
+[    0.770000] ip6_tables: (C) 2000-2006 Netfilter Core Team
+[    0.770000] IPv6 over IPv4 tunneling driver
+[    0.780000] NET: Registered protocol family 17
+[    0.790000] 8021q: 802.1Q VLAN Support v1.8
+[    0.800000] VFS: Mounted root (squashfs filesystem) readonly on device 31:3.
+[    0.810000] Freeing unused kernel memory: 180k freed
+[    5.680000] JFFS2 notice: (322) jffs2_build_xattr_subsystem: complete building xattr subsystem, 0
+ of xdatum (0 unchecked, 0 orphan) and 0 of xref (0 dead, 0 orphan) found.
+[   13.830000] device eth0 entered promiscuous mode
+[   14.010000] br-lan: port 1(eth0) entered forwarding state
+[   14.020000] br-lan: port 1(eth0) entered forwarding state
+[   16.020000] br-lan: port 1(eth0) entered forwarding state
+root@rtl8672:/# ls
+bin      etc      mnt      proc     root     sys      usr      www
+dev      lib      overlay  rom      sbin     tmp      var
+root@rtl8672:/# cd bin
+root@rtl8672:/bin# ls
+adsl_init      debug_piddump  ln             opkg           sync
+ash            df             lock           pidof          tar
+busybox        dmesg          login.sh       ping           touch
+cat            echo           ls             ping6          true
+chgrp          egrep          mkdir          ps             ubus
+chmod          false          mknod          pwd            umount
+chown          fgrep          mktemp         rm             uname
+cp             grep           mount          rmdir          vi
+date           gunzip         mv             sarctl         zcat
+dd             gzip           netmsg         sed
+debug_lsstack  ipcalc.sh      netstat        sh
+debug_memdump  kill           nice           sleep
+root@rtl8672:/bin# cd ..
+root@rtl8672:/# cd sbin
+root@rtl8672:/sbin# ls
+blkid              ifstatus           netifd             syslogd
+devstatus          ifup               pivot_root         sysupgrade
+fdisk              init               poweroff           ubusd
+firstboot          insmod             reboot             uci
+fw                 klogd              rmmod              udevtrigger
+halt               led.sh             route              udhcpc
+hotplug-call       logread            start-stop-daemon  vconfig
+hotplug2           lsmod              swapoff            watchdog
+hwclock            mkswap             swapon             wifi
+ifconfig           mount_root         switch_root
+ifdown             mtd                sysctl
+root@rtl8672:/sbin# cd ..
+root@rtl8672:/# cd /usr/sbin
+root@rtl8672:/usr/sbin# ls
+br2684ctl         dhcprelay         iptables-restore  tc
+brctl             dnsmasq           iptables-save     telnetd
+chat              dropbear          pppd              udhcpd
+chroot            ip                px5g              uhttpd
+crond             iptables          rdate
+root@rtl8672:/usr/sbin# cd ..
+root@rtl8672:/usr# ls
+bin    lib    sbin   share
+root@rtl8672:/usr# cd bin
+root@rtl8672:/usr/bin# ls
+[            dbclient     head         md5sum       qos-stop     time
+[[           diff         hexdump      mesg         reset        top
+arping       dirname      hostid       mkfifo       scp          tr
+awk          dropbearkey  id           nc           seq          traceroute
+basename     du           jshn         nslookup     sort         uniq
+bunzip2      env          killall      passwd       ssh          uptime
+bzcat        expr         killall5     pgrep        strings      wc
+clear        find         less         pkill        tail         wget
+comgt        free         logger       printf       tee          which
+crontab      ftpget       lsusb        qos-start    telnet       xargs
+cut          gcom         lua          qos-stat     test         yes
+root@rtl8672:/usr/bin# openssl
+/bin/ash: openssl: not found
+root@rtl8672:/usr/bin# cat /proc/cpuinfo
+system type             : Grass
+processor               : 0
+cpu model               : Mips3k V0.0
+BogoMIPS                : 398.13
+wait instruction        : no
+microsecond timers      : no
+tlb_entries             : 32
+extra interrupt vector  : no
+hardware watchpoint     : no
+ASEs implemented        :
+shadow register sets    : 0
+kscratch registers      : 0
+core                    : 0
+VCED exceptions         : not available
+VCEI exceptions         : not available
+
+root@rtl8672:/usr/bin# lsmod
+Module                  Size  Used by    Not tainted
+xt_CT                   1760  0
+root@rtl8672:/usr/bin# cd /proc
+root@rtl8672:/proc# lspci
+/bin/ash: lspci: not found
+root@rtl8672:/proc# ls
+1              323            890            ioports        slabinfo
+101            325            97             irq            softirqs
+109            340            99             kallsyms       stat
+117            376            buddyinfo      kmsg           swaps
+118            378            bus            loadavg        sys
+138            380            cmdline        locks          sysrq-trigger
+139            387            consoles       meminfo        sysvipc
+140            397            cpuinfo        memmap_pid     timer_list
+156            4              crypto         misc           tty
+161            476            devices        modules        uptime
+166            5              diskstats      mounts         version
+171            6              driver         mtd            vmallocinfo
+176            7              execdomains    net            vmstat
+181            817            filesystems    pagetypeinfo   zoneinfo
+186            827            fs             partitions
+2              862            interrupts     scsi
+3              869            iomem          self
+root@rtl8672:/proc# cat devices
+Character devices:
+  1 mem
+  4 ttyS
+  5 /dev/tty
+  5 /dev/console
+  5 /dev/ptmx
+ 10 misc
+ 90 mtd
+101 piddump
+102 memdump
+108 ppp
+128 ptm
+136 pts
+180 usb
+188 ttyUSB
+189 usb_device
+
+Block devices:
+259 blkext
+  8 sd
+ 31 mtdblock
+ 65 sd
+ 66 sd
+ 67 sd
+ 68 sd
+ 69 sd
+ 70 sd
+ 71 sd
+128 sd
+129 sd
+130 sd
+131 sd
+132 sd
+133 sd
+134 sd
+135 sd
+root@rtl8672:/proc#

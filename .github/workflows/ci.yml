@@ -1,0 +1,176 @@
+# CI: fmt / clippy / test / build across the workspace.
+#
+# Triggered on PRs + pushes to main. Fast path (fmt/clippy) fails
+# first — no point running the full build if formatting is off.
+#
+# Cost: ~4-6 min per run on ubuntu-latest with dependency caching.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:  # manual trigger for post-migration sanity + ad-hoc reruns
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+  RUST_BACKTRACE: short
+
+jobs:
+  fmt:
+    name: rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain (stable + rustfmt)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: cargo fmt --all --check
+        run: cargo fmt --all --check
+
+  clippy:
+    name: clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain (stable + clippy)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Install libudev (Linux serialport dep)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libudev-dev
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ci-clippy-${{ hashFiles('Cargo.lock') }}
+      - name: clippy (default features)
+        run: cargo clippy --all-targets -- -D warnings
+      - name: clippy (--features tui)
+        run: cargo clippy --features tui --all-targets -- -D warnings
+
+  test:
+    name: test (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: default-features
+            features: ""
+          - name: tui
+            features: "--features tui"
+          - name: no-default
+            features: "--no-default-features"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install libudev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libudev-dev
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ci-test-${{ matrix.name }}-${{ hashFiles('Cargo.lock') }}
+      - name: cargo test
+        run: cargo test ${{ matrix.features }} --workspace
+
+  build:
+    name: release build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install libudev (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libudev-dev
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ci-build-${{ matrix.os }}-${{ hashFiles('Cargo.lock') }}
+      - name: cargo build --release --features tui
+        # RUSTFLAGS=-D warnings above → any warning breaks the build.
+        run: cargo build --release --features tui
+
+  audit:
+    name: cargo audit + deny
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install cargo-audit
+        run: cargo install --locked cargo-audit
+      - name: cargo audit
+        # Non-blocking for now (warns on advisories, doesn't fail CI).
+        # Flip to `cargo audit --deny warnings` once we've triaged the
+        # baseline.
+        run: cargo audit || true
+      - name: Install cargo-deny
+        run: cargo install --locked cargo-deny
+      - name: cargo deny check
+        # deny.toml enforces our supply-chain policy: license
+        # allowlist, wildcard-dep policy, duplicate skiplist,
+        # crates.io-only sources. Blocking — any new dep with an
+        # unknown license or from an unallowed source fails CI.
+        run: cargo deny check
+
+  msrv:
+    name: MSRV (rust-version) build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract rust-version from Cargo.toml
+        id: msrv
+        run: |
+          v=$(grep -oP '^rust-version = "\K[^"]+' Cargo.toml | head -1)
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "MSRV declared: $v"
+      - name: Install pinned toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.msrv.outputs.version }}
+      - name: Install libudev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libudev-dev
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ci-msrv-${{ steps.msrv.outputs.version }}-${{ hashFiles('Cargo.lock') }}
+      - name: cargo build (MSRV)
+        # Proves rust-version = "X.Y" in Cargo.toml is actually true.
+        # Users doing `cargo install --locked` on the declared MSRV
+        # get a real build, not a "method not found" surprise.
+        run: cargo build --features tui

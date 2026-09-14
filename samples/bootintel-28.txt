@@ -1,0 +1,742 @@
+\00console init done
+
+
+U-Boot 2012.10 (Sep 29 2006 - 00:20:41) for GK7102 rb jxh42 v1.00 (GOKE)
+
+HAL:  20151223 
+DRAM:  64 MiB
+Flash: 16 MiB
+16 MiB
+NAND:  SPINAND MID = 0xff, DID = 0xffff, Data = 0x1ffffff !spinand_board_init[1581]: No support this SPI nand!
+SF: Detected GD25Q128C with page size 256 B, sector size 64 KiB, total size 16 MiB
+In:    serial
+Out:   serial
+Err:   serial
+Net:   arm_freq(600MHz)..............0x112032
+use int MII..............
+gk7101
+Hit any key to stop autoboot:  1  0 
+[PROCESS_SEPARATORS] run sfboot
+[PROCESS_SEPARATORS] setenv bootargs console=${consoledev},${baudrate} noinitrd mem=${mem} rw ${rootfstype} init=linuxrc ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}:${netdev} mac=${ethaddr} phytype=${phytype};sf probe 0 0;sf read ${loadaddr} ${sfkernel} ${filesize}; bootm
+SF: Detected GD25Q128C with page size 256 B, sector size 64 KiB, total size 16 MiB
+put param to memory
+mem size (35)
+bsb size (2)
+
+the kernel image is zImage or Image
+entry = 0xc1000000 
+## Transferring control to Linux (at address c1000000)...
+
+Starting kernel ...
+
+machid = 3988 r2 = 0xc0000100 
+Uncompressing Linux... done, booting the kernel.
+[    0.000000] Booting Linux on physical CPU 0
+[    0.000000] Linux version 3.4.43-gk (user15@ubuntu) (gcc version 4.6.1 (crosstool-NG 1.18.0) ) #56 PREEMPT Fri Sep 29 00:24:56 PDT 2006
+[    0.000000] CPU: ARMv6-compatible processor [410fb767] revision 7 (ARMv7), cr=00c5387d
+[    0.000000] CPU: VIPT aliasing data cache, VIPT aliasing instruction cache
+[    0.000000] Machine: Goke GK7102 RB_JXH42 board V2.00
+[    0.000000] Memory policy: ECC disabled, Data cache writeback
+[    0.000000] AHB: 0x90000000  0xf2000000  -- 0x1000000
+[    0.000000] APB: 0xa0000000  0xf3000000  -- 0x1000000
+[    0.000000] PPM: 0xc0000000  0xc0000000  -- 0x200000
+[    0.000000] BSB: 0xc2500000  0xf5000000  -- 0x200000
+[    0.000000] DSP: 0xc2700000  0xf6000000  -- 0x1900000
+[    0.000000] hal version = 20151223 
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 8890
+[    0.000000] Kernel command line: console=ttySGK0,115200 noinitrd mem=35M rw mtdparts=gk7101_flash:256K(boot),64K(bootenv),2560K(kernel),7168K(rootfs),1024K(rom),5312K(APP) rootfstype=squashfs root=/dev/mtdblock3 init=linuxrc ip=192.168.1.229:192.168.1.225:192.168.1.1:255.255.255.0:"gk7101":eth0 mac=3C:97:0E:22:E1:14 phytype=0
+[    0.000000] PID hash table entries: 256 (order: -2, 1024 bytes)
+[    0.000000] Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+[    0.000000] Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Memory: 35MB = 35MB total
+[    0.000000] Memory: 30760k/30760k available, 5080k reserved, 0K highmem
+[    0.000000] Virtual kernel memory layout:
+[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+[    0.000000]     fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+[    0.000000]     DMA     : 0xff600000 - 0xffe00000   (   8 MB)
+[    0.000000]     vmalloc : 0x82800000 - 0xff000000   (1992 MB)
+[    0.000000]     lowmem  : 0x80000000 - 0x82300000   (  35 MB)
+[    0.000000]     modules : 0x7f000000 - 0x80000000   (  16 MB)
+[    0.000000]       .text : 0x80008000 - 0x80413000   (4140 kB)
+[    0.000000]       .init : 0x80413000 - 0x80433000   ( 128 kB)
+[    0.000000]       .data : 0x80434000 - 0x8045cd00   ( 164 kB)
+[    0.000000]        .bss : 0x8045cd24 - 0x8048edf8   ( 201 kB)
+[    0.000000] NR_IRQS:128
+[    0.000000] >> gk7101 init irq vic1...
+[    0.000000] >> gk7101 init irq vic2...
+[    0.000000] gk7101 init vic...
+[    0.000000] mach gk7101 init timer...
+[    0.000000] sched_clock: 32 bits at 100 Hz, resolution 10000000ns, wraps every 4294967286ms
+[    0.000000] Console: colour dummy device 80x30
+[    0.000000] console [ttySGK0] enabled
+[    0.010000] Calibrating delay loop... 597.60 BogoMIPS (lpj=2988032)
+[    0.070000] pid_max: default: 32768 minimum: 301
+[    0.070000] Mount-cache hash table entries: 512
+[    0.080000] CPU: Testing write buffer coherency: ok
+[    0.090000] Setting up static identity map for 0xc0542e30 - 0xc0542e68
+[    0.100000] NET: Registered protocol family 16
+[    0.110000] gk7101 init timer...
+[    0.110000] Init HW timer for DSP communication
+[    0.120000] gk7101 init gpio...
+[    0.120000] gpiochip_add: registered GPIOs 0 to 63 on device: gk7101-gpio0
+[    0.130000] gpio map init...
+[    0.130000] create proc dir
+[    0.140000] gk7101 register devices 8
+[    0.140000] gk7101 register I2C
+[    0.280000] bio: create slab <bio-0> at 0
+[    0.290000] spi spi.0: gk7101 SPI Controller 0 created 
+[    0.290000] spi spi.0: master is unqueued, this is deprecated
+[    0.300000] usbcore: registered new interface driver usbfs
+[    0.310000] usbcore: registered new interface driver hub
+[    0.310000] usbcore: registered new device driver usb
+[    0.320000] i2c regbase: 0xf3003000 
+[    0.320000] i2c i2c.0: i2c irq:registers 9
+[    0.330000] i2c i2c.0: GK7101 I2C[0] adapter[i2c-0] probed!
+[    0.340000] FS-Cache: Loaded
+[    0.340000] CacheFiles: Loaded
+[    0.350000] cfg80211: Calling CRDA to update world regulatory domain
+[    0.360000] gk7101-sd gk7101-sd.0: Slot0 req_size=0x00010000, segs=16, seg_size=0x00010000
+[    0.390000] gk7101-sd gk7101-sd.0: GK7101 SD/MMC[0] has 1 slots @ 46000000Hz, [0x09e130b0:0x00000000]
+[    0.400000] NET: Registered protocol family 2
+[    0.400000] IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.410000] TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+[    0.420000] TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.430000] TCP: Hash tables configured (established 2048 bind 2048)
+[    0.440000] TCP: reno registered
+[    0.440000] UDP hash table entries: 256 (order: 0, 4096 bytes)
+[    0.450000] UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+[    0.450000] NET: Registered protocol family 1
+[    0.460000] RPC: Registered named UNIX socket transport module.
+[    0.470000] RPC: Registered udp transport module.
+[    0.470000] RPC: Registered tcp transport module.
+[    0.480000] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    0.490000] mdma init...
+[    0.490000] mdma request irq: 54 
+[    0.500000] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.500000] NFS: Registering the id_resolver key type
+[    0.510000] jffs2: version 2.2. (NAND) © 2001-2006 Red Hat, Inc.
+[    0.520000] msgmni has been set to 60
+[    0.530000] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 253)
+[    0.540000] io scheduler noop registered
+[    0.540000] io scheduler deadline registered
+[    0.550000] io scheduler cfq registered (default)
+[    0.550000] uart.0: ttySGK0 at MMIO 0xa0005000 (irq = 31) is a gk7101uart
+[    0.560000] uart.1: ttySGK1 at MMIO 0xa001f000 (irq = 15) is a gk7101uart
+[    0.570000] uart.2: ttySGK2 at MMIO 0xa001e000 (irq = 27) is a gk7101uart
+[    0.590000] brd: module loaded
+[    0.590000] loop: module loaded
+[    0.600000] adc initialized (10:11)
+[    0.600000] slram: not enough parameters.
+[    0.610000] speed_mod is 0
+[    0.610000] gk7101_flash gk7101_flash.0: GD25Q128C (16384 Kbytes)
+[    0.620000] 6 cmdlinepart partitions found on MTD device gk7101_flash
+[    0.630000] Creating 6 MTD partitions on "gk7101_flash":
+[    0.630000] 0x000000000000-0x000000040000 : "boot"
+[    0.640000] 0x000000040000-0x000000050000 : "bootenv"
+[    0.650000] 0x000000050000-0x0000002d0000 : "kernel"
+[    0.650000] 0x0000002d0000-0x0000009d0000 : "rootfs"
+[    0.660000] 0x0000009d0000-0x000000ad0000 : "rom"
+[    0.670000] 0x000000ad0000-0x000001000000 : "APP"
+[    0.670000] GKETH_init
+[    0.680000] [GKETH_drv_probe] eth_base = 0xf200e000
+[    0.680000] mii id = 0 
+[    0.690000] ###### PHY Reset.1.0.2
+[    0.800000] mdiobus_register: PHY[0] whose id 0x00000000 
+[    0.810000] goke MII Bus: probed
+[    0.810000] gk7101-eth gk7101-eth.0: MAC Address[3e:97:0e:22:e1:14].
+[    0.820000] usbcore: registered new interface driver cdc_wdm
+[    0.830000] usbcore: registered new interface driver libusual
+[    0.830000] musb-hdrc: version 6.0, ?dma?, otg (peripheral+host)
+[    0.840000] musb phy Begin initial sequence ...
+[    1.090000] gk7101 musb init end...
+[    1.090000] musb-hdrc musb-hdrc: MUSB HDRC host driver
+[    1.100000] musb-hdrc musb-hdrc: new USB bus registered, assigned bus number 1
+[    1.110000] vm : ffde0000, phy : c21a0000
+[    1.110000] dma_buf alloc ok!
+[    1.110000] hub 1-0:1.0: USB hub found
+[    1.120000] hub 1-0:1.0: 1 port detected
+[    1.120000] musb-hdrc musb-hdrc: USB Host mode controller at f0006000 using PIO, IRQ 26
+[    1.130000] platform add gk7101 musb...
+[    1.140000] mousedev: PS/2 mouse device common for all mice
+[    1.140000] input: GKInput as /devices/virtual/input/input0
+[    1.150000] Protocol NEC[0]
+[    1.150000] ir request irq: 62 
+[    1.160000] IR Host Controller probed!
+[    1.160000] gk7101 rtc init...
+[    1.160000] rtc base: 0xf2080000 
+[    1.170000] os read tm: t=0 
+[    1.170000] gk7101-rtc gk7101-rtc: rtc core: registered gk7101-rtc as rtc0
+[    1.180000] i2c /dev entries driver
+[    1.180000] gk7101_wdt: GK7101 Watchdog Timer, (c) 2014 Goke Microelectronics
+[    1.190000] [gk7101_wdt_init]: init
+[    1.200000] [gk7101_wdt_probe]: probe
+[    1.200000] [gk7101_wdt_probe]: probe mapped wdt_base=f3006000
+[    1.210000] watchdog inactive, reset disabled, irq disabled
+[    1.210000] IPv4 over IPv4 tunneling driver
+[    1.220000] gre: GRE over IPv4 demultiplexor driver
+[    1.230000] ip_gre: GRE over IPv4 tunneling driver
+[    1.230000] TCP: cubic registered
+[    1.240000] Initializing XFRM netlink socket
+[    1.240000] NET: Registered protocol family 10
+[    1.250000] IPv6 over IPv4 tunneling driver
+[    1.260000] NET: Registered protocol family 17
+[    1.260000] NET: Registered protocol family 15
+[    1.270000] lib80211: common routines for IEEE802.11 drivers
+[    1.270000] Registering the dns_resolver key type
+[    1.280000] VFP support v0.3: implementor 41 architecture 1 part 20 variant b rev 5
+[    1.290000] os read tm: t=0 
+[    1.290000] gk7101-rtc gk7101-rtc: setting system clock to 1970-01-01 00:00:00 UTC (0)
+[    1.300000] net eth0: ###### GKETH_start_hw
+[    1.310000] net eth0: ###### GKETH_phy_start_aneg...
+[    1.320000] ADDRCONF(NETDEV_UP): eth0: link is not ready
+[    1.580000] usb 1-1: new high-speed USB device number 2 using musb-hdrc
+[    2.310000] PHY: 0:00 - Link is Up - 100/Full
+[    2.320000] ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[    2.340000] IP-Config: Complete:
+[    2.340000]      device=eth0, addr=192.168.1.229, mask=255.255.255.0, gw=192.168.1.1
+[    2.350000]      host="gk7101", domain=, nis-domain=(none)
+[    2.350000]      bootserver=192.168.1.225, rootserver=192.168.1.225, rootpath=
+[    2.370000] VFS: Mounted root (squashfs filesystem) readonly on device 31:3.
+[    2.380000] Freeing init memory: 128K
+Starting logging: OK
+Starting mdev...
+Initializing random number generator... read-only file system detected...done
+Starting network...
+ip: RTNETLINK answers: File exists
+[    7.500000] gk_vi_init
+[    7.500000]  request_irq...24 ok-- video_sync
+[    7.530000]  request_irq...59 ok-- video_frame_last_pixel
+[    7.530000]  request_irq...61 ok-- video_frame
+[    7.550000]  gk7101_is_valid_gpio_irq...
+[    7.710000] crypto initialized (10:11)
+[    7.800000] 
+Media driver version (gcc version 4.6.1 (crosstool-NG 1.18.0) (uClibc)) v1.1.2 #svn r8850 Wed Jul 6 17:44:23 CST 2016
+[   10.710000] rtusb init rt2870 --->
+[   10.730000] 
+[   10.730000] 
+[   10.730000] === pAd = 82a82000, size = 1581168 ===
+[   10.730000] 
+[   10.750000] <-- RTMPAllocTxRxRingMemory, Status=0
+[   10.750000] <-- RTMPAllocAdapterBlock, Status=0
+[   10.770000] RTMP_COM_IoctlHandle():pAd->BulkOutEpAddr=0x8
+[   10.770000] RTMP_COM_IoctlHandle():pAd->BulkOutEpAddr=0x4
+[   10.790000] RTMP_COM_IoctlHandle():pAd->BulkOutEpAddr=0x5
+[   10.790000] RTMP_COM_IoctlHandle():pAd->BulkOutEpAddr=0x6
+[   10.810000] RTMP_COM_IoctlHandle():pAd->BulkOutEpAddr=0x7
+[   10.810000] RTMP_COM_IoctlHandle():pAd->BulkOutEpAddr=0x9
+[   10.820000] STA Driver version-JEDI.MP1.mt7601u.v1.5
+[   10.840000] Compile time-Jul 26 2006,19:39:19
+[   10.840000] ==>WaitForAsicReady MAC_CSR0=0x76010500
+[   10.850000] ==>WaitForAsicReady MAC_CSR0=0x76010500
+[   10.850000] NVM is EFUSE
+[   10.860000] Endpoint(8) is for In-band Command
+[   10.860000] Endpoint(4) is for WMM0 AC0
+[   10.870000] Endpoint(5) is for WMM0 AC1
+[   10.870000] Endpoint(6) is for WMM0 AC2
+[   10.880000] Endpoint(7) is for WMM0 AC3
+[   10.880000] Endpoint(9) is for WMM1 AC0
+[   10.890000] Endpoint(84) is for Data-In
+[   10.890000] Endpoint(85) is for Command Rsp
+[   10.900000] 80211> RFICType = 3
+[   10.900000] NumOfChan ===> 58
+[   10.910000] 80211> Number of channel = 0x44
+[   10.910000] 80211> Number of rate = 12
+[   10.920000] 80211> CurTxPower = 0 dBm
+[   10.920000] 80211> TxStream = 0
+[   10.940000] crda> requlation requestion by core: 00
+[   10.940000] 80211> CFG80211_Register
+[   10.960000] MSC msc_proc_create: 82a82000
+[   11.000000] usbcore: registered new interface driver rt2870
+=========================================================================
+ Start startup!
+startup 0 0
+no key detect 
+vStarNpc:
+=========================================================================
+/ # setenv:/usr/bin:/usr/sbin:/bin:/sbin:/patch/bin
+dwGetWatchDogLiveTime = 60
+dwGetSensorType dwSensorType=7
+dwGetSensorType dwSensorType=7
+fgCmosTypeInit-142
+dwGetSensorType dwSensorType=7
+[   15.660000] sensor board reset...
+[   15.960000] sensor board reset...
+[   16.370000] write: addr 0x3640 val 0x3
+Certificate: rom file ok, eeprom ok
+
+info:  RTC has been used before, no need to init it 
+<1>Sun Jan  1 01:01:01 2010
+<3>Fri Jan  1 01:01:01 2010
+>>vVarInit11
+>>vVarInit22
+vMesgQBufInit
+vDevLogQThreadStart star!
+iClientSocketFd = 4
+cEmailAddr[0] is 0xffav_ctl.c:16189(gk_init),gadi_sys_set_log_level return:0  
+GOKE ADI: R(8724) LIBC(uClibc) (gcc version 4.6.1 (crosstool-NG 1.18.0) ) Sat Jun 25 04:57:54 CST 2016
+av_ctl.c:16198(gk_init),gadi_sys_init  return:0  
+av_ctl.c:16206(gk_init),gadi_sys_load_firmware  return:0  
+gk_video_init:300
+
+
+Image library version (gcc version 4.6.1 (crosstool-NG 1.18.0) (uClibc)) v1.1.2 #svn r9021 Wed Jul 13 15:44:41 CST 2016
+gk_image.c:247(gk_imaging_init),gadi_isp_init return:0 
+dwGetSensorType dwSensorType=7
+gk_video_parse_config_file-dwSensorType=7
+dwGetSensorType dwSensorType=7
+dwGetSensorType dwSensorType=7
+dw[   19.400000] [sc1135_set_video_mode 1188] 1
+GetSensorType dwSensorType=7
+dwGetSensorType dwSensorType=7
+gk_image_parse_config_file-dwSensorType=7
+dwGetSensorType dwSensorType=7
+dwGetSensorType dwSensorType=7
+dwGetSensorType dwSensorType=7
+gk_video_open:403
+
+gk_image.c:267(gk_imaging_open),gadi_isp_open return:0 
+fgAddLogMesgBodyToQ 1
+timeOut,vTimerSendLogMesgBody 16 bytes
+[   24.000000] fps is 25, support max shutter time is 20480000 curr shutter_time 0
+psMesgQBuf->dwMesgID = 0
+[   24.160000] mirror_patter 3
+[   24.500000] fps is 15, support max shutter time is 34133333 curr shutter_time 20480000
+gk_check_encode_streams_params:1[   25.830000] win_height:0 win_width:0
+609
+
+resolution[   25.830000] win_height:0 win_width:0
+ order of streams : 0, 1, 3, 2, 
+gk_video_set_h264_param:894,channelID=0,streamID=0
+
+res width=1280,height=960
+
+gk_video_set_h264_param:894,channelID=1,streamID=1
+
+res width=640,height=480
+
+gk_video_set_h264_param:894,channelID=2,streamID=2
+
+res width=320,height=240
+
+psMesgQBuf->dwMesgID = 0
+gk_video_open:403
+
+gk_image.c:285(gk_imaging_start),gadi_isp_load_param return:0 
+gk_image.c:294(gk_imaging_start),gadi_isp_start return:0 
+start stream[0]
+=======================================
+[GK]DE-MBLK 4x4 basing on 1/16 orig pic version: v2.1.0
+=======================================
+[   26.980000] delay mod0 ret 37
+[   26.980000] delay mod0 ret 41
+start stream[1]
+start stream[2]
+start stream[3]
+psMesgQBuf->dwMesgID = 0
+day ... fps=1
+gk_image.c:1101(gk_image_ircut_switch),gadi_vi_set_slowshutter_mode(viHandle, 2, 15) return:0 
+day current fps= 15
+[   28.360000] fps is 15, support max shutter time is 34133333 curr shutter_time 20525920
+gk_image.c:1107(gk_image_ircut_switch),gadi_isp_set_vi_frame(ispHandle, 15) return:0 
+gk_video_set_framerate:1430
+
+gk_video_set_framerate:1430
+
+gk_video_set_framerate:1430
+
+psMesgQBuf->dwMesgID = 0
+stop stream[0]
+stop stream[1]
+stop stream[2]
+stop stream[3]
+gk_video_stop_all_encode_stream:1411
+
+*************vNetMg_Init******************
+psMesgQBuf->dwMesgID = 0
+vRtspServderThreadStar star!
+vHandSelectThreadStar star!
+accept ******************
+Disk init
+MCU controls motor 
+3CID=7544396, CustomerID=85,  SubType=10 
+
+vDiskProc begin
+
+=====  Now AT24CXX used 255 Bytes=====
+ready to main loop!!!
+
+dwGetWatchDogLiveTime1 = 20
+vNewIrCutHanldeFun to filter, day
+>>>>>>>>>>>>>>>>>>>>>1135 ae_awb_speed<<<<<<<<<<<<<<<<<<<
+delay 3600 s to Send
+[   34.980000] ================> UP : RTMP_SEM_EVENT_WAIT(STA)
+[   34.980000] 1. LDO_CTR0(6c) = a6478d, PMU_OCLEVEL 6
+[   34.990000] 2. LDO_CTR0(6c) = a6478d, PMU_OCLEVEL 6
+[   35.000000] ==>WaitForAsicReady MAC_CSR0=0x76010500
+[   35.010000] RTMP_TimerListAdd: add timer obj 82baa764!
+[   35.020000] RTMP_TimerListAdd: add timer obj 82baa794!
+[   35.030000] RTMP_TimerListAdd: add timer obj 82baa7c4!
+[   35.030000] RTMP_TimerListAdd: add timer obj 82baa734!
+[   35.040000] RTMP_TimerListAdd: add timer obj 82baa6a4!
+[   35.050000] RTMP_TimerListAdd: add timer obj 82baa6d4!
+[   35.050000] RTMP_TimerListAdd: add timer obj 82b3ecdc!
+[   35.060000] RTMP_TimerListAdd: add timer obj 82b2b5d0!
+[   35.070000] RTMP_TimerListAdd: add timer obj 82b2b604!
+[   35.070000] RTMP_TimerListAdd: add timer obj 82b3ed7c!
+[   35.080000] RTMP_TimerListAdd: add timer obj 82b2df80!
+[   35.090000] RTMP_TimerListAdd: add timer obj 82b2d7c0!
+[   35.100000] RTMP_TimerListAdd: add timer obj 82b2df4c!
+[   35.100000] RTMP_TimerListAdd: add timer obj 82b2e29c!
+[   35.110000] RTMP_TimerListAdd: add timer obj 82b2dfb4!
+[   35.120000] RTMP_TimerListAdd: add timer obj 82b2dfe8!
+[   35.120000] RTMP_TimerListAdd: add timer obj 82b2e01c!
+[   35.130000] RTMP_TimerListAdd: add timer obj 82a8640c!
+[   35.140000] RTMP_TimerListAdd: add timer obj 82a85c4c!
+[   35.140000] RTMP_TimerListAdd: add timer obj 82a863d8!
+[   35.150000] RTMP_TimerListAdd: add timer obj 82a86728!
+[   35.160000] RTMP_TimerListAdd: add timer obj 82a8665c!
+[   35.160000] RTMP_TimerListAdd: add timer obj 82abd684!
+[   35.170000] RTMP_TimerListAdd: add timer obj 82abcec4!
+[   35.180000] RTMP_TimerListAdd: add timer obj 82abd650!
+[   35.190000] RTMP_TimerListAdd: add timer obj 82abd9a0!
+[   35.190000] RTMP_TimerListAdd: add timer obj 82abd6b8!
+[   35.200000] RTMP_TimerListAdd: add timer obj 82abd6ec!
+[   35.210000] RTMP_TimerListAdd: add timer obj 82abd720!
+[   35.210000] RTMP_TimerListAdd: add timer obj 82b3ec7c!
+[   35.220000] RTMP_TimerListAdd: add timer obj 82b3ed4c!
+[   35.230000] RTMP_TimerListAdd: add timer obj 82c01d20!
+[   35.230000] RTMP_TimerListAdd: add timer obj 82c01d50!
+[   35.240000] RTMP_TimerListAdd: add timer obj 82c01d80!
+[   35.250000] RTMP_TimerListAdd: add timer obj 82c01db0!
+[   35.250000] RTMP_TimerListAdd: add timer obj 82c01de0!
+[   35.260000] RTMP_TimerListAdd: add timer obj 82c01e14!
+[   35.270000] RTMP_TimerListAdd: add timer obj 82baa704!
+[   35.280000] RTMP_TimerListAdd: add timer obj 82b2a5ec!
+[   35.280000] RTMP_TimerListAdd: add timer obj 82b2a5bc!
+[   35.290000] RTMP_TimerListAdd: add timer obj 82b2a58c!
+[   35.300000] RTMP_TimerListAdd: add timer obj 82b3ecac!
+[   35.300000] P2pGroupTabInit .  
+[   35.310000] P2pScanChannelDefault <=== count = 3, Channels are 1, 6,11 separately   
+[   35.320000] P2pCfgInit:: 
+[   35.320000] ==>WaitForAsicReady MAC_CSR0=0x76010500
+[   35.770000] cfg_mode=9
+[   35.770000] cfg_mode=9
+[   35.770000] wmode_band_equal(): Band Equal!
+[   35.780000] Key1Str is Invalid key length(0) or Type(0)
+[   35.790000] Key2Str is Invalid key length(0) or Type(0)
+[   35.800000] Key3Str is Invalid key length(0) or Type(0)
+[   35.800000] Key4Str is Invalid key length(0) or Type(0)
+[   35.810000] ###### Force at HT20 (BW_20) mode !!! ########
+[   35.830000] 1. Phy Mode = 14
+[   35.840000] 2. Phy Mode = 14
+[   35.840000] NVM is Efuse and its size =1d[1e0-1fc] 
+[   35.860000] ERROR!!! MT7601 E2PROM: WRONG VERSION 0xc, should be 9
+[   35.870000] MT7601_ReadChannelPwr: EEPROM 0xD0 Error! Use Default Target Power = 0x20
+[   35.890000] 3. Phy Mode = 14
+[   35.900000] AntCfgInit: primary/secondary ant 0/1
+[   36.090000] ---> InitFrequencyCalibration
+[   36.100000] InitFrequencyCalibrationMode:Unknow mode = 3
+[   36.110000] InitFrequencyCalibration: frequency offset in the EEPROM = 105(0x69)
+[   36.120000] <--- InitFrequencyCalibration
+[   36.120000] RTMPSetPhyMode: channel is out of range, use first channel=1 
+[   36.140000] MCS Set = ff 00 00 00 01
+[   36.150000] <==== STA : rt28xx_init, Status=0
+[   36.190000] 80211> re-init bands...
+[   36.190000] 80211> RFICType = 1
+[   36.190000] NumOfChan ===> 14
+[   36.220000] 80211> Number of channel = 0x44
+[   36.220000] 80211> Number of rate = 12
+[   36.220000] 80211> CurTxPower = 0 dBm
+[   36.250000] 80211> TxStream = 1
+[   36.270000] 0x1300 = 00064300
+[   36.270000] RTMPDrvOpen(1):Check if PDMA is idle!
+[   36.280000] RTMPDrvOpen(2):Check if PDMA is idle!
+[   36.290000] <================ UP : RTMP_SEM_EVENT_UP(STA)
+fgEth0Support = 1,fgRa0Support = 1
+[   36.300000] net eth0: ###### GKETH_phy_stop
+Support eth0!
+[   36.360000] net eth0: ###### GKETH_start_hw
+[   36.370000] net eth0: ###### GKETH_phy_start_aneg...
+[   36.380000] ADDRCONF(NETDEV_UP): eth0: link is not ready
+udhcpc (v1.21.0) started
+Sending discover...
+udhcpc (v1.21.0) started
+Sending discover...
+[   38.370000] PHY: 0:00 - Link is Up - 100/Full
+[   38.370000] ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+route: resolving dev
+Sending discover...
+Sending select for 192.168.0.111...
+Lease of 192.168.0.111 obtained, lease time 86400
+deleting routers
+route: SIOCDELRT: No such process
+adding dns 192.168.0.16
+adding dns 192.168.0.10
+Sending discover...
+Sending discover...
+fgUpdateLocalDnsFile:nameserver 114.114.114.114
+fgUpdateLocalDnsFile:nameserver 8.8.8.8
+fgUpdateLocalDnsFile:nameserver 192.168.0.63
+Play: /npc/sound/WifiLink_en/OnLine_en.amr 
+
+create adec chn6 success
+fgAOEnable=0; fgEn=1
+
+Info: vAOControl,fgAIEnable=0 
+++++++++++++++create+++++++++++++++
+vAOControl enable
+dwSpeakVol = 185
+
+open audio file fail
+fgAOEnable=1; fgEn=0
+
+-----------------destory---------------
+vAOControl disable 0
+Destroy adec chn6 success
+vCheckPlaySoundEnd
+Socket connection successful: master socket = 8
+Sending discover...
+fgAddLogMesgBodyToQ 2
+timeOut,vTimerSendLogMesgBody 32 bytes
+psMesgQBuf->dwMesgID = 1
+Send 68 Bytes to 192.161.95.202:51831
+
+Sending discover...
+psMesgQBuf->dwMesgID = 1
+Send 68 Bytes to 192.161.95.202:51831
+
+psMesgQBuf->dwMesgID = 1
+Send 68 Bytes to 192.161.95.202:51831
+
+Sending discover...
+psMesgQBuf->dwMesgID = 1
+Send 68 Bytes to 192.161.95.202:51831
+
+Sending discover...
+psMesgQBuf->dwMesgID = 1
+Send 68 Bytes to 192.161.95.202:51831
+
+delay 3600 s to Send
+Sending discover...
+Sending discover...
+Sending discover...
+Sending discover...
+Sending discover...
+Sending discover...
+Sending discover...
+Sending discover...
+No lease, forking to background
+
+/ # cat /etc/passwd
+root:x:0:0:root:/root:/bin/sh
+daemon:x:1:1:daemon:/usr/sbin:/bin/sh
+bin:x:2:2:bin:/bin:/bin/sh
+sys:x:3:3:sys:/dev:/bin/sh
+sync:x:4:100:sync:/bin:/bin/sync
+mail:x:8:8:mail:/var/spool/mail:/bin/sh
+proxy:x:13:13:proxy:/bin:/bin/sh
+www-data:x:33:33:www-data:/var/www:/bin/sh
+backup:x:34:34:backup:/var/backups:/bin/sh
+operator:x:37:37:Operator:/var:/bin/sh
+haldaemon:x:68:68:hald:/:/bin/sh
+dbus:x:81:81:dbus:/var/run/dbus:/bin/sh
+ftp:x:83:83:ftp:/home/ftp:/bin/sh
+nobody:x:99:99:nobody:/home:/bin/sh
+sshd:x:103:99:Operator:/var:/bin/sh
+default:x:1000:1000:Default non-root user:/home/default:/bin/sh
+/ # 
+/ # cat /etc/passwd[J[J[J[J[J[J[Jshadow
+root::10933:0:99999:7:::
+bin:*:10933:0:99999:7:::
+daemon:*:10933:0:99999:7:::
+adm:*:10933:0:99999:7:::
+lp:*:10933:0:99999:7:::
+sync:*:10933:0:99999:7:::
+shutdown:*:10933:0:99999:7:::
+halt:*:10933:0:99999:7:::
+uucp:*:10933:0:99999:7:::
+operator:*:10933:0:99999:7:::
+ftp:*:10933:0:99999:7:::
+nobody:*:10933:0:99999:7:::
+default::10933:0:99999:7:::
+/ # reboot
+/ # Stopping network...ifdown: interface lo not configured
+Saving random seed... done.
+mknod: /dev/gk_video: File exists
+mknod: /dev/gk_log: File exists
+mknod: /dev/gk_fw: File exists
+mknod: /dev/debug: File exists
+mknod: /dev/ai_dev: File exists
+mknod: /dev/ao_dev: File exists
+mkdir: can't create directory '/dev/pts': File exists
+mount: mounting devpts on /dev/pts failed: Device or resource busy
+Stopping logging: OK
+umount: /dev/mtdblock5 busy - remounted read-only
+umount: can't remount /dev/ram0 read-only
+umount: can't remount /dev/ram0 read-only
+umount: can't remount tmpfs read-only
+umount: tmpfs busy - remounted read-only
+umount: can't remount proc read-only
+
+The system is going down NOW!
+vSetWatchDogLiveTime = 60
+Onvif_exit finish star !
+
+Sent SIGTERM to all processes
+[  106.510000] ================> DOWN : RTMP_SEM_EVENT_WAIT(STA)
+[  106.640000] unlink cmd rsp urb
+vExitOnvifPth:LINE:478
+
+[  106.730000] <=============== DOWN : RTMP_SEM_EVENT_UP(STA)
+
+Sent SIGKILL to all processes
+
+Requesting system reboot
+[  107.510000] watchdog: GK7101 Watchdog: watchdog did not stop!
+[  108.520000] (NULL device *): gadget not registered.
+[  108.520000] musb-hdrc musb-hdrc: remove, state 1
+[  108.530000] usb usb1: USB disconnect, device number 1
+[  108.530000] usb 1-1: USB disconnect, device number 2
+[  108.540000] STA : rtusb_disconnect: unregister usbnet usb-musb-hdrc-1
+[  108.550000] ================> DOWN : RTMP_SEM_EVENT_WAIT(STA)
+[  108.550000] <=============== DOWN : RTMP_SEM_EVENT_UP(STA)
+[  108.570000] RtmpOSNetDevDetach(): RtmpOSNetDeviceDetach(), dev->name=wlan0!
+[  108.580000] 80211> unregister/free wireless device
+[  108.580000] MSC msc_proc_destroy: elian
+[  108.590000]  STA : RTUSB disconnect successfully
+[  108.590000] musb-hdrc musb-hdrc: USB bus 1 deregistered
+[  108.600000] Restarting system.
+[  108.600000] gk7101 reboot...
+console init done
+
+
+U-Boot 2012.10 (Sep 29 2006 - 00:20:41) for GK7102 rb jxh42 v1.00 (GOKE)
+
+HAL:  20151223 
+DRAM:  64 MiB
+Flash: 16 MiB
+16 MiB
+NAND:  SPINAND MID = 0xff, DID = 0xffff, Data = 0x1ffffff !spinand_board_init[1581]: No support this SPI nand!
+SF: Detected GD25Q128C with page size 256 B, sector size 64 KiB, total size 16 MiB
+In:    serial
+Out:   serial
+Err:   serial
+Net:   arm_freq(600MHz)..............0x112032
+use int MII..............
+gk7101
+Hit any key to stop autoboot:  1  0 
+Gwell7102 # printenv
+[PROCESS_SEPARATORS] printenv
+arm_freq=0x00112032
+baudrate=115200
+bootargs=console=ttySGK0,115200 noinitrd mem=38M root=/dev/mtdblock3 rootfstype=squashfs mtdparts=gk7101_flash:256K(boot),64K(bootenv),2560K(kernel),7168K(rootfs),1024K(rom),5312K(APP) phytype=0
+bootcmd=run sfboot
+bootdelay=1
+bootfile=zImage
+bsbsize=2M
+consoledev=ttySGK0
+ethact=gk7101
+ethaddr=3C:97:0E:22:E1:14
+fileaddr=C1000000
+filesize=3AC000
+gatewayip=192.168.1.1
+hostname="gk7101"
+ipaddr=192.168.1.229
+loadaddr=0xC1000000
+mem=35M
+mtdparts=gk7101_flash:256K(boot),64K(bootenv),2M(kernel),7M(rootfs),1M(rom),5824K(APP)
+netdev=eth0
+netmask=255.255.255.0
+nfsserver=11.1.4.19
+phytype=0
+rootfstype=mtdparts=gk7101_flash:256K(boot),64K(bootenv),2560K(kernel),7168K(rootfs),1024K(rom),5312K(APP) rootfstype=squashfs root=/dev/mtdblock3
+rootpath=/home/star/nfs/gk/rootfs_uClibc_v112/
+serverip=192.168.1.225
+sfboot=setenv bootargs console=${consoledev},${baudrate} noinitrd mem=${mem} rw ${rootfstype} init=linuxrc ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}:${netdev} mac=${ethaddr} phytype=${phytype};sf probe 0 0;sf read ${loadaddr} ${sfkernel} ${filesize}; bootm
+sfkernel=0x50000
+soctype=1
+stderr=serial
+stdin=serial
+stdout=serial
+tftpboot=setenv bootargs root=/dev/nfs nfsroot=${nfsserver}:${rootpath},proto=tcp,nfsvers=3,nolock ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}:${netdev} mac=${ethaddr} phytype=${phytype} console=${consoledev},${baudrate} mem=${mem};tftpboot ${bootfile};bootm
+
+Environment size: 1524/65532 bytes
+Gwell7102 # help
+[PROCESS_SEPARATORS] help
+?       - alias for 'help'
+base    - print or set address offset
+bdinfo  - print Board Info structure
+boot    - boot default, i.e., run 'bootcmd'
+bootd   - boot default, i.e., run 'bootcmd'
+bootelf - Boot from an ELF image in memory
+bootm   - boot application image from memory
+bootp   - boot image via network using BOOTP/TFTP protocol
+bootvx  - Boot vxWorks from an ELF image
+bootz   - boot Linux zImage image from memory
+cmp     - memory compare
+coninfo - print console devices and information
+cp      - memory copy
+crc32   - checksum calculation
+dhcp    - boot image via network using DHCP/TFTP protocol
+echo    - echo args to console
+editenv - edit environment variable
+env     - environment handling commands
+erase   - erase FLASH memory
+flinfo  - print FLASH memory information
+go      - start application at address 'addr'
+help    - print command description/usage
+iminfo  - print header information for application image
+imls    - list all images found in flash
+imxtract- extract a part of a multi-image
+itest   - return true/false on integer compare
+loadb   - load binary file over serial line (kermit mode)
+loads   - load S-Record file over serial line
+loady   - load binary file over serial line (ymodem mode)
+loop    - infinite loop on address range
+md      - memory display
+mm      - memory modify (auto-incrementing address)
+mtest   - simple RAM read/write test
+mw      - memory write (fill)
+nfs     - boot image via network using NFS protocol
+nm      - memory modify (constant address)
+ping    - send ICMP ECHO_REQUEST to network host
+printenv- print environment variables
+protect - enable or disable FLASH write protection
+reset   - Perform RESET of the CPU
+run     - run commands in an environment variable
+saveenv - save environment variables to persistent storage
+setenv  - set environment variables
+sf      - SPI flash sub-system
+sleep   - delay execution for some time
+snand   - SpiNAND sub-system
+source  - run script from memory
+tftpboot- boot image via network using TFTP protocol
+version - print monitor, compiler and linker version
+Gwell7102 # bdinfo
+[PROCESS_SEPARATORS] bdinfo
+arch_number = 0x00000F94
+boot_params = 0xC0000100
+DRAM bank   = 0x00000000
+-> start    = 0xC0000000
+-> size     = 0x04000000
+ethaddr     = 3C:97:0E:22:E1:14
+ip_addr     = 192.168.1.229
+baudrate    = 115200 bps
+relocaddr   = 0xC0800000
+reloc off   = 0x00000000
+irq_sp      = 0xC3F3FF68
+sp start    = 0xC3F3FF58
+FB base     = 0x00000000
+Gwell7102 # coninfo
+[PROCESS_SEPARATORS] coninfo
+List of available devices:
+serial   80000003 SIO stdin stdout stderr 
+Gwell7102 # version
+[PROCESS_SEPARATORS] version
+
+U-Boot 2012.10 (Sep 29 2006 - 00:20:41) for GK7102 rb jxh42 v1.00 (GOKE)
+arm-goke-linux-uclibcgnueabi-gcc (crosstool-NG 1.18.0) 4.6.1
+GNU ld (crosstool-NG 1.18.0) 2.21.1
+Gwell7102 # imlf s
+[PROCESS_SEPARATORS] imls
+Gwell7102 # reset

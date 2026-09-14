@@ -1,0 +1,98 @@
+# cargo-deny policy for bootintel-cli.
+#
+# Wired into CI's `audit` job. Local invocation:
+#   cargo install --locked cargo-deny
+#   cargo deny check
+#
+# Sections:
+#   [advisories] — RustSec advisory DB posture (mirror of cargo-audit).
+#   [licenses]   — SPDX allowlist. Anything else = build fail.
+#   [bans]       — duplicate-crate policy + explicit-allow list.
+#   [sources]    — where crates may be pulled from.
+
+[graph]
+# Check every target we build for on release — no false positives from
+# platform-conditional deps that don't ship in our binaries.
+all-features = true
+
+[advisories]
+# Match CI's cargo-audit posture: fail on known vulnerabilities and
+# unsound crates, but only warn on unmaintained ones (many "unmaintained"
+# advisories are for crates we don't actually use vulnerably).
+version = 2
+yanked = "deny"
+ignore = []
+
+[licenses]
+# Allowlist matches the current lockfile after the ratatui 0.30 + all
+# other P2 dep bumps. Any new crate whose license isn't listed here
+# fails the build — that's the point.
+version = 2
+allow = [
+    "Apache-2.0",
+    "MIT",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unicode-3.0",
+    "0BSD",
+    # Boost Software License — OSI-approved, FSF-libre, permissive.
+    # Used by clipboard-win (arboard's Windows backend). Same terms as
+    # MIT for our redistribution purposes.
+    "BSL-1.0",
+    "Unlicense",
+    "MPL-2.0",
+    "Zlib",
+    "CDLA-Permissive-2.0",
+    # Apache-2.0 with LLVM exception — used by wasi crates. Same terms as
+    # plain Apache-2.0 for our purposes (we don't redistribute LLVM).
+    "Apache-2.0 WITH LLVM-exception",
+]
+confidence-threshold = 0.8
+# Deliberately do NOT set `copyleft = "deny"` — MPL-2.0 above is fine
+# for a dep. GPL / AGPL / LGPL are absent from `allow` so they'd fail.
+
+[bans]
+# By default warn on multiple versions of the same crate — it inflates
+# binary size and slows compiles. Exceptions below cover crates that
+# are legitimately duplicated by independent transitive branches; each
+# comment explains why bumping the older version isn't worth it.
+multiple-versions = "warn"
+# Path/workspace deps are cargo-deny "wildcards" by construction (they
+# have no version — the workspace pins them). Allow those explicitly
+# via allow-wildcard-paths; still deny wildcards from external deps.
+wildcards = "deny"
+allow-wildcard-paths = true
+# Explicit-allow list: crates we know appear at multiple versions in
+# the current lockfile. Adding an entry here silences the warning
+# without silencing new duplications.
+skip = [
+    # syn 1 (via legacy proc-macro deps) coexists with syn 2 (modern).
+    { name = "syn" },
+    # hashbrown 0.15 via indexmap 2.5; 0.16/0.17 via newer ratatui-core.
+    { name = "hashbrown" },
+    # thiserror 1.x + 2.x during the ecosystem transition.
+    { name = "thiserror" },
+    { name = "thiserror-impl" },
+    # windows-sys / windows-targets have overlapping majors in the
+    # Windows-crate ecosystem — a single-target compile only picks
+    # one, but the workspace resolver keeps both in Cargo.lock.
+    { name = "windows-sys" },
+    { name = "windows-targets" },
+    { name = "windows_aarch64_gnullvm" },
+    { name = "windows_aarch64_msvc" },
+    { name = "windows_i686_gnu" },
+    { name = "windows_i686_msvc" },
+    { name = "windows_x86_64_gnu" },
+    { name = "windows_x86_64_gnullvm" },
+    { name = "windows_x86_64_msvc" },
+]
+
+[sources]
+# crates.io is the only permitted registry. Git-source deps require an
+# explicit allow list here — none currently, and any addition should
+# be a conscious choice (git deps skip the version-yank safety net).
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

@@ -1,0 +1,33 @@
+[package]
+name = "bootintel-fuzz"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# Empty workspace table — keeps this crate out of the parent cli-rust
+# workspace (which doesn't include fuzz/ in members). cargo-fuzz uses
+# its own build flags (sanitizers) that we don't want polluting the
+# main workspace.
+[workspace]
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+bootintel-detectors = { path = "../crates/detectors" }
+# bootintel-cli is a bin; we cheat and inline the response parser
+# module here rather than depending on the bin crate (crates can't
+# depend on bins). Small copy — the fuzz target for response.rs
+# needs the parse function callable.
+
+# Preventing unwanted subcommand from being run
+[[bin]]
+name = "detector_analyze"
+path = "fuzz_targets/detector_analyze.rs"
+test = false
+doc = false
+bench = false
+
+[profile.release]
+debug = 1

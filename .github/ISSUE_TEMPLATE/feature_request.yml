@@ -1,0 +1,72 @@
+name: Feature request
+description: A new subcommand, flag, detector, output format, or platform.
+title: "feat: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion. Feature requests get triaged against the [design doc / roadmap](https://github.com/bootintel/cli/blob/main/README.md) — some may be a natural fit, some may be out of scope, some may be already-planned.
+
+        If you're not sure whether the idea fits, that's fine — open the issue anyway. We'd rather say "not planned, here's why" than have you wonder in silence.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: |
+        Describe the workflow or pain point, not the specific solution. "I need to feed bootintel output into
+        my SIEM and it needs CEF format" is more useful than "please add --format cef" because it lets us
+        discuss whether CEF is actually the right output vs. a wrapper script.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: |
+        What you'd want the CLI to do. Sketching the flag / subcommand / output shape is helpful:
+        ```
+        bootintel scan foo.log --format cef > events.cef
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: |
+        Anything you already tried (existing flags, shell one-liners, other tools). Helps us understand where
+        the gap actually is.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Which surface would this touch?
+      multiple: true
+      options:
+        - New subcommand
+        - New flag on an existing subcommand
+        - New output format
+        - New detector
+        - Serial / hardware handling
+        - Server-side (`--api`) integration
+        - Packaging / distribution (install.sh, Docker, Homebrew, Nix)
+        - Docs
+        - Other / not sure
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Would you be willing to send a PR?
+      description: Optional — no obligation either way.
+      options:
+        - label: "Yes, I'd try to send the PR myself."
+        - label: "Yes, with guidance on where to start."
+        - label: "No, just filing the request."

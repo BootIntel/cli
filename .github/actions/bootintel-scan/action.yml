@@ -1,0 +1,121 @@
+# bootintel-scan — GitHub Action wrapper around bootintel-cli (Rust).
+#
+# Runs the Rust binary from a GH release (via install.sh). Faster start
+# than `docker run` on GH-hosted runners (~2s install vs ~10s pull).
+#
+# Usage:
+#
+#   jobs:
+#     firmware-scan:
+#       runs-on: ubuntu-latest
+#       steps:
+#         - uses: actions/checkout@v4
+#         # SECURITY: pin to a release tag (cli-v0.1.0) or a commit SHA.
+#         # Never track `@main` in production — a compromised main branch
+#         # would execute arbitrary shell in every consumer's pipeline.
+#         - uses: bootintel/cli/.github/actions/bootintel-scan@cli-v0.3.0
+#           with:
+#             log-file: artifacts/boot.log
+#             format: sarif
+#             output-file: bootintel.sarif
+#             gate-critical: true
+#             version: 0.3.0   # pin the binary too
+#         # Optional: upload to GitHub Code Scanning:
+#         - uses: github/codeql-action/upload-sarif@v3
+#           with:
+#             sarif_file: bootintel.sarif
+#
+# For full server-side analysis (CVE matching, exploit paths, PDF),
+# add `--api` to your own workflow step with a $BOOTINTEL_API_KEY secret.
+
+name: bootintel-scan
+description: Run BootIntel client-side detectors against a boot log, optionally gating on critical exposure findings.
+branding:
+  icon: terminal
+  color: blue
+
+inputs:
+  log-file:
+    description: Path to the boot log file relative to the repo root.
+    required: true
+  format:
+    description: 'Output format: json | text | sarif | junit'
+    required: false
+    default: 'json'
+  output-file:
+    description: 'Write output to this file. Defaults to a temp file so `findings-json` is populated.'
+    required: false
+    default: ''
+  gate-critical:
+    description: If 'true', fail the step when any critical-exposure detector fires (autoboot / telnet).
+    required: false
+    default: 'true'
+  version:
+    description: 'bootintel-cli version to install. Empty = latest GH Release.'
+    required: false
+    default: ''
+outputs:
+  findings-json:
+    description: Path to the JSON findings report (only populated when format=json).
+    value: ${{ steps.run.outputs.findings-json }}
+  findings-count:
+    description: Number of findings in the report (only populated when format=json).
+    value: ${{ steps.run.outputs.findings-count }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install bootintel-cli
+      shell: bash
+      env:
+        BOOTINTEL_VERSION: ${{ inputs.version }}
+        BOOTINTEL_INSTALL_DIR: ${{ runner.temp }}/bin
+      run: |
+        set -eu
+        # Skip install if bootintel is already on PATH — lets a
+        # workflow pre-provision the binary (self-test, cached
+        # runner, custom build) and lets this action no-op cleanly.
+        if command -v bootintel >/dev/null 2>&1; then
+          echo "bootintel already on PATH ($(command -v bootintel)); skipping install"
+          bootintel version
+          exit 0
+        fi
+        curl -sSfL https://raw.githubusercontent.com/bootintel/cli/main/packaging/scripts/install.sh | sh
+        echo "${BOOTINTEL_INSTALL_DIR}" >> "$GITHUB_PATH"
+
+    - id: run
+      shell: bash
+      env:
+        BOOTINTEL_INSTALL_DIR: ${{ runner.temp }}/bin
+      run: |
+        set -eu
+        # Pick output file: explicit input if given, otherwise a temp path.
+        out="${{ inputs.output-file }}"
+        if [ -z "$out" ]; then
+          out="${{ runner.temp }}/bootintel-findings.${{ inputs.format }}"
+        fi
+
+        flags=""
+        if [ "${{ inputs.gate-critical }}" = "true" ]; then
+          flags="--gate-critical"
+        fi
+
+        set +e
+        "${BOOTINTEL_INSTALL_DIR}/bootintel" scan --format "${{ inputs.format }}" $flags "${{ inputs.log-file }}" > "$out"
+        rc=$?
+        set -e
+
+        echo "findings-json=$out" >> "$GITHUB_OUTPUT"
+
+        if [ "${{ inputs.format }}" = "json" ]; then
+          if command -v jq >/dev/null; then
+            count=$(jq '.findings | length' "$out" 2>/dev/null || echo 0)
+            echo "findings-count=$count" >> "$GITHUB_OUTPUT"
+          fi
+        fi
+
+        # Print output to the run log for visibility (unless it's binary).
+        if [ "${{ inputs.format }}" != "junit" ]; then
+          cat "$out" || true
+        fi
+        exit $rc

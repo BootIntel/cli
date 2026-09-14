@@ -1,0 +1,239 @@
+# Cut a bootintel-cli release across 5 platforms.
+#
+# workflow_dispatch only — never triggered by push, so a stray tag
+# or commit can't accidentally publish. Matches the Launch Guard
+
+#
+# What it does:
+#   1. Matrix-builds the CLI on Linux (x86_64 + aarch64), macOS
+#      (x86_64 + aarch64), and Windows (x86_64).
+#   2. Bundles each binary with LICENSE + README into a tarball
+#      (or zip on Windows).
+#   3. Uploads all artifacts to a GH Release DRAFT — you review +
+#      publish the draft manually. Nothing is public until you hit
+#      the "Publish release" button.
+#   4. Computes a combined SHA256SUMS file across all binaries so
+#      install.sh can verify.
+#
+# What it does NOT do:
+#   - No auto-publish to Homebrew tap / winget / apt / Nix registry.
+#   - No auto-bump of version numbers. You bump Cargo.toml
+#     yourself before running this, then paste the version below.
+#   - No auto-tag. You tag from the released commit manually after
+#     the draft is published.
+#
+# Cost note: uses github-hosted runners (2000 min/mo free for
+# public repos). Full matrix is ~15-20 minutes per invocation.
+
+name: cli-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g. 0.1.0 — no leading v)'
+        required: true
+        type: string
+      dry_run:
+        description: 'Build binaries but do NOT create a release draft'
+        required: false
+        type: boolean
+        default: false
+      publish_docker:
+        description: 'Also build + push the Docker image to ghcr.io/bootintel/cli'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # needed to create the release draft
+
+jobs:
+  build:
+    name: build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            asset_name: bootintel-v${{ inputs.version }}-x86_64-linux.tar.gz
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+            asset_name: bootintel-v${{ inputs.version }}-aarch64-linux.tar.gz
+            cross: true
+          # x86_64-apple-darwin cross-compiles from an Apple Silicon
+          # runner (macos-latest = macos-15 as of 2026). The macos-13
+          # (Intel) runner pool is effectively unavailable on public
+          # repos — a v0.2.0 dispatch on 2026-08-26 sat queued for 1h47m
+          # before we gave up. Rust cross-compiles Intel-macos from
+          # arm64-macos cleanly (single-arch dylib, same Xcode SDK).
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            asset_name: bootintel-v${{ inputs.version }}-x86_64-macos.tar.gz
+          - target: aarch64-apple-darwin
+            os: macos-14
+            asset_name: bootintel-v${{ inputs.version }}-aarch64-macos.tar.gz
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            asset_name: bootintel-v${{ inputs.version }}-x86_64-windows.zip
+            windows: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      # Linux serialport backend needs libudev headers.
+      - name: Install libudev (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libudev-dev
+
+      # For cross-compiling to aarch64-linux on an x86_64 GH runner.
+      - name: Install cross-linker (Linux aarch64)
+        if: matrix.cross
+        run: |
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+          mkdir -p .cargo
+          cat >> .cargo/config.toml <<'EOF'
+          [target.aarch64-unknown-linux-gnu]
+          linker = "aarch64-linux-gnu-gcc"
+          EOF
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: cli-release-${{ matrix.target }}-${{ hashFiles('Cargo.lock') }}
+
+      - name: Build release
+        
+        run: |
+          cargo build --release --target ${{ matrix.target }} --features tui
+
+      - name: Package (Unix)
+        if: '!matrix.windows'
+        
+        run: |
+          mkdir -p dist
+          cp target/${{ matrix.target }}/release/bootintel dist/
+          cp README.md dist/
+          cp ../LICENSE dist/ 2>/dev/null || echo "LICENSE not found at repo root; skipping"
+          tar -czf ${{ matrix.asset_name }} -C dist .
+
+      - name: Package (Windows)
+        if: matrix.windows
+        
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Copy-Item "target\${{ matrix.target }}\release\bootintel.exe" -Destination "dist\"
+          Copy-Item README.md -Destination "dist\"
+          if (Test-Path "..\LICENSE") { Copy-Item "..\LICENSE" -Destination "dist\" }
+          Compress-Archive -Path "dist\*" -DestinationPath ${{ matrix.asset_name }}
+
+      - name: Compute SHA256
+        
+        shell: bash
+        run: |
+          if command -v sha256sum >/dev/null; then
+            sha256sum ${{ matrix.asset_name }} > ${{ matrix.asset_name }}.sha256
+          else
+            shasum -a 256 ${{ matrix.asset_name }} > ${{ matrix.asset_name }}.sha256
+          fi
+          cat ${{ matrix.asset_name }}.sha256
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: |
+            ${{ matrix.asset_name }}
+            ${{ matrix.asset_name }}.sha256
+          retention-days: 7
+
+  release:
+    name: create release draft
+    needs: build
+    if: '!inputs.dry_run'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Assemble SHA256SUMS
+        run: |
+          mkdir release-assets
+          # NB: parenthesize the -o expression so -type f binds to
+          # BOTH branches. Without parens, -type f only applies to
+          # the tar.gz branch, and the zip branch matches the parent
+          # directory that actions/download-artifact@v4 creates
+          # (named after the artifact — see
+          # https://github.com/actions/download-artifact#outputs).
+          # cp then fails on the directory and the whole job exits 1.
+          # v0.2.0 dispatch (run 32958967197) hit this. Keep the parens.
+          find artifacts -type f \( -name 'bootintel-*.tar.gz' -o -name 'bootintel-*.zip' \) | while read f; do
+            cp "$f" release-assets/
+          done
+          find artifacts -type f -name '*.sha256' -exec cat {} \; | sort > release-assets/SHA256SUMS
+          echo "─────────────────────────────────────"
+          ls -la release-assets/
+          echo "─────────────────────────────────────"
+          cat release-assets/SHA256SUMS
+
+      - name: Create GH Release DRAFT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "cli-v${{ inputs.version }}" \
+            --draft \
+            --title "bootintel-cli v${{ inputs.version }}" \
+            --notes "Release notes: see CHANGELOG.md. This is a DRAFT — publish manually after verifying artifacts." \
+            release-assets/*
+
+  docker:
+    name: build + push docker image
+    needs: build
+    if: inputs.publish_docker && !inputs.dry_run
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build + push (linux/amd64, linux/arm64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/bootintel/cli:v${{ inputs.version }}
+            ghcr.io/bootintel/cli:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

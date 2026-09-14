@@ -1,0 +1,1750 @@
+LLC
+
+U-Boot 2014.01-14400-gda781c6-dirty (Apr 30 2014 - 22:35:38)
+
+CPU:   Freescale i.MX28 rev1.2 at 454 MHz
+BOOT:  NAND, 3V3
+DRAM:  64 MiB
+NAND:  128 MiB
+In:    serial
+Out:   serial
+Err:   serial
+Net:   FEC0 [PRIME]
+Hit any key to stop autoboot:  0 
+UBI: attaching mtd1 to ubi0
+UBI: physical eraseblock size:   131072 bytes (128 KiB)
+UBI: logical eraseblock size:    126976 bytes
+UBI: smallest flash I/O unit:    2048
+UBI: VID header offset:          2048 (aligned 2048)
+UBI: data offset:                4096
+UBI: attached mtd1 to ubi0
+UBI: MTD device name:            "mtd=3"
+UBI: MTD device size:            8 MiB
+UBI: number of good PEBs:        64
+UBI: number of bad PEBs:         0
+UBI: max. allowed volumes:       128
+UBI: wear-leveling threshold:    4096
+UBI: number of internal volumes: 1
+UBI: number of user volumes:     1
+UBI: available PEBs:             6
+UBI: total number of reserved PEBs: 58
+UBI: number of PEBs reserved for bad PEB handling: 2
+UBI: max/mean erase counter: 2/1
+UBIFS: recovery needed
+UBIFS: recovery deferred
+UBIFS: mounted UBI device 0, volume 0, name "database"
+UBIFS: mounted read-only
+UBIFS: file system size:   5459968 bytes (5332 KiB, 5 MiB, 43 LEBs)
+UBIFS: journal size:       1015809 bytes (992 KiB, 0 MiB, 6 LEBs)
+UBIFS: media format:       w4/r0 (latest is w4/r0)
+UBIFS: default compressor: LZO
+UBIFS: reserved for root:  269835 bytes (263 KiB)
+Loading file 'DO_UPDATE' to addr 0x42000000 with size 1 (0x00000001)...
+Done
+Total of 1 word(s) were the same
+
+NAND read: device 0 offset 0x2b00000, size 0x400000
+ 4194304 bytes read: OK
+## Booting kernel from Legacy Image at 42000000 ...
+   Image Name:   Linux-2.6.35.3-flex-dvt
+   Created:      2014-04-30   3:15:35 UTC
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    1928460 Bytes = 1.8 MiB
+   Load Address: 40008000
+   Entry Point:  40008000
+   Verifying Checksum ... OK
+   Loading Kernel Image ... OK
+
+Starting kernel ...
+
+Uncompressing Linux... done, booting the kernel.
+Linux version 2.6.35.3-flex-dvt (saurabh@localhost.localdomain) (gcc version 4.4.4 (4.4.4_09.06.2010) ) #32 PREEMPT Tue Apr 29 23:15:31 EDT 2014
+CPU: ARM926EJ-S [41069265] revision 5 (ARMv5TEJ), cr=00053177
+CPU: VIVT data cache, VIVT instruction cache
+Machine: Freescale MX28EVK board
+Memory policy: ECC disabled, Data cache writeback
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 16256
+Kernel command line: noinitrd console=ttyAM0,115200 rootfstype=ubifs ubi.mtd=5 root=ubi0:rootfs rw gpmi
+PID hash table entries: 256 (order: -2, 1024 bytes)
+Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Memory: 64MB = 64MB total
+Memory: 60784k/60784k available, 4752k reserved, 0K highmem
+Virtual kernel memory layout:
+    vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+    fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+    DMA     : 0xfde00000 - 0xffe00000   (  32 MB)
+    vmalloc : 0x84800000 - 0xf0000000   (1720 MB)
+    lowmem  : 0x80000000 - 0x84000000   (  64 MB)
+    modules : 0x7f000000 - 0x80000000   (  16 MB)
+      .init : 0x80008000 - 0x80027000   ( 124 kB)
+      .text : 0x80027000 - 0x803b6000   (3644 kB)
+      .data : 0x803b6000 - 0x803deec0   ( 164 kB)
+SLUB: Genslabs=11, HWalign=32, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+Hierarchical RCU implementation.
+	RCU-based detection of stalled CPUs is disabled.
+	Verbose stalled-CPUs detection is disabled.
+NR_IRQS:288
+Console: colour dummy device 80x30
+console [ttyAM0] enabled
+Calibrating delay loop... 226.09 BogoMIPS (lpj=1130496)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 512
+CPU: Testing write buffer coherency: ok
+regulator: core version 0.5
+NET: Registered protocol family 16
+regulator: vddd: 800 <--> 1575 mV at 1500 mV fast normal 
+regulator: vdddbo: 800 <--> 1575 mV fast normal 
+regulator: vdda: 1500 <--> 2275 mV at 1800 mV fast normal 
+vddio = 3380000, val=10
+regulator: vddio: 2880 <--> 3680 mV at 3380 mV fast normal 
+regulator: overall_current: fast normal 
+regulator: vbus5v: 
+regulator: mxs-duart-1: fast normal 
+regulator: mxs-bl-1: fast normal 
+regulator: mxs-i2c-1: fast normal 
+regulator: mmc_ssp-1: fast normal 
+regulator: mmc_ssp-2: fast normal 
+regulator: charger-1: fast normal 
+regulator: power-test-1: fast normal 
+regulator: cpufreq-1: fast normal 
+i.MX IRAM pool: 124 KB@0x84820000
+Initializing GPMI pins
+bio: create slab <bio-0> at 0
+usbcore: registered new interface driver usbfs
+usbcore: registered new interface driver hub
+usbcore: registered new device driver usb
+cfg80211: Calling CRDA to update world regulatory domain
+Switching to clocksource mxs clock source
+NET: Registered protocol family 2
+IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+TCP: Hash tables configured (established 2048 bind 2048)
+TCP reno registered
+UDP hash table entries: 256 (order: 0, 4096 bytes)
+UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+NET: Registered protocol family 1
+Bus freq driver module loaded
+mxs_cpu_init: cpufreq init finished
+Slow work thread pool: Starting up
+Slow work thread pool: Ready
+fuse init (API version 7.14)
+msgmni has been set to 118
+alg: No test for stdrng (krng)
+cryptodev: driver loaded.
+io scheduler noop registered
+io scheduler deadline registered
+io scheduler cfq registered (default)
+Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+mxs-duart.0: ttyAM0 at MMIO 0x80074000 (irq = 47) is a DebugUART
+mxs-auart.0: ttySP0 at MMIO 0x8006a000 (irq = 112) is a mxs-auart.0
+Found APPUART 3.1.0
+mxs-auart.1: ttySP1 at MMIO 0x8006c000 (irq = 113) is a mxs-auart.1
+Found APPUART 3.1.0
+mxs-auart.2: ttySP2 at MMIO 0x8006e000 (irq = 114) is a mxs-auart.2
+Found APPUART 3.1.0
+mxs-auart.3: ttySP3 at MMIO 0x80070000 (irq = 115) is a mxs-auart.3
+Found APPUART 3.1.0
+mxs-auart.4: ttySP4 at MMIO 0x80072000 (irq = 116) is a mxs-auart.4
+Found APPUART 3.1.0
+loop: module loaded
+i.MX GPMI NFC
+NFC: Version 1, 8-chip GPMI and BCH
+Boot ROM: Version 1, Single-chip boot area, block mark swapping supported
+Scanning for NAND Flash chips...
+NAND device: Manufacturer ID: 0x01, Chip ID: 0xf1 (AMD NAND 128MiB 3,3V 8-bit)
+-----------------------------
+NAND Flash Device Information
+-----------------------------
+Manufacturer      : AMD (0x01)
+Device Code       : 0xf1
+Cell Technology   : SLC
+Chip Size         : 128 MiB
+Pages per Block   : 64
+Page Geometry     : 2048+64
+ECC Strength      : 4 bits
+ECC Size          : 512 B
+Data Setup Time   : 10 ns
+Data Hold Time    : 5 ns
+Address Setup Time: 10 ns
+GPMI Sample Delay : 6 ns
+tREA              : Unknown
+tRLOH             : Unknown
+tRHOH             : Unknown
+Description       : S34ML01G1
+-----------------
+Physical Geometry
+-----------------
+Chip Count             : 1
+Page Data Size in Bytes: 2048 (0x800)
+Page OOB Size in Bytes : 64
+Block Size in Bytes    : 131072 (0x20000)
+Block Size in Pages    : 64 (0x40)
+Chip Size in Bytes     : 134217728 (0x8000000)
+Chip Size in Pages     : 65536 (0x10000)
+Chip Size in Blocks    : 1024 (0x400)
+Medium Size in Bytes   : 134217728 (0x8000000)
+------------
+NFC Geometry
+------------
+ECC Algorithm          : BCH
+ECC Strength           : 8
+Page Size in Bytes     : 2112
+Metadata Size in Bytes : 10
+ECC Chunk Size in Bytes: 512
+ECC Chunk Count        : 4
+Payload Size in Bytes  : 2048
+Auxiliary Size in Bytes: 16
+Auxiliary Status Offset: 12
+Block Mark Byte Offset : 1999
+Block Mark Bit Offset  : 0
+-----------------
+Boot ROM Geometry
+-----------------
+Boot Area Count            : 1
+Boot Area Size in Bytes    : 3145728 (0x300000)
+Stride Size in Pages       : 64
+Search Area Stride Exponent: 2
+Scanning device for bad blocks
+Bad eraseblock 910 at 0x0000071c0000
+Boot area protection is enabled.
+Creating 6 MTD partitions on "gpmi-nfc-main":
+0x000000000000-0x000000300000 : "gpmi-nfc-0-boot"
+0x000000300000-0x000000700000 : "updater-kernel"
+0x000000700000-0x000002300000 : "updater-rootfs"
+0x000002300000-0x000002b00000 : "database"
+0x000002b00000-0x000003300000 : "app-kernel"
+0x000003300000-0x000008000000 : "gpmi-nfc-general-use"
+cmdlinepart partition parsing not available
+UBI: attaching mtd5 to ubi0
+UBI: physical eraseblock size:   131072 bytes (128 KiB)
+UBI: logical eraseblock size:    126976 bytes
+UBI: smallest flash I/O unit:    2048
+UBI: VID header offset:          2048 (aligned 2048)
+UBI: data offset:                4096
+UBI: attached mtd5 to ubi0
+UBI: MTD device name:            "gpmi-nfc-general-use"
+UBI: MTD device size:            77 MiB
+UBI: number of good PEBs:        615
+UBI: number of bad PEBs:         1
+UBI: max. allowed volumes:       128
+UBI: wear-leveling threshold:    4096
+UBI: number of internal volumes: 1
+UBI: number of user volumes:     1
+UBI: available PEBs:             0
+UBI: total number of reserved PEBs: 615
+UBI: number of PEBs reserved for bad PEB handling: 6
+UBI: max/mean erase counter: 1/0
+UBI: image sequence number: 686797812
+UBI: background thread "ubi_bgt0d" started, PID 922
+ ubiblka: unknown partition table
+mice: PS/2 mouse device common for all mice
+MXS RTC driver v1.0 hardware v2.3.0
+mxs-rtc mxs-rtc.0: rtc core: registered mxs-rtc as rtc0
+mxs watchdog: initialized, heartbeat 19 sec
+mxs-mmc: MXS SSP Controller MMC Interface driver
+__mxs_reset_block(f0010000): timeout when resetting
+__mxs_reset_block(f0010000): timeout when resetting
+__mxs_reset_block(f0010000): timeout when resetting
+__mxs_reset_block(f0010000): timeout when resetting
+__mxs_reset_block(f0010000): timeout when resetting
+__mxs_reset_block(f0010000): timeout when resetting
+__mxs_reset_block(f0010000): timeout when resetting
+__mxs_reset_block(f0010000): timeout when resetting
+mxs-mmc mxs-mmc.0: mmc0: MXS SSP MMC DMAIRQ 82 ERRIRQ 96 
+TCP cubic registered
+NET: Registered protocol family 17
+NET: Registered protocol family 15
+lib80211: common routines for IEEE802.11 drivers
+mxs-rtc mxs-rtc.0: setting system clock to 1970-01-01 00:00:05 UTC (5)
+mmc0: queuing unknown CIS tuple 0x80 (7 bytes)
+mmc0: queuing unknown CIS tuple 0x80 (6 bytes)
+mmc0: new high speed SDIO card at address 0001
+UBIFS: recovery needed
+UBIFS: recovery completed
+UBIFS: mounted UBI device 0, volume 0, name "rootfs"
+UBIFS: file system size:   75423744 bytes (73656 KiB, 71 MiB, 594 LEBs)
+UBIFS: journal size:       9023488 bytes (8812 KiB, 8 MiB, 72 LEBs)
+UBIFS: media format:       w4/r0 (latest is w4/r0)
+UBIFS: default compressor: zlib
+UBIFS: reserved for root:  0 bytes (0 KiB)
+VFS: Mounted root (ubifs filesystem) on device 0:11.
+Freeing init memory: 124K
+Starting logging: OK
+Initializing random number generator... done.
+Starting system message bus: done
+UBI: attaching mtd3 to ubi1
+UBI: physical eraseblock size:   131072 bytes (128 KiB)
+UBI: logical eraseblock size:    126976 bytes
+UBI: smallest flash I/O unit:    2048
+UBI: VID header offset:          2048 (aligned 2048)
+UBI: data offset:                4096
+UBI: attached mtd3 to ubi1
+UBI: MTD device name:            "database"
+UBI: MTD device size:            8 MiB
+UBI: number of good PEBs:        64
+UBI: number of bad PEBs:         0
+UBI: max. allowed volumes:       128
+UBI: wear-leveling threshold:    4096
+UBI: number of internal volumes: 1
+UBI: number of user volumes:     1
+UBI: available PEBs:             6
+UBI: total number of reserved PEBs: 58
+UBI: number of PEBs reserved for bad PEB handling: 2
+UBI: max/mean erase counter: 2/1
+UBI: image sequence number: 0
+UBI: background thread "ubi_bgt1d" started, PID 988
+ ubiblkb: unknown partition table
+UBI device number 1, total 64 LEBs (8126464 bytes, 7.8 MiB), available 6 LEBs (761856 bytes, 744.0 KiB), LEB size 126976 bytes (124.0 KiB)
+UBIFS: recovery needed
+UBIFS: recovery completed
+UBIFS: mounted UBI device 1, volume 0, name "database"
+UBIFS: file system size:   5459968 bytes (5332 KiB, 5 MiB, 43 LEBs)
+UBIFS: journal size:       1015809 bytes (992 KiB, 0 MiB, 6 LEBs)
+UBIFS: media format:       w4/r0 (latest is w4/r0)
+UBIFS: default compressor: lzo
+UBIFS: reserved for root:  257887 bytes (251 KiB)
+app_boot=run appboot_args && nand read ${loadaddr} app-kernel 0x00400000 && bootm ${loadaddr}
+app_boot_bad=run updater_args; setenv bootargs ${bootargs} badapp; nand read ${loadaddr} updater-kernel 0x00400000; bootm ${loadaddr}
+boot_app=run app_boot || run app_boot_bad
+cat: can't open '/database/cf_url': No such file or directory
+00:21:CC:06:E3:F2
+rm: can't remove '/database/wpa_supplicant.conf': No such file or directory
++ case "$1" in
++ echo 'Starting AP mode...'
+Starting AP mode...
++ rm /tmp/isalive
+rm: can't remove '/tmp/isalive': No such file or directory
+++ pidof wpa_supplicant
++ '[' ']'
+++ pidof wpa_cli
++ '[' ']'
++ lsmod
++ grep dhd
++ '[' 1 -eq 1 ']'
++ insmod /root/wifi/dhd.ko firmware_path=/root/wifi/fw_prod.bin nvram_path=/root/wifi/nvram.conf iface_name=wlan0 dhd_sdiod_drive_strength=8
+DHD: dongle ram size is set to 524288(orig 524288) at 0x0
+dhd_bus_init: enable 0x06, ready 0x06 (waited 0us)
+dhd_wlfc_init(): successfully enabled bdcv2 tlv signaling, 79
+wlan0: Broadcom Dongle Host Driver
+
+Dongle Host Driver, version 1.88.64 (r447771)
++ set_rgb 127 20 73 0 0 0 flash 250000
++ sleep 2
++ wl mpc 0
++ wl down
++ wl ap 1
++ wl channel 8
++ wl wsec 0
++ wl wpa_auth 0
++ wl maxassoc 2
++ wl up
+++ ifconfig wlan0
+++ head -1
+++ egrep -o '([0-9A-F]{2}:){5}[0-9A-F]{2}'
++ hwaddr=34:23:BA:F0:45:4B
++++ date +%s
+++ sed 's/://g;s/.*\(......\)/\1/'
+++ printf %s 11
++ ssid=WINKHUB-11
++ wl ssid WINKHUB-11
+Setting SSID: "WINKHUB-11"
++ ifconfig wlan0 192.168.0.1
+dhd_aoe_hostip_clr failed code -23
+aoe_update_host_ipv4_table failed
++ pidof udhcpd
++ '[' 1 ']'
++ udhcpd -S /etc/udhcpd.conf
++ sleep 2
++ touch /tmp/ap_mode
++ exit 0
+Starting network...
+Starting bluetooth...
+Loading modules backported from Linux version v3.13.2-0-gfd82174
+Backport generated by backports.git v3.13.2-1-0-gaef13bc
+Bluetooth: 830f9f04
+NET: Registered protocol family 31
+Bluetooth: 830f9f04
+Bluetooth: 830f9eec
+Bluetooth: 830f9edc
+Bluetooth: 830f9eec
+Bluetooth: 83153f04
+Bluetooth: 83153eec
+Bluetooth: 83153eecDone setting line discpline
+Starting dropbear sshd: OK
+Starting lighttpd: OK
+Starting Zigbee...Starting lutron-core...Reset info: 11 (SOFTWARE)
+ezsp ver 0x04 stack type 0x02 stack ver. [5.1.0 GA build 49]
+Ezsp Config: set max end device children to 0x0006:Success: set
+Ezsp Config: set binding table size to 0x0002:Success: set
+Ezsp Config: set source route table size to 0x0064:Success: set
+Ezsp Config: set security level to 0x0005:Success: set
+Ezsp Config: set address table size to 0x00FA:Success: set
+Ezsp Config: set TC addr cache to 0x0004:Success: set
+Ezsp Config: set stack profile to 0x0002:Success: set
+Ezsp Config: set MAC indirect TX timeout to 0x1E00:Success: set
+Ezsp Config: set max hops to 0x001E:Success: set
+Ezsp Config: set key table size to 0x0000:Success: set
+Ezsp Config: set tx power mode to 0x8000:Success: set
+Ezsp Config: set supported networks to 0x0001:Success: set
+Ezsp Policy: set binding modify to "allow for valid endpoints & clusters only":Success: set
+Ezsp Policy: set message content in msgSent to "return":Success: set
+Ezsp Value : set maximum incoming transfer size to 0x000000FF:Success: set
+Ezsp Value : set maximum outgoing transfer size to 0x000000FF:Success: set
+Ezsp Config: set Fragmentation RX window size to 0x0001:Success: set
+NCP supports maxing out packet buffers
+Ezsp Config: set packet buffers to 89
+Ezsp Config: set Fragmentation RX window size to 0x0001:Success: set
+Ezsp Endpoint 1 added, profile 0x0104, in clusters: 3, out clusters 19
+Ezsp Policy: set TC Key Request to "Deny":Success: set
+Ezsp Policy: set App. Key Request to "Allow":Success: set
+Ezsp Policy: set Trust Center Policy to "Allow preconfigured key joins":Success: set
+Found 0 files
+
+main: flxOs Initialize success!
+zbServer_Initialize: Ipc Server Initialization success! 
+zbServer_Initialize: Ipc Server Open success! 
+main: zbServer Initialize success!
+FlexCI>[ OK ]
+Starting aprond...Got Z-Wave version: Z-Wave 3.79
+[ZWAVE OK]
+i: [1244.2aacdf40] main() (apron/:46): APRON Home Automation Gateway version 1.2.6953+pocketlaser-20140520.115653 Starting ...
+Connected
+IpcServerAcceptLoop: accept() success!
+IpcServerAcceptLoop: Ipc Server running in event-loop mode
+Starting Wink...Starting monit...-----Ipc Server Received message-----
+seqNum: 0
+msgType: C
+Processing ZB_NETWORK_STATUS_CMD
+-----Ipc Client Received message-----
+seqNum: 0
+msgType: 66
+---------------------------------------------------
+zbClient_ProcessAsyncMessage: Received Ember ASYNC NETWORK STATUS message:
+network Status: 0x0 
+---------------------------------------------------
+-----Ipc Server Received message-----
+seqNum: 1
+msgType: C
+Processing ZB_FIND_UNUSED_NETWORK_CMD
+zbUtil_FindUnusedNetwork: network form success!
+-----Ipc Client Received message-----
+seqNum: 1
+msgType: 82
+---------------------------------------------------
+zbClient_WaitForResponse: Got  zb server synchronous response:
+zbClient_WaitForResponse: msg type: 82
+zbClient_WaitForResponse: seqNum: 1
+zbClient_WaitForResponse: status: 0
+---------------------------------------------------
+zbClient_FindUnusedNetwork: WaitForResponse returned status: 0 
+hub[1251]: NOTICE: (hub.c:369) hub-dev started up by User: 0
+hub[1251]: INFO: (ConfigHandler.c:92) Reading Congif from: /root/config/hub.conf
+hub[1251]: INFO: (hub.c:415) Waiting for /database/token
+monit: generated unique Monit id 2d21946b1f2dd24e221bec813b4c2676 and stored to '/root/.monit.id'
+Starting monit daemon
+
+Welcome to Buildroot
+flex-dvt login: hub[1251]: WARNING: (hub.c:438) No Token Found
+hub[1251]: DEBUG: (AuthenticationUtil.c:28) Destroying Oauth
+hub[1251]: DEBUG: (AuthenticationUtil.c:36) Done freeing oauth
+set state to: 0x0B04
+set extended security to: 0x0010
+Ezsp Policy: set TC Key Request to "Deny":Success: set
+Ezsp Policy: set App. Key Request to "Allow":Success: set
+Ezsp Policy: set Trust Center Policy to "Allow preconfigured key joins":Success: set
+Forming on ch 14, panId 0xB89B
+EMBER_NETWORK_UP 0x0000
+Network find complete
+-----Ipc Client Received message-----
+seqNum: 0
+msgType: 66
+---------------------------------------------------
+zbClient_ProcessAsyncMessage: Received Ember ASYNC NETWORK STATUS message:
+network Status: 0x90 
+---------------------------------------------------
+emberAfStackStatusCallback: send complete 
+The app framework is handling the stack status.
+Found 0 devices in database...
+Setting non-canonical mode
+Startup complete.
+
+Welcome to Buildroot
+flex-dvt login: 
+Welcome to Buildroot
+flex-dvt login: ÿíÿÿÿÿÿÿÿÕÿÿÿÿ&¢åÑ•Íread: OK
+## Booting kernel from0LegacýÕ•±Image (uncompressed)
+   Data Size: 00 193ÿ²ÂOK
+   Loading Kernen ImageüÿOK
+
+Starting kernenþÿLinux ver{ionüiÚÑ1069265] revision 5 (ARMv5TEJ),üªšŠººÿÒ½¹•±¥ÍÑÍin Zone order, mobility groupingð	öëKuz~wîþies: 256 (order: -2, 1024 bytes)
+dentry cacheþ²‚ºÂ¢Z½60784k available, 4752k reserved, 0K higþ    : 0xfde00000 - 0xffe00000 øÿj	¥
+      .init : 0x80008000 - 0x<üü-kj)kmº®¿ÿJ‘•Éõ0-3, MinObjects=0, CPUs=1, Nodes=1Êsarcþ•é colour dummy device 80x30
+console [ttyAMüÿ¹ÑÉ¥•Íé 512
+CPU: Testing writeÿbuffuÿk½±family 16
+ÿregulator: vdddbo: 800 <--> 1575üëKµåmV at 3380 mV fast normal 
+regulaþt normal 
+regulator: mxs-i2c-1:þÑáregulator: power-test-1: fast normalÿùÿusbcore: registered newð¹Ñ•ÉÙûÉ•)ÿTCP established hash table entries: 2048 (order:þ¹½registered
+UDP hash table entries:üÉ‘•éBus freq driver module loaded
+mÿ•Åinit finished
+ûmsgmni has been set to 118
+ýÉstdrng (krng)
+cryptodev: drivurxloqÿSerial:08250/16558(driwõÍµduart.0: ttyAM0 at MMIO 0x80074000 (irqðúšrŠr‚Rmxs-auart.1: ttySP1 at MMIOðù…ÉÑ¹2
+Found APPUARTüñ
+‚Âá0072000 (irq = 116) is a mxs-auart.6ÊÿÿªJ²•ÉÍ¥½¹1, Single-chip boot area, blockþ­'‚Â™Å
+Cell Technology   : SLC
+CümüZ¯Š‚rÍ)Data Hold Time    : 5 nsŠãÍá: S34ML01G1
+-----------------
+XhysisñÑ•Í   : 131072 (0x20000)
+Block Size inðñ¡xSYV«µSize in Bytes   : 134217728 (0|¼üze in Bytes : 10
+ECC Chunk Size inðòÑÕÍéøML&ñŠÊÊÊRBlock Mark Bit Offset  : 0
+-------------­ges       : 64
+Search Area Strideðá½¹•¹ÑéøBad0esaseúÿ¹
+Creating 6 MTD partitions on02gpmi-nfc-main":ë]‘…Ñ•Éµkernel"
+ÿLKÂÁ00002b00000 : "database"
+ÿ0003300000-0x000008000000 : "gpmi-nfc-generil-usõUBI: attaching mtd5 to ubi0ÊÍUBI: plysiû•…‘•Éoffset:          2048 (aligned 2048)ÊUòUBI: attached mtd5üÉof bad PEBs:         1
+UBI: max. allowedø‹«µ•í.'‚RUBI: total numberø].W–éUBI: background thread "ubi_bgt0d"øâmice
+MXS RTC driver v1.0 hardware v2.3.ÿmxs-mmc: MXS SSP Controllerøþ__mÿ-ÉÁ010000): timeout when resetting
+mÿøªQé Registered protocol family 17ŠNET:0Regisÿmxs-rtc mxs-rtc.0:0setting sysÿY[^þ¬Ñ•Í¥
+^@mmc0:ð^@ÿ^@ýUBIfS;ÿË•ÉõýUÿË•Éåcompleted
+UBIFS: mounted UBI deviceü±Õµ•ý	± 8 MiB, 72 LEBs)
+UBIFS: media format:ðÿZ«ÍåÍÑ•µ¥ on device 0:11.
+Freeingüµ½éÿÿ^C^@ÿ^@Starting logging:üý+K¥¹random number generator... ^øÿ_ÿ^þý^@done.
+ûrting system message bus: ^üÿ^@
+^@ðÿ^ø
+ÿÿíÿ^@ÿÿÿ^@ÿÿŠšŠ‚º’åÑ•Í(128 KiB)
+UBI: logical0erùéUBI: data offset:             ðÕ•Ù¥•name:            "database"
+^xUÿë•‘volumes:       128
+UBI: wear-leveningü         6
+UBI: total number of reserwed0XEBs:þUBI: background thread "ubi_bgt1d" starteÿUBI device numberøUÿÿ^@UBIFS: recovery completed
+UBIFS: mounþ809 bytes (992 KiB, 0 MiB, 6 LEBs)
+UBIFSºü^@^@ý•É}…ÉÍí setenv bootargs ${bootargs} badapücat: can'tþËÍÿÿ«Starting AP mode...
++ rm /tmp/isaliveþ½Éå5
+^@€^@++ pidof wpa_supplisqntêÿÿ^@^@ÿ5±¥5
+«uj
+^øµ½‘5
+ÿ^@+¸5ÑÉ•¹Ñ¡õ8
+^@^ðÿÿ^@ÿÿ^þÿÿ^@ÿÿÿÿ^ÿ^ø^þ^þ×ÿÿÿÿÿÿ«õýÿ+ touch /tmp/ap_mode
++ exit 0
+Starting network...
+Starting bluetooth...ÃLoading modules backported from Linux version v3.13.2-0-gfd82174
+Backport generatedàÕ 0, volume 0, name "database"
+UâùÔ¥j•‘¥…format:       w4/r0 (ÿñ¡size 1 (0x000000øþImage at 42000000 ...
+   Image Name:0ø«ù.8 MiB
+   Load Address: 40üïïH¨HøUncompressing Linux... done, booting the kernel.
+ÿªršj2±•áµdvt (saurabh@localhost.localdomain© VIVT data cache, VIVT instructionü,•)‹…±pages: 16256
+Kernel commandðline: noinitsÿù…‰±•entries: 8192 (order: 3,ø¥Š)Virtual kernel memory layout:
+ü½Éñ‚Âá4800000 - 0xf0000000  0(172üJ-¨I¨r¢•áÑ: 0x80027000 - ÿHplementation.
+	RCU-based detecÿ[Ë‹+‰±•‘)Calibrating delay loop... ÿ«É•¹åé ok
+ÿÿregulator: vdda:ðzÙ•É…±±}ÕÉÉ•¹Ñé fast normal 
+reguþqþ…±
+regulator: mmc_ssp-1:üregulator: cpufreq-1: fast normùãýýÿ¬"É¥Ù•Éusbfs
+usbcore:øñcfg80211: CallingøÅNET:0RegistesedøŠ²šÂ¢åÑ•Í¥
+TCP bind hash vabneü: 0, 4096 bytes)
+UDP-Lite hash0tableÿ.ÿSlow work thread pool: Startingøûëëýmûÿ‘•‘¹
+io scheduler noop registered
+ioÿ—ûKÑÍ± IRQ sharing disabled
+mÿT
+mxs-ñqrt.ÿ‚BJÉÅ= 113) is a mxs-auart.1
+ÿmxs-auart.3: ttySP3 at MMIO 0x800700000(irqøÔÿFound APPUART 3.1.0
+loop: module loaded
+ýting supported
+Scanning for0NAND Flqshþÿ-----------------------------Šná‹áË•        : 128 MiB
+Pages per Bloskøüµ•é 10 ns
+GPMI Sample Felay0:ðTÖ««ÑÉå)-----------------
+Cjiü²¢B‚ÂÑ0)
+Chip Size in Bytesðø------------
+NFC Geometry
+------------
+EóRECC Chunk Count        : 4
+Payload8Sizeþ¹ù˜½½ÑROM Geometry
+-----------------
+âRScanning device for bad blocksŠÿeblock 910 at 0x0000071c0000
+ÿ‰:
+0x000000000000-0x000000300000ðÉëµÿ0x0000007þüþùû*É…Í•‰±½­size:   131072 byvesüUBI: data offset:              øUÿ%%é MTD device name:          ø–±Õµ•Íé       128
+UBI: wear-leveling0thresü‹•ÉÙ•‘PEBs: 615
+UBI: number of PEBsü’’R ubiblka: unknownðmxs-rtc mxs-rtc.0:þiver
+ßmxs-mmc mxs-mmc.0: mmc0: MXS SSPþ¥ÍÑ•É•‘protocol family 15
+lib80211:(common8rouþclock to 1970-01-01 00:00:05 UTcü^@^@^@^_^@ðÿ^@^@^@^@ÿ^@^@^@^D^ü…ŠÕ•Õ¥¹unknown CIS tuple 0x80ðÿÿ^@mmcþ•Ýñneeded
+^@UÿFS: recovery completed
+UBIFS: mountedøWkÕùŠ’Z¥	± 8 MiB, 72 LEBs)
+UBIFS:øormù«¹Ñ•‘root (ubifs filesystem) onüüí^ü^@_ñÿÿ^@íÿÿ^@ÿ^ðÿÿ^@ÿÿû^@
+ÿOK
+Ë•ÉÉÕ¹¡s)
+ator... ^@ÿíÿ^@ÿ^üÿdone.
+ÿ^@ÿ^øûÿÿ^ñÿÿ^øÿdooeííÿ^@Uÿ‘Í to ubi1
+UBI: physical eraseblockð131þÙ•ÉÉÕ¹¡s)
+UBI: VIDþÑéø^@UBI:¤²¢RUBI: number of badü^@UBI: number of user volumes:øUBI: max/mean erase8counter:øøÿ“	Z¥	¥, LEB size 126976 bytesþJãüíUòÿ^ñÿÿÿÿ^üÿUBIFS: file system size:   5459968ø©šš’ÿUBIFS: default compressor: lzo
+UBIFS:øÍÝ•Ñí^@
+ý‹…ÉÍ${bootargs} badapp; nand reafþr}ø…ýcat: can't open '/datýiû
+
+íÿÿ^üÿÿ^@ÿ^øÿKdirectory
+^@^@ÿ^@Ã+ case "$1" in
++ echo 'StartingüR|þÿXë¢remove '/tmp/isalive': No suchøVK•Íÿ^ÿÿ++ð5±¥µÃ+øÿ+0'[§üË=8
+ÿ^@^@C^@^øÿÿÍÿÿÃíÿÿ^øÿÿþÑ0x0
+
+ÿ^ðÿÿÿ^ðÿÿ_@Ãÿ^ðÿÿÿ^ðÿÿ
+íÿ^ðÿýÿÿÿÿÿÿÿLþo|üþIn:ðY®+±5
+Net:   FEC0 [PRIME]
+ÕUòUBIFS: recovery deferred
+UBIFS: mounted UBI deviceð09 bytes (992 KiB, 0 MiB, 6ðLoading file 'DO_UPDATE' to addr 0x42øÿV‘é OK
+## Booting kernel fromøåá®V©H"…Ñ…Size:  øåÑ•ÍùOK
+   Loading Kernel ImageüOK
+
+StartingþþLinuxø¹Áš[41069265] revision 5 (ARMv5TEJ), cr=00053977ŠÑÍin Zone order, mobility grouping on.  TotñÉ‘•Éé -2, 1024 bytes)
+Dentry cqsheð84k/60784k available, 4752k reserved, 0K highmemþÂ™™•Á0000   ($üJ¹¥Ñ: 0x80008000 - 0x80027ür=0-3, MinObjects=0, CPUs=1, Nodes=1
+Hierarcþ±½ÕÉdummy device 80x30
+consoleüÿCPU: Testing writeø–V–ñòregulator: mxs-i2c-1: fast normalàøregulator:à«k}ÍÍÁµ1:àV.½Éµ…ñ¡…ÿþÿÿÿËµ…regulator: power-test-1: fast normal 
+regulator: cpufreq-1: fas|àëKµ…±øéInitializing GPMI pins
+bio: create slab <bio-0> at 0
+usbcore: registered new interface driver usbfs
+usbcore: registered newàcfg80211: Calling CRüðNET: Registered pòSlow workà|hreadàalg: No test for stdrng (krng)
+cryptodev: driver loaded.
+io scheduler noop •¥ÍÑ•É•‘)io scheduler Serial: 8250/16550 driver,040ports, IRQðsxùÁþ¢‚‚‚BJÉÅ= 47) is a DebugUART
+mþ0x8006c000 (irq =8113)øFound APPUART 3.1.0
+mxs-auart.3:ðs-auart.4
+Found Áøloop: moduleøë‹area, block mark swapping supported
+Scñ-----------------------------ÿ¨¸¨‹¢•¡¹½±½å  : SLC
+Chip SizeàüData Hold Time    : 5 ns
+Address SetuüùŠòm Size in Bytes   : 134217728 (0x8000000)
+------------î Bytes : 10
+ECC Chunk Size in Bytes:ðÊ™Í•Ñ : 0
+-----------------ÊESearch Area Stride Exponent: 2
+ScñBad eraseblocküò"gþer-kernel"
+þ "database"
+þüUBI: attaching mtd5 to ubi0
+UBI: physicalð(þ offset:          2048 (aligned 2048)
+UBI:üUBI: attachedàmtd5àLã4 MB)
+    modules : 0x7fü••Á   ( 164 kB)
+SNUB:ð±õ•Ñ•Ñ¥½¹is disùRCJõÕÿ¥‘}µ…áé default: 32768 minimum:ðMounþregulator: core version 0.5
+NET:ÿregulator: vddd: 800 <--> 1575 mV at 1508øYývddio = 3380000, val=10
+regulator:üÍµduart-1: fast normal 
+regulñÍÁµ2: fast normal 
+regulqtor: charges-1:þ&Z	Áx84820000
+Initializing GPMI pins
+bio: create slab <bio-ø>øusbcore: registered new deviceþW–ñn
+Switchingðache hash table entries: 1024 (order:øTCP: Hash tables configured (estqrlishedð3<þNET: Registered protocol family 1
+ÿmüÿfuse init (API version 7.14)
+mûýš¡•‘Õ±•Écfq registered (default)
+ûmüX.—	RFoundü
+‚Âá006e000 (irq = 114) is a mxs-auert.2
+åí)r‚Rmxs-auart.4: ttySP4 at MMIOøÿ¹1, 8-chip GPMI and BCH
+Boovþ‚Â™Å (AMD NAND 128MiB 3,3V 8-bit)
+ÿ©©©©©©©©©©©©©©©©©©I¨xSX«™…ÑÕÉ•Éáðð(šÑÉ•¹Ñ¡     : 4 bits
+ECC Sizeð
+
+Òª¹­¹½Ý¹)tRHOHøÑ•Íé 2048 (0x800)
+Page OOB Sizeþü    : 65536 (0x10000)
+Chip Sizeð­ÍùÉ•¹Ñ¡          : 8
+Page Size ioüþtes: 16
+Auxiliary Status Offset:012Š¨x¨ë‹Area Size in Bytes    :03145728ð(8x3þþÿBootü•…ñ0x00ÿÿÁµkernel"
+ÿ+Ë«Á…ÉÑpartition parsing not available
+U126976 bytes
+UBI: smallest flasløÿUò«Í•ù__mÿþmÿÿmmûUÿÿÿÿÿýÿÿUÿÿÿÕýÿÿÿï½µÁÉ•ÍÍ¥¹Linux... done, bootingÿLinux version 2.6.35.3-flex-dvt (saurabhàÿõ00053177
+CPU: VIVT data cache,øÑÉÕÍouping on.  Total pages: 16256
+Kernel commùáåcache hash table entries: 8192øÿZhighmem
+Virtual kernel memoryøÑéŠµ…±±½: 0x84800000 - 0xf0ü‚’º‚‚‚BŠ’¢Z	¥
+      .textü*«É…É¡¥…±RCU implementation.
+	RCU-baseþole [ttyAM0] enabled
+Calibrating delayþÿ™•Écoherency: ok
+ÿÿ…±
+regulator:0vddù:øregulator: overall_current: fast normñÿÉc-1: fast normal 
+regulator: mmc_ssü½Éµ…±
+regulator: spufreq-1:øÅÍÑñÿÿd new interface driver usbfs
+usbcore:øsfg80211:øNET:øK‘•Éé 2, 16384 bytes)
+TCü: 256 (order: 0, 4096 bytes)
+UDP-LiteðÿSlow work threñý•Ùé driver loaded.
+io scheduler noop0regi{tezedÊSerial: 8250/16550 driver, 4 ports,0IRQÿ–(irq = 47) is a DebugUART
+mÿat MMIO 0x8006c000 (irq = 113) isüµù¹‘APPUART 3.1.0
+mxs-auart.3: ttySP3þSsŠart.4
+Found APXUáloop: moduleø‘)O±½­mark swapping supported
+Scý-----------------------------ë Size         : 128 MiB
+Pages pezøüAddress Setup Time: 10 ns
+GPMI Sample0DelýPhysical Geometry
+-----------------
+ChixøVÖ   : 64 (0x40)
+Chip SizeþË‚‚‚‚‚‚JR------------
+NFC Geometry
+----------­•Íé 512
+ECC Chunk Count        ;þÅdü©©©©©©©©©©©©©©I¨˜½½ÑROM Geometry
+-------------­•ýÑé 2
+Scanning device for bad blocks
+ÃBad eraseblock 910 at 0x0000071c00üÿËµmain":
+0x000000000000-0x000ü:á0|þûü…±µuse"
+ûÍ¥…±eraseblock size:   131ü’åÑ•Íá
+UBI: data offset:             !þUÿZRUBI: MTD device name:        þ¬é•¹Õëë•‘volumes:       128
+UBI: wear-leveningøþ reserved PEBs: 615
+UBI: numberðÍ•ÉÙÕed, PID 922
+ ubiblka: unknownørtivýir‚Rmxs-rtc mxs-rts.8:øñerface driver
+__ÿ_ÿÿ__mÿ__mxs_reset_blocküTCP cubic registered
+Nåéümÿÿyý
+mmcüÕ•Õ¥ýmmû•ÍÍ0001
+UBIFS: recovery needed
+ÿíÑ•Í(73656 KiB, 71 MiB, 594 LeBs)
+Uò*'¸•%Mé reserved for root:  0 bytesøÿÿÿÿ
+ÿÿ^@
+ÿ^Cÿÿï^@ttyAM0: 60 input overrun8{)
+øÿInitializing rantomøWk•íÿÿÿÿÿ¥¹system message bus: ÿ^@ÿÿÿ^@ÿÿ^@ÿÿÿ^@
+ÿ^@ÿÿ^@ÿ
+ÿÿÿ^@ÿÿÙ•ÉÉÕ¹¡s)
+ü
+^@ðÿ…Í•‰±½­size:   131072 bytes (128øUbI:ÿÂÿ’‚¢ÂJRUBI: data offset:   000     0ÿ^@
+Õ¥•name:            "database"
+Uòÿ¹ allowed volumes:       128
+UBI:øingþ6
+UBI: total number of reserved PEBs: 5þUÿRUBI: background thread "ubi_bgt1f"þùÿÿ^@UBI deviceþ«µ‰•ÉáÿÿUÿüÿõ$KiB, 5 MiB, 43 LEBs)
+UBIFS: journalüüor root:  257887 bytes (251 KiB)
+ÿapp_boot=run appboot_args && nand0readðÅ‘‘Éõýnel 0x00400000; bootm ${loadaddr}
+boot_axøûr½such file or directory
+^@^@ðÿÿÿrm: can'vþYëÿÿÿ«ÿ+ lsmod
+û^@«½½Ñ½wifi/dhd.ko firmware_path=/root/wifi/gw_xroþÿþÿýÿDHD: dongle ram size isÿÿÿÿ(): successfully enabled bdcv2 tlvð½ù+ set_rgb 127üÿ+ sleep 2
+ÿ^@ÿÿttyAM0: 28 inü]‹ÿüþÿÿÿÿÿÿÿÿÿÿÿÿ^@ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ+üÿ+ÿÿ««««««ÿëÿ«««û«ÿÿ«ÿÿÿÿþÿ+þùSþÿÿþþêþÿóOKÍÿûÿÿÿ^þ^ÿ^ÿ^ÿ^ÿ^þ^þÿ^þ^þÿ^þ^þÿÿ^þ^ðÿ_ÿ^þ^ÿ^ÿÿþÿÿÿÿÿÿÿÿÿÿÿÿõÿí•ÑÕÉ½Í;Success:øÿEzspðùÍùýconfig: set Fragmentýtionü·š•Ñpacket buffers to 89Ê^þÿ®K•to 0x0001:Success: set
+^øÿ^c^üPolicy to "Allow preconfiguredø§ª×Íÿÿ^@ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿmÿÿÿÿÿÕýýýÿÿÿÿÿëÿÿëµÕÿÿýÿÿÿÿÿýýÿÿýÿÿÿýÿýýÿþˆà+ touch /tmp/ap_mode
++ exit 0
+Starting network...
+Starting bluetooth...
+Loading modules backported from Linux version v3.13.2-0-gfd82174
+Backport generated by backports.git v3.13.2-1-0-gaef13bc
+Bluetooth: 830c5f04
+NET: Registered protocol family 31
+Bluetooth: 830c5f04
+Bluetooth: 830c5eec
+Bluetooth: 830c5edc
+Bluetooth: 830c5eec
+Bluetooth: 83159f04
+Bluetooth: 83159eec
+Bluetooth: 83159eecDone setting line discpline
+ÃLLC
+
+U-Boot 2014.01-14400-gda781c6-dirty (Apr 30 2014 - 22:35:38)
+
+CPU:   Freescale i.MX28 rev1.2 at 454 MHz
+BOOT:  NAND, 3V3
+DRAM:  64 MiB
+NAND:  128 MiB
+In:    serial
+Out:   serial
+Err:   serial
+Net:   FEC0 [PRIME]
+Hit any key to stop autoboot:  0 
+UBI: attaching mtd1 to ubi0
+UBI: physical eraseblock size:   131072 bytes (128 KiB)
+UBI: logical eraseblock size:    126976 bytes
+UBI: smallest flash I/O unit:    2048
+UBI: VID header offset:          2048 (aligned 2048)
+UBI: data offset:                4096
+UBI: attached mtd1 to ubi0
+UBI: MTD device name:            "mtd=3"
+UBI: MTD device size:            8 MiB
+UBI: number of good PEBs:        64
+UBI: number of bad PEBs:         0
+UBI: max. allowed volumes:       128
+UBI: wear-leveling threshold:    4096
+UBI: number of internal volumes: 1
+UBI: number of user volumes:     1
+UBI: available PEBs:             6
+UBI: total number of reserved PEBs: 58
+UBI: number of PEBs reserved for bad PEB handling: 2
+UBI: max/mean erase counter: 2/1
+UBIFS: recovery needed
+UBIFS: recovery deferred
+UBIFS: mounted UBI device 0, volume 0, name "database"
+UBIFS: mounted read-only
+UBIFS: file system size:   5459968 bytes (5332 KiB, 5 MiB, 43 LEBs)
+UBIFS: journal size:       1015809 bytes (992 KiB, 0 MiB, 6 LEBs)
+UBIFS: media format:       w4/r0 (latest is w4/r0)
+UBIFS: default compressor: LZO
+UBIFS: reserved for root:  269835 bytes (263 KiB)
+Loading file 'DO_UPDATE' to addr 0x42000000 with size 1 (0x00000001)...
+Done
+Total of 1 word(s) were the same
+
+NAND read: device 0 offset 0x2b00000, size 0x400000
+ 4194304 bytes read: OK
+## Booting kernel from Legacy Image at 42000000 ...
+   Image Name:   Linux-2.6.35.3-flex-dvt
+   Created:      2014-04-30   3:15:35 UTC
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    1928460 Bytes = 1.8 MiB
+   Load Address: 40008000
+   Entry Point:  40008000
+   Verifying Checksum ... OK
+   Loading Kernel Image ... OK
+
+Starting kernel ...
+
+Uncompressing Linux... done, booting the kernel.
+Linux version 2.6.35.3-flex-dvt (saurabh@localhost.localdomain) (gcc version 4.4.4 (4.4.4_09.06.2010) ) #32 PREEMPT Tue Apr 29 23:15:31 EDT 2014
+CPU: ARM926EJ-S [41069265] revision 5 (ARMv5TEJ), cr=00053177
+CPU: VIVT data cache, VIVT instruction cache
+Machine: Freescale MX28EVK board
+Memory policy: ECC disabled, Data cache writeback
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 16256
+Kernel command line: noinitrd console=ttyAM0,115200 rootfstype=ubifs ubi.mtd=5 root=ubi0:rootfs rw gpmi
+PID hash table entries: 256 (order: -2, 1024 bytes)
+Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Memory: 64MB = 64MB total
+Memory: 60784k/60784k available, 4752k reserved, 0K highmem
+Virtual kernel memory layout:
+    vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+    fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+    DMA     : 0xfde00000 - 0xffe00000   (  32 MB)
+    vmalloc : 0x84800000 - 0xf0000000   (1720 MB)
+    lowmem  : 0x80000000 - 0x84000000   (  64 MB)
+    modules : 0x7f000000 - 0x80000000   (  16 MB)
+      .init : 0x80008000 - 0x80027000   ( 124 kB)
+      .text : 0x80027000 - 0x803b6000   (3644 kB)
+      .data : 0x803b6000 - 0x803deec0   ( 164 kB)
+SLUB: Genslabs=11, HWalign=32, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+Hierarchical RCU implementation.
+	RCU-based detection of stalled CPUs is disabled.
+	Verbose stalled-CPUs detection is disabled.
+NR_IRQS:288
+Console: colour dummy device 80x30
+console [ttyAM0] enabled
+Calibrating delay loop... 226.09 BogoMIPS (lpj=1130496)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 512
+CPU: Testing write buffer coherency: ok
+regulator: core version 0.5
+NET: Registered protocol family 16
+regulator: vddd: 800 <--> 1575 mV at 1500 mV fast normal 
+regulator: vdddbo: 800 <--> 1575 mV fast normal 
+regulator: vdda: 1500 <--> 2275 mV at 1800 mV fast normal 
+vddio = 3380000, val=10
+regulator: vddio: 2880 <--> 3680 mV at 3380 mV fast normal 
+regulator: overall_current: fast normal 
+regulator: vbus5v: 
+regulator: mxs-duart-1: fast normal 
+regulator: mxs-bl-1: fast normal 
+regulator: mxs-i2c-1: fast normal 
+regulator: mmc_ssp-1: fast normal 
+regulator: mmc_ssp-2: fast normal 
+regulator: charger-1: fast normal 
+regulator: power-test-1: fast normal 
+regulator: cpufreq-1: fast normal 
+i.MX IRAM pool: 124 KB@0x84820000
+Initializing GPMI pins
+bio: create slab <bio-0> at 0
+usbcore: registered new interface driver usbfs
+usbcore: registered new interface driver hub
+usbcore: registered new device driver usb
+cfg80211: Calling CRDA to update world regulatory domain
+Switching to clocksource mxs clock source
+NET: Registered protocol family 2
+IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+TCP: Hash tables configured (established 2048 bind 2048)
+TCP reno registered
+UDP hash table entries: 256 (order: 0, 4096 bytes)
+UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+NET: Registered protocol family 1
+Bus freq driver module loaded
+mxs_cpu_init: cpufreq init finished
+Slow work thread pool: Starting up
+Slow work thread pool: Ready
+fuse init (API version 7.14)
+msgmni has been set to 118
+alg: No test for stdrng (krng)
+cryptodev: driver loaded.
+io scheduler noop registered
+io scheduler deadline registered
+io scheduler cfq registered (default)
+Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+mxs-duart.0: ttyAM0 at MMIO 0x80074000 (irq = 47) is a DebugUART
+mxs-auart.0: ttySP0 at MMIO 0x8006a000 (irq = 112) is a mxs-auart.0
+Found APPUART 3.1.0
+mxs-auart.1: ttySP1 at MMIO 0x8006c000 (irq = 113) is a mxs-auart.1
+Found APPUART 3.1.0
+mxs-auart.2: ttySP2 at MMIO 0x8006e000 (irq = 114) is a mxs-auart.2
+Found APPUART 3.1.0
+mxs-auart.3: ttySP3 at MMIO 0x80070000 (irq = 115) is a mxs-auart.3
+Found APPUART 3.1.0
+mxs-auart.4: ttySP4 at MMIO 0x80072000 (irq = 116) is a mxs-auart.4
+Found APPUART 3.1.0
+loop: module loaded
+i.MX GPMI NFC
+NFC: Version 1, 8-chip GPMI and BCH
+Boot ROM: Version 1, Single-chip boot area, block mark swapping supported
+Scanning for NAND Flash chips...
+NAND device: Manufacturer ID: 0x01, Chip ID: 0xf1 (AMD NAND 128MiB 3,3V 8-bit)
+-----------------------------
+NAND Flash Device Information
+-----------------------------
+Manufacturer      : AMD (0x01)
+Device Code       : 0xf1
+Cell Technology   : SLC
+Chip Size         : 128 MiB
+Pages per Block   : 64
+Page Geometry     : 2048+64
+ECC Strength      : 4 bits
+ECC Size          : 512 B
+Data Setup Time   : 10 ns
+Data Hold Time    : 5 ns
+Address Setup Time: 10 ns
+GPMI Sample Delay : 6 ns
+tREA              : Unknown
+tRLOH             : Unknown
+tRHOH             : Unknown
+Description       : S34ML01G1
+-----------------
+Physical Geometry
+-----------------
+Chip Count             : 1
+Page Data Size in Bytes: 2048 (0x800)
+Page OOB Size in Bytes : 64
+Block Size in Bytes    : 131072 (0x20000)
+Block Size in Pages    : 64 (0x40)
+Chip Size in Bytes     : 134217728 (0x8000000)
+Chip Size in Pages     : 65536 (0x10000)
+Chip Size in Blocks    : 1024 (0x400)
+Medium Size in Bytes   : 134217728 (0x8000000)
+------------
+NFC Geometry
+------------
+ECC Algorithm          : BCH
+ECC Strength           : 8
+Page Size in Bytes     : 2112
+Metadata Size in Bytes : 10
+ECC Chunk Size in Bytes: 512
+ECC Chunk Count        : 4
+Payload Size in Bytes  : 2048
+Auxiliary Size in Bytes: 16
+Auxiliary Status Offset: 12
+Block Mark Byte Offset : 1999
+Block Mark Bit Offset  : 0
+-----------------
+Boot ROM Geometry
+-----------------
+Boot Area Count            : 1
+Boot Area Size in Bytes    : 3145728 (0x300000)
+Stride Size in Pages       : 64
+Search Area Stride Exponent: 2
+Scanning device for bad blocks
+Bad eraseblock 910 at 0x0000071c0000
+Boot area protection is enabled.
+Creating 6 MTD partitions on "gpmi-nfc-main":
+0x000000000000-0x000000300000 : "gpmi-nfc-0-boot"
+0x000000300000-0x000000700000 : "updater-kernel"
+0x000000700000-0x000002300000 : "updater-rootfs"
+0x000002300000-0x000002b00000 : "database"
+0x000002b00000-0x000003300000 : "app-kernel"
+0x000003300000-0x000008000000 : "gpmi-nfc-general-use"
+cmdlinepart partition parsing not available
+UBI: attaching mtd5 to ubi0
+UBI: physical eraseblock size:   131072 bytes (128 KiB)
+UBI: logical eraseblock size:    126976 bytes
+UBI: smallest flash I/O unit:    2048
+UBI: VID header offset:          2048 (aligned 2048)
+UBI: data offset:                4096
+__mxs_reset_block(f0010000): timeout when resetting
+__mxs_reset_block(f0010000): timeout when resetting
+__mxs_reset_block(f0010000): timeout when resetting
+mxs-mmc mxs-mmc.0: mmc0: MXS SSP MMC DMAIRQ 82 ERRIRQ 96 
+TCP cubic registered
+NET: Registered protocol family 17
+NET: Registered protocol family 15
+lib80211: common routines for IEEE802.11 drivers
+mxs-rtc mxs-rtc.0: setting system clock to 1970-01-01 00:00:05 UTC (5)
+^@mmc0: queuing unknown CIS tuple 0x80 (7 bytes)
+mmc0: queuing unknown CIS tuple 0x80 (6 bytes)
+mmc0: new high speed SDIO card at address 0001
+UBIFS: recovery needed
+UBIFS: recovery completed
+UBIFS: mounted UBI device 0, volume 0, name "rootfs"
+UBIFS: file system size:   75423744 bytes (73656 KiB, 71 MiB, 594 LEBs)
+UBIFS: journal size:       9023488 bytes (8812 KiB, 8 MiB, 72 LEBs)
+UBIFS: media format:       w4/r0 (latest is w4/r0)
+UBIFS: default compressor: zlib
+UBIFS: reserved for root:  0 bytes (0 KiB)
+VFS: Mounted root (ubifs filesystem) on device 0:11.
+Freeing init memory: 124K
+
+Starting logging: OK
+Initializing random number generator... done.
+Starting system message bus: done
+
+UBI: attaching mtd3 to ubi1
+UBI: physical eraseblock size:   131072 bytes (128 KiB)
+UBI: logical eraseblock size:    126976 bytes
+UBI: smallest flash I/O unit:    2048
+UBI: VID header offset:          2048 (aligned 2048)
+UBI: data offset:                4096
+UBI: attached mtd3 to ubi1
+UBI: MTD device name:            "database"
+UBI: MTD device size:            8 MiB
+UBI: number of good PEBs:        64
+UBI: number of bad PEBs:         0
+UBI: max. allowed volumes:       128
+UBI: wear-leveling threshold:    4096
+UBI: number of internal volumes: 1
+UBI: number of user volumes:     1
+UBI: available PEBs:             6
+UBI: total number of reserved PEBs: 58
+UBI: number of PEBs reserved for bad PEB handling: 2
+UBI: max/mean erase counter: 2/1
+UBI: image sequence number: 0
+UBI: background thread "ubi_bgt1d" started, PID 988
+ ubiblkb: unknown partition table
+UBI device number 1, total 64 LEBs (8126464 bytes, 7.8 MiB), available 6 LEBs (761856 bytes, 744.0 KiB), LEB size 126976 bytes (124.0 KiB)
+
+UBIFS: recovery needed
+UBIFS: recovery completed
+UBIFS: mounted UBI device 1, volume 0, name "database"
+UBIFS: file system size:   5459968 bytes (5332 KiB, 5 MiB, 43 LEBs)
+UBIFS: journal size:       1015809 bytes (992 KiB, 0 MiB, 6 LEBs)
+UBIFS: media format:       w4/r0 (latest is w4/r0)
+UBIFS: default compressor: lzo
+UBIFS: reserved for root:  257887 bytes (251 KiB)
+
+app_boot=run appboot_args && nand read ${loadaddr} app-kernel 0x00400000 && bootm ${loadaddr}
+app_boot_bad=run updater_args; setenv bootargs ${bootargs} badapp; nand read ${loadaddr} updater-kernel 0x00400000; bootm ${loadaddr}
+boot_app=run app_boot || run app_boot_bad
+cat: can't open '/database/cf_url': No such file or directory
+rm: can't remove '/database/wpa_supplicant.conf': No such file or directory
++ case "$1" in
++ echo 'Starting AP mode...'
+Starting AP mode...
++ rm /tmp/isalive
+rm: can't remove '/tmp/isalive': No such file or directory
+++ pidof wpa_supplicant
+
++ '[' ']'
+++ pidof wpa_cli
++ '[' ']'
++ grep dhd
++ lsmod
++ '[' 1 -eq 1 ']'
++ insmod /root/wifi/dhd.ko firmware_path=/root/wifi/fw_prod.bin nvram_path=/root/wifi/nvram.conf iface_name=wlan0 dhd_sdiod_drive_strength=8
+DHD: dongle ram size is set to 524288(orig 524288) at 0x0
+dhd_bus_init: enable 0x06, ready 0x06 (waited 0us)
+dhd_wlfc_init(): successfully enabled bdcv2 tlv signaling, 79
+wlan0: Broadcom Dongle Host Driver
+
+Dongle Host Driver, version 1.88.64 (r447771)
++ set_rgb 127 20 73 0 0 0 flash 250000
++ sleep 2
+^C
+^C
+^C
++ wl mpc 0
++ wl down
+^K+ wl ap 1
++ wl channel 8
++ wl wsec 0
++ wl wpa_auth 0
++ wl maxassoc 2
++ wl up
+++ ifconfig wlan0
+^K++ egrep -o '([0-9A-F]{2}:){5}[0-9A-F]{2}'
+++ head -1
++ hwaddr=34:23:BA:F0:45:4B
+++ sed 's/://g;s/.*\(......\)/\1/'
++++ date +%s
+++ printf %s 11
++ ssid=WINKHUB-11
++ wl ssid WINKHUB-11
+Setting SSID: "WINKHUB-11"
++ ifconfig wlan0 192.168.0.1
+dhd_aoe_hostip_clr failed code -23
+aoe_update_host_ipv4_table failed
++ pidof udhcpd
++ '[' 1 ']'
++ udhcpd -S /etc/udhcpd.conf
++ sleep 2
+^K^K+ touch /tmp/ap_mode
++ exit 0
+Starting network...
+^KStarting bluetooth...
+Loading modules backported from Linux version v3.13.2-0-gfd82174
+Backport generated by backports.git v3.13.2-1-0-gaef13bc
+Bluetooth: 83055f04
+NET: Registered protocol family 31
+Bluetooth: 83055f04
+Bluetooth: 83055eec
+Bluetooth: 83055edc
+Bluetooth: 83055eec
+Bluetooth: 83119f04
+Bluetooth: 83119eec
+Bluetooth: 83119eec^K^Z^K^K^K
+
+Done setting line discpline
+
+
+LLC
+
+U-Boot 2014.01-14400-gda781c6-dirty (Apr 30 2014 - 22:35:38)
+
+CPU:   Freescale i.MX28 rev1.2 at 454 MHz
+BOOT:  NAND, 3V3
+DRAM:  64 MiB
+NAND:  128 MiB
+In:    serial
+Out:   serial
+Err:   serial
+Net:   FEC0 [PRIME]
+Hit any key to stop autoboot:  0 
+UBI: attaching mtd1 to ubi0
+UBI: physical eraseblock size:   131072 bytes (128 KiB)
+UBI: logical eraseblock size:    126976 bytes
+UBI: smallest flash I/O unit:    2048
+UBI: VID header offset:          2048 (aligned 2048)
+UBI: data offset:                4096
+UBI: attached mtd1 to ubi0
+UBI: MTD device name:            "mtd=3"
+UBI: MTD device size:            8 MiB
+UBI: number of good PEBs:        64
+UBI: number of bad PEBs:         0
+UBI: max. allowed volumes:       128
+UBI: wear-leveling threshold:    4096
+UBI: number of internal volumes: 1
+UBI: number of user volumes:     1
+UBI: available PEBs:             6
+UBI: total number of reserved PEBs: 58
+UBI: number of PEBs reserved for bad PEB handling: 2
+UBI: max/mean erase counter: 2/1
+UBIFS: recovery needed
+UBIFS: recovery deferred
+UBIFS: mounted UBI device 0, volume 0, name "database"
+UBIFS: mounted read-only
+UBIFS: file system size:   5459968 bytes (5332 KiB, 5 MiB, 43 LEBs)
+UBIFS: journal size:       1015809 bytes (992 KiB, 0 MiB, 6 LEBs)
+UBIFS: media format:       w4/r0 (latest is w4/r0)
+UBIFS: default compressor: LZO
+UBIFS: reserved for root:  269835 bytes (263 KiB)
+Loading file 'DO_UPDATE' to addr 0x42000000 with size 1 (0x00000001)...
+Done
+Total of 1 word(s) were the same
+
+NAND read: device 0 offset 0x2b00000, size 0x400000
+ 4194304 bytes read: OK
+## Booting kernel from Legacy Image at 42000000 ...
+   Image Name:   Linux-2.6.35.3-flex-dvt
+   Created:      2014-04-30   3:15:35 UTC
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    1928460 Bytes = 1.8 MiB
+   Load Address: 40008000
+   Entry Point:  40008000
+   Verifying Checksum ... OK
+   Loading Kernel Image ... OK
+
+Starting kernel ...
+
+Uncompressing Linux... done, booting the kernel.
+Linux version 2.6.35.3-flex-dvt (saurabh@localhost.localdomain) (gcc version 4.4.4 (4.4.4_09.06.2010) ) #32 PREEMPT Tue Apr 29 23:15:31 EDT 2014
+CPU: ARM926EJ-S [41069265] revision 5 (ARMv5TEJ), cr=00053177
+CPU: VIVT data cache, VIVT instruction cache
+Machine: Freescale MX28EVK board
+Memory policy: ECC disabled, Data cache writeback
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 16256
+Kernel command line: noinitrd console=ttyAM0,115200 rootfstype=ubifs ubi.mtd=5 root=ubi0:rootfs rw gpmi
+PID hash table entries: 256 (order: -2, 1024 bytes)
+Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Memory: 64MB = 64MB total
+Memory: 60784k/60784k available, 4752k reserved, 0K highmem
+Virtual kernel memory layout:
+    vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+    fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+    DMA     : 0xfde00000 - 0xffe00000   (  32 MB)
+    vmalloc : 0x84800000 - 0xf0000000   (1720 MB)
+    lowmem  : 0x80000000 - 0x84000000   (  64 MB)
+    modules : 0x7f000000 - 0x80000000   (  16 MB)
+      .init : 0x80008000 - 0x80027000   ( 124 kB)
+      .text : 0x80027000 - 0x803b6000   (3644 kB)
+      .data : 0x803b6000 - 0x803deec0   ( 164 kB)
+SLUB: Genslabs=11, HWalign=32, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+Hierarchical RCU implementation.
+	RCU-based detection of stalled CPUs is disabled.
+	Verbose stalled-CPUs detection is disabled.
+NR_IRQS:288
+Console: colour dummy device 80x30
+console [ttyAM0] enabled
+Calibrating delay loop... 226.09 BogoMIPS (lpj=1130496)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 512
+CPU: Testing write buffer coherency: ok
+regulator: core version 0.5
+NET: Registered protocol family 16
+regulator: vddd: 800 <--> 1575 mV at 1500 mV fast normal 
+regulator: vdddbo: 800 <--> 1575 mV fast normal 
+regulator: vdda: 1500 <--> 2275 mV at 1800 mV fast normal 
+vddio = 3380000, val=10
+regulator: vddio: 2880 <--> 3680 mV at 3380 mV fast normal 
+regulator: overall_current: fast normal 
+regulator: vbus5v: 
+regulator: mxs-duart-1: fast normal 
+regulator: mxs-bl-1: fast normal 
+regulator: mxs-i2c-1: fast normal 
+regulator: mmc_ssp-1: fast normal 
+regulator: mmc_ssp-2: fast normal 
+regulator: charger-1: fast normal 
+regulator: power-test-1: fast normal 
+regulator: cpufreq-1: fast normal 
+i.MX IRAM pool: 124 KB@0x84820000
+Initializing GPMI pins
+bio: create slab <bio-0> at 0
+usbcore: registered new interface driver usbfs
+usbcore: registered new interface driver hub
+usbcore: registered new device driver usb
+cfg80211: Calling CRDA to update world regulatory domain
+Switching to clocksource mxs clock source
+NET: Registered protocol family 2
+IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+TCP: Hash tables configured (established 2048 bind 2048)
+TCP reno registered
+UDP hash table entries: 256 (order: 0, 4096 bytes)
+UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+NET: Registered protocol family 1
+Bus freq driver module loaded
+mxs_cpu_init: cpufreq init finished
+Slow work thread pool: Starting up
+Slow work thread pool: Ready
+fuse init (API version 7.14)
+msgmni has been set to 118
+alg: No test for stdrng (krng)
+cryptodev: driver loaded.
+io scheduler noop registered
+io scheduler deadline registered
+io scheduler cfq registered (default)
+ÃLLC
+
+U-Boot 2014.01-14400-gda781c6-dirty (Apr 30 2014 - 22:35:38)
+
+CPU:   Freescale i.MX28 rev1.2 at 454 MHz
+BOOT:  NAND, 3V3
+DRAM:  64 MiB
+NAND:  128 MiB
+In:    serial
+Out:   serial
+Err:   serial
+Net:   FEC0 [PRIME]
+Hit any key to stop autoboot:  0 
+UBI: attaching mtd1 to ubi0
+UBI: physical eraseblock size:   131072 bytes (128 KiB)
+UBI: logical eraseblock size:    126976 bytes
+UBI: smallest flash I/O unit:    2048
+UBI: VID header offset:          2048 (aligned 2048)
+UBI: data offset:                4096
+UBI: attached mtd1 to ubi0
+UBI: MTD device name:            "mtd=3"
+UBI: MTD device size:            8 MiB
+UBI: number of good PEBs:        64
+UBI: number of bad PEBs:         0
+UBI: max. allowed volumes:       128
+UBI: wear-leveling threshold:    4096
+UBI: number of internal volumes: 1
+UBI: number of user volumes:     1
+UBI: available PEBs:             6
+UBI: total number of reserved PEBs: 58
+UBI: number of PEBs reserved for bad PEB handling: 2
+UBI: max/mean erase counter: 2/1
+UBIFS: recovery needed
+UBIFS: recovery deferred
+UBIFS: mounted UBI device 0, volume 0, name "database"
+UBIFS: mounted read-only
+UBIFS: file system size:   5459968 bytes (5332 KiB, 5 MiB, 43 LEBs)
+UBIFS: journal size:       1015809 bytes (992 KiB, 0 MiB, 6 LEBs)
+UBIFS: media format:       w4/r0 (latest is w4/r0)
+UBIFS: default compressor: LZO
+UBIFS: reserved for root:  269835 bytes (263 KiB)
+Loading file 'DO_UPDATE' to addr 0x42000000 with size 1 (0x00000001)...
+Done
+Total of 1 word(s) were the same
+
+NAND read: device 0 offset 0x2b00000, size 0x400000
+ 4194304 bytes read: OK
+## Booting kernel from Legacy Image at 42000000 ...
+   Image Name:   Linux-2.6.35.3-flex-dvt
+   Created:      2014-04-30   3:15:35 UTC
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    1928460 Bytes = 1.8 MiB
+   Load Address: 40008000
+   Entry Point:  40008000
+   Verifying Checksum ... OK
+   Loading Kernel Image ... OK
+
+Starting kernel ...
+
+Uncompressing Linux... done, booting the kernel.
+Linux version 2.6.35.3-flex-dvt (saurabh@localhost.localdomain) (gcc version 4.4.4 (4.4.4_09.06.2010) ) #32 PREEMPT Tue Apr 29 23:15:31 EDT 2014
+CPU: ARM926EJ-S [41069265] revision 5 (ARMv5TEJ), cr=00053177
+CPU: VIVT data cache, VIVT instruction cache
+Machine: Freescale MX28EVK board
+Memory policy: ECC disabled, Data cache writeback
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 16256
+Kernel command line: noinitrd console=ttyAM0,115200 rootfstype=ubifs ubi.mtd=5 root=ubi0:rootfs rw gpmi
+PID hash table entries: 256 (order: -2, 1024 bytes)
+Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+Memory: 64MB = 64MB total
+Memory: 60784k/60784k available, 4752k reserved, 0K highmem
+Virtual kernel memory layout:
+    vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+    fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+    DMA     : 0xfde00000 - 0xffe00000   (  32 MB)
+    vmalloc : 0x84800000 - 0xf0000000   (1720 MB)
+    lowmem  : 0x80000000 - 0x84000000   (  64 MB)
+    modules : 0x7f000000 - 0x80000000   (  16 MB)
+      .init : 0x80008000 - 0x80027000   ( 124 kB)
+      .text : 0x80027000 - 0x803b6000   (3644 kB)
+      .data : 0x803b6000 - 0x803deec0   ( 164 kB)
+SLUB: Genslabs=11, HWalign=32, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+Hierarchical RCU implementation.
+	RCU-based detection of stalled CPUs is disabled.
+	Verbose stalled-CPUs detection is disabled.
+NR_IRQS:288
+Console: colour dummy device 80x30
+console [ttyAM0] enabled
+Calibrating delay loop... 226.09 BogoMIPS (lpj=1130496)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 512
+CPU: Testing write buffer coherency: ok
+regulator: core version 0.5
+NET: Registered protocol family 16
+regulator: vddd: 800 <--> 1575 mV at 1500 mV fast normal 
+regulator: vdddbo: 800 <--> 1575 mV fast normal 
+regulator: vdda: 1500 <--> 2275 mV at 1800 mV fast normal 
+vddio = 3380000, val=10
+regulator: vddio: 2880 <--> 3680 mV at 3380 mV fast normal 
+regulator: overall_current: fast normal 
+regulator: vbus5v: 
+regulator: mxs-duart-1: fast normal 
+regulator: mxs-bl-1: fast normal 
+regulator: mxs-i2c-1: fast normal 
+regulator: mmc_ssp-1: fast normal 
+regulator: mmc_ssp-2: fast normal 
+regulator: charger-1: fast normal 
+regulator: power-test-1: fast normal 
+regulator: cpufreq-1: fast normal 
+i.MX IRAM pool: 124 KB@0x84820000
+Initializing GPMI pins
+bio: create slab <bio-0> at 0
+usbcore: registered new interface driver usbfs
+usbcore: registered new interface driver hub
+usbcore: registered new device driver usb
+cfg80211: Calling CRDA to update world regulatory domain
+Switching to clocksource mxs clock source
+NET: Registered protocol family 2
+IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+TCP established hash table entries: 2048 (order: 2, 16384 bytes)
+TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
+TCP: Hash tables configured (established 2048 bind 2048)
+TCP reno registered
+UDP hash table entries: 256 (order: 0, 4096 bytes)
+UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+NET: Registered protocol family 1
+Bus freq driver module loaded
+mxs_cpu_init: cpufreq init finished
+Slow work thread pool: Starting up
+Slow work thread pool: Ready
+fuse init (API version 7.14)
+msgmni has been set to 118
+alg: No test for stdrng (krng)
+cryptodev: driver loaded.
+io scheduler noop registered
+io scheduler deadline registered
+io scheduler cfq registered (default)
+Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+mxs-duart.0: ttyAM0 at MMIO 0x80074000 (irq = 47) is a DebugUART
+mxs-auart.0: ttySP0 at MMIO 0x8006a000 (irq = 112) is a mxs-auart.0
+Found APPUART 3.1.0
+mxs-auart.1: ttySP1 at MMIO 0x8006c000 (irq = 113) is a mxs-auart.1
+Found APPUART 3.1.0
+mxs-auart.2: ttySP2 at MMIO 0x8006e000 (irq = 114) is a mxs-auart.2
+Found APPUART 3.1.0
+mxs-auart.3: ttySP3 at MMIO 0x80070000 (irq = 115) is a mxs-auart.3
+Found APPUART 3.1.0
+mxs-auart.4: ttySP4 at MMIO 0x80072000 (irq = 116) is a mxs-auart.4
+Found APPUART 3.1.0
+loop: module loaded
+i.MX GPMI NFC
+NFC: Version 1, 8-chip GPMI and BCH
+Boot ROM: Version 1, Single-chip boot area, block mark swapping supported
+Scanning for NAND Flash chips...
+NAND device: Manufacturer ID: 0x01, Chip ID: 0xf1 (AMD NAND 128MiB 3,3V 8-bit)
+-----------------------------
+NAND Flash Device Information
+-----------------------------
+Manufacturer      : AMD (0x01)
+Device Code       : 0xf1
+Cell Technology   : SLC
+Chip Size         : 128 MiB
+Pages per Block   : 64
+Page Geometry     : 2048+64
+ECC Strength      : 4 bits
+ECC Size          : 512 B
+Data Setup Time   : 10 ns
+Data Hold Time    : 5 ns
+Address Setup Time: 10 ns
+GPMI Sample Delay : 6 ns
+tREA              : Unknown
+tRLOH             : Unknown
+tRHOH             : Unknown
+Description       : S34ML01G1
+-----------------
+Physical Geometry
+-----------------
+Chip Count             : 1
+Page Data Size in Bytes: 2048 (0x800)
+Page OOB Size in Bytes : 64
+Block Size in Bytes    : 131072 (0x20000)
+Block Size in Pages    : 64 (0x40)
+Chip Size in Bytes     : 134217728 (0x8000000)
+Chip Size in Pages     : 65536 (0x10000)
+Chip Size in Blocks    : 1024 (0x400)
+Medium Size in Bytes   : 134217728 (0x8000000)
+------------
+NFC Geometry
+------------
+ECC Algorithm          : BCH
+ECC Strength           : 8
+Page Size in Bytes     : 2112
+Metadata Size in Bytes : 10
+ECC Chunk Size in Bytes: 512
+ECC Chunk Count        : 4
+Payload Size in Bytes  : 2048
+Auxiliary Size in Bytes: 16
+Auxiliary Status Offset: 12
+Block Mark Byte Offset : 1999
+Block Mark Bit Offset  : 0
+-----------------
+Boot ROM Geometry
+-----------------
+Boot Area Count            : 1
+Boot Area Size in Bytes    : 3145728 (0x300000)
+Stride Size in Pages       : 64
+Search Area Stride Exponent: 2
+Scanning device for bad blocks
+Bad eraseblock 910 at 0x0000071c0000
+Boot area protection is enabled.
+Creating 6 MTD partitions on "gpmi-nfc-main":
+0x000000000000-0x000000300000 : "gpmi-nfc-0-boot"
+0x000000300000-0x000000700000 : "updater-kernel"
+0x000000700000-0x000002300000 : "updater-rootfs"
+0x000002300000-0x000002b00000 : "database"
+0x000002b00000-0x000003300000 : "app-kernel"
+0x000003300000-0x000008000000 : "gpmi-nfc-general-use"
+cmdlinepart partition parsing not available
+UBI: attaching mtd5 to ubi0
+UBI: physical eraseblock size:   131072 bytes (128 KiB)
+UBI: logical eraseblock size:    126976 bytes
+UBI: smallest flash I/O unit:    2048
+UBI: VID header offset:          2048 (aligned 2048)
+UBI: data offset:                4096
+UBI: attached mtd5 to ubi0
+UBI: MTD device name:            "gpmi-nfc-general-use"
+UBI: MTD device size:            77 MiB
+UBI: number of good PEBs:        615
+UBI: number of bad PEBs:         1
+UBI: max. allowed volumes:       128
+UBI: wear-leveling threshold:    4096
+UBI: number of internal volumes: 1
+UBI: number of user volumes:     1
+UBI: available PEBs:             0
+UBI: total number of reserved PEBs: 615
+UBI: number of PEBs reserved for bad PEB handling: 6
+UBI: max/mean erase counter: 1/0
+UBI: image sequence number: 686797812
+UBI: background thread "ubi_bgt0d" started, PID 922
+ ubiblka: unknown partition table
+mice: PS/2 mouse device common for all mice
+MXS RTC driver v1.0 hardware v2.3.0
+mxs-rtc mxs-rtc.0: rtc core: registered mxs-rtc as rtc0
+mxs watchdog: initialized, heartbeat 19 sec
+mxs-mmc: MXS SSP Controller MMC Interface driver
+__mxs_reset_block(f0010000): timeout when resetting
+mxs-mmc mxs-mmc.0: mmc0: MXS SSP MMC DMAIRQ 82 ERRIRQ 96 
+TCP cubic registered
+NET: Registered protocol family 17
+NET: Registered protocol family 15
+lib80211: common routines for IEEE802.11 drivers
+mxs-rtc mxs-rtc.0: setting system clock to 1970-01-01 00:00:05 UTC (5)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+mmc0: queuing unknown CIS tuple 0x80 (7 bytes)
+mmc0: queuing unknown CIS tuple 0x80 (6 bytes)
+UBIFS: recovery needed
+mmc0: new high speed SDIO card at address 0001
+UBIFS: recovery completed
+UBIFS: mounted UBI device 0, volume 0, name "rootfs"
+UBIFS: file system size:   75423744 bytes (73656 KiB, 71 MiB, 594 LEBs)
+UBIFS: journal size:       9023488 bytes (8812 KiB, 8 MiB, 72 LEBs)
+UBIFS: media format:       w4/r0 (latest is w4/r0)
+UBIFS: default compressor: zlib
+UBIFS: reserved for root:  0 bytes (0 KiB)
+VFS: Mounted root (ubifs filesystem) on device 0:11.
+Freeing init memory: 124K
+Starting logging: OK
+Initializing random number generator... done.
+Starting system message bus: done
+UBI: attaching mtd3 to ubi1
+UBI: physical eraseblock size:   131072 bytes (128 KiB)
+UBI: logical eraseblock size:    126976 bytes
+UBI: smallest flash I/O unit:    2048
+UBI: VID header offset:          2048 (aligned 2048)
+UBI: data offset:                4096
+UBI: attached mtd3 to ubi1
+UBI: MTD device name:            "database"
+UBI: MTD device size:            8 MiB
+UBI: number of good PEBs:        64
+UBI: number of bad PEBs:         0
+UBI: max. allowed volumes:       128
+UBI: wear-leveling threshold:    4096
+UBI: number of internal volumes: 1
+UBI: number of user volumes:     1
+UBI: available PEBs:             6
+UBI: total number of reserved PEBs: 58
+UBI: number of PEBs reserved for bad PEB handling: 2
+UBI: max/mean erase counter: 2/1
+UBI: image sequence number: 0
+UBI: background thread "ubi_bgt1d" started, PID 988
+ ubiblkb: unknown partition table
+UBI device number 1, total 64 LEBs (8126464 bytes, 7.8 MiB), available 6 LEBs (761856 bytes, 744.0 KiB), LEB size 126976 bytes (124.0 KiB)
+UBIFS: recovery needed
+UBIFS: recovery completed
+UBIFS: mounted UBI device 1, volume 0, name "database"
+UBIFS: file system size:   5459968 bytes (5332 KiB, 5 MiB, 43 LEBs)
+UBIFS: journal size:       1015809 bytes (992 KiB, 0 MiB, 6 LEBs)
+UBIFS: media format:       w4/r0 (latest is w4/r0)
+UBIFS: default compressor: lzo
+UBIFS: reserved for root:  257887 bytes (251 KiB)
+app_boot=run appboot_args && nand read ${loadaddr} app-kernel 0x00400000 && bootm ${loadaddr}
+app_boot_bad=run updater_args; setenv bootargs ${bootargs} badapp; nand read ${loadaddr} updater-kernel 0x00400000; bootm ${loadaddr}
+boot_app=run app_boot || run app_boot_bad
+cat: can't open '/database/cf_url': No such file or directory
+rm: can't remove '/database/wpa_supplicant.conf': No such file or directory
++ case "$1" in
++ echo 'Starting AP mode...'
+Starting AP mode...
++ rm /tmp/isalive
+rm: can't remove '/tmp/isalive': No such file or directory
+++ pidof wpa_supplicant
++ '[' ']'
+++ pidof wpa_cli
++ '[' ']'
++ lsmod
++ grep dhd
++ '[' 1 -eq 1 ']'
++ insmod /root/wifi/dhd.ko firmware_path=/root/wifi/fw_prod.bin nvram_path=/root/wifi/nvram.conf iface_name=wlan0 dhd_sdiod_drive_strength=8
+DHD: dongle ram size is set to 524288(orig 524288) at 0x0
+dhd_bus_init: enable 0x06, ready 0x06 (waited 0us)
+dhd_wlfc_init(): successfully enabled bdcv2 tlv signaling, 79
+wlan0: Broadcom Dongle Host Driver
+
+Dongle Host Driver, version 1.88.64 (r447771)
++ set_rgb 127 20 73 0 0 0 flash 250000
++ sleep 2
++ wl mpc 0
++ wl down
++ wl ap 1
++ wl channel 8
++ wl wsec 0
++ wl wpa_auth 0
++ wl maxassoc 2
++ wl up
+++ head -1
+++ ifconfig wlan0
+++ egrep -o '([0-9A-F]{2}:){5}[0-9A-F]{2}'
++ hwaddr=34:23:BA:F0:45:4B
++++ date +%s
+++ sed 's/://g;s/.*\(......\)/\1/'
+++ printf %s 11
++ ssid=WINKHUB-11
++ wl ssid WINKHUB-11
+Setting SSID: "WINKHUB-11"
++ ifconfig wlan0 192.168.0.1
+dhd_aoe_hostip_clr failed code -23
+aoe_update_host_ipv4_table failed
++ pidof udhcpd
++ '[' 1 ']'
++ udhcpd -S /etc/udhcpd.conf
++ sleep 2
++ touch /tmp/ap_mode
++ exit 0
+Starting network...
+Starting bluetooth...
+Loading modules backported from Linux version v3.13.2-0-gfd82174
+Backport generated by backports.git v3.13.2-1-0-gaef13bc
+Bluetooth: 830ebf04
+NET: Registered protocol family 31
+Bluetooth: 830ebf04
+Bluetooth: 830ebeec
+Bluetooth: 830ebedc
+Bluetooth: 830ebeec
+Bluetooth: 83153f04
+Bluetooth: 83153eec
+Bluetooth: 83153eecDone setting line discpline
+Starting dropbear sshd: OK
+Starting lighttpd: OK
+Starting Zigbee...Starting lutron-core...Reset info: 11 (SOFTWARE)
+ezsp ver 0x04 stack type 0x02 stack ver. [5.1.0 GA build 49]
+Ezsp Config: set max end device children to 0x0006:Success: set
+Ezsp Config: set binding table size to 0x0002:Success: set
+Ezsp Config: set source route table size to 0x0064:Success: set
+Ezsp Config: set security level to 0x0005:Success: set
+Ezsp Config: set address table size to 0x00FA:Success: set
+Ezsp Config: set TC addr cache to 0x0004:Success: set
+Ezsp Config: set stack profile to 0x0002:Success: set
+Ezsp Config: set MAC indirect TX timeout to 0x1E00:Success: set
+Ezsp Config: set max hops to 0x001E:Success: set
+Ezsp Config: set key table size to 0x0000:Success: set
+Ezsp Config: set tx power mode to 0x8000:Success: set
+Ezsp Config: set supported networks to 0x0001:Success: set
+Ezsp Policy: set binding modify to "allow for valid endpoints & clusters only":Success: set
+Ezsp Policy: set message content in msgSent to "return":Success: set
+Ezsp Value : set maximum incoming transfer size to 0x000000FF:Success: set
+Ezsp Value : set maximum outgoing transfer size to 0x000000FF:Success: set
+Ezsp Config: set Fragmentation RX window size to 0x0001:Success: set
+NCP supports maxing out packet buffers
+Ezsp Config: set packet buffers to 89
+Ezsp Config: set Fragmentation RX window size to 0x0001:Success: set
+Ezsp Endpoint 1 added, profile 0x0104, in clusters: 3, out clusters 19
+Ezsp Policy: set TC Key Request to "Deny":Success: set
+Ezsp Policy: set App. Key Request to "Allow":Success: set
+Ezsp Policy: set Trust Center Policy to "Allow preconfigured key joins":Success: set
+Found 0 files
+
+main: flxOs Initialize success!
+zbServer_Initialize: Ipc Server Initialization success! 
+zbServer_Initialize: Ipc Server Open success! 
+main: zbServer Initialize success!
+EMBER_NETWORK_UP 0x0000
+IpcServerSendMessage: send error
+emberAfStackStatusCallback: error on IPC send 
+emberAfStackStatusCallback: send complete 
+The app framework is handling the stack status.
+FlexCI>[ OK ]
+Starting aprond...
+
+ttyAM0: 33 input overrun(s)
+
+
+
+
+
+^KttyAM0: 6 input overrun(s)
+^KKttyAM0: 2 input overrun(s)
+K
+
+ttyAM0: 3 input overrun(s)
+
+
+a
+
+ttyAM0: 5 input overrun(s)
+
+
+
+
+
+
+^C^C^C^CttyAM0: 10 input overrun(s)
+^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C^C
+
+httyAM0: 21 input overrun(s)
+elp
+helttyAM0: 7 input overrun(s)
+p
+help
+^CttyAM0: 8 input overrun(s)
+^C^C^C^C
+Got Z-Wave version: Z-Wave 3.79
+[ZWAVE OK]
+i: [1242.2aacdf40] main() (apron/:46): APRON Home Automation Gateway version 1.2.6953+pocketlaser-20140520.115653 Starting ...
+Connected
+IpcServerAcceptLoop: accept() success!
+IpcServerAcceptLoop: Ipc Server running in event-loop mode
+Starting Wink...Starting monit...-----Ipc Server Received message-----
+seqNum: 0
+msgType: C
+Processing ZB_NETWORK_STATUS_CMD
+-----Ipc Client Received message-----
+seqNum: 0
+msgType: 66
+---------------------------------------------------
+zbClient_ProcessAsyncMessage: Received Ember ASYNC NETWORK STATUS message:
+network Status: 0x90 
+---------------------------------------------------
+-----Ipc Server Received message-----
+seqNum: 1
+msgType: C
+Processing ZB_FIND_UNUSED_NETWORK_CMD
+zbUtil_FindUnusedNetwork: network form success!
+-----Ipc Client Received message-----
+seqNum: 1
+msgType: 82
+---------------------------------------------------
+zbClient_WaitForResponse: Got  zb server synchronous response:
+zbClient_WaitForResponse: msg type: 82
+zbClient_WaitForResponse: seqNum: 1
+zbClient_WaitForResponse: status: 0
+---------------------------------------------------
+zbClient_FindUnusedNetwork: WaitForResponse returned status: 0 
+Found 0 devices in database...
+hub[1249]: NOTICE: (hub.c:369) hub-dev started up by User: 0
+hub[1249]: INFO: (ConfigHandler.c:92) Reading Congif from: /root/config/hub.conf
+hub[1249]: INFO: (hub.c:415) Waiting for /database/token
+Starting monit daemon
+
+Welcome to Buildroot
+flex-dvt login: 
+Welcome to Buildroot
+flex-dvt login: hub[1249]: WARNING: (hub.c:438) No Token Found
+hub[1249]: DEBUG: (AuthenticationUtil.c:28) Destroying Oauth
+hub[1249]: DEBUG: (AuthenticationUtil.c:36) Done freeing oauth
+
+Welcome to Buildroot
+flex-dvt login: 
+Welcome to Buildroot
+flex-dvt login: g root
+Password: ttyAM0: 6 input overrun(s)
+set state to: 0x0B04
+security init TC: 0x70
+Forming on ch 11, panId 0xB89B
+Form error 0x70 aborting
+Scan error 0x70
+Network find complete (scan error).
+
+Login incorrect
+flex-dvt login: rttyAM0: 9 input overrun(s)
+oot
+Password: Setting non-canonical mode
+Startup complete.
+ttyAM0: 5 input overrun(s)
+ttyAM0: 2 input overrun(s)

@@ -1,0 +1,83 @@
+
+
+U-Boot 2010.03 (Jan 26 2011 - 12:37:34)Agilent P500
+
+CPU:   SPEAr600
+DRAM:  128 MiB
+Flash: 512 KiB
+NAND:  128 MiB
+In:    serial
+Out:   serial
+Err:   serial
+SerNum:serial number not programmed
+Chip:  BD Board Rev: 4
+Net:   smsc
+Press space to stop autoboot:  0 
+## Booting kernel from Legacy Image at f8050000 ...
+   Image Name:   PBOOT
+   Created:      2011-01-27  11:38:14 UTC
+   Image Type:   ARM Linux Kernel Image (gzip compressed)
+   Data Size:    36703 Bytes = 35.8 KiB
+   Load Address: 00000000
+   Entry Point:  00000000
+   Uncompressing Kernel Image ... OK
+
+Starting kernel ...
+
+
+Debug serial initialized ........OK 
+
+Microsoft Windows CE Bootloader Common Library Version 1.4 Built Jan 27 2011 02:04:15
+Microsoft Windows CE 6.0 Ethernet Bootloader for the Agilent P500 board 
+Adaptation performed by Agilent Technologies (c) 2008
+
+
+System ready!
+Preparing for download...
+ Loading image 1 from memory at 0xD0600000
+O
+BL_IMAGE_TYPE_BIN
+
+X
+XXXXXOOOOXOOOOOOOOXOXOOOOOOOOXOOOXOOOOXXOOOOOOOOOXOOOOXXXOXOXXXOOXOXXOXXXXOOOXXXOOOOOXOOXOXXXOOOXXOOOXXOOOOXOOXOOXXOOOXOOOOOXOOOXOOOXXXXXXOXOXXOXXXXXXXOXXXOOOXOOOOXXOOOOXOOOOXOXOXOOOOOOXOOOOXOXOOOOOXXOOOOOXXOOOOX
+XOOOOOOOOOXOOOOXOOOOOOOXXOOOOOXXOOOOXOXOXOOXOXOOOXOOOXOOOXXXOXOOOXOXXXXOXOOXXOXXOXXOOOXXOXOXXOXXXXXOOXOXXXXOXOOXOXOOOOXOOOOXOOOXOOXOOXOOOXOOXXXXXXXXXXXXXXOXrom_offset=0x0.
+XXImageStart = 0x80361000, ImageLength = 0x124867C, LaunchAddr = 0x80362000
+
+Completed file(s):
+-------------------------------------------------------------------------------
+[0]: Address=0x80361000  Length=0x124867C  Name="" Target=RAM
+ Loading image 1 succeeded.
+ROMHDR at Address 80361044h
+Preparing launch... 
+Launching windows CE image by jumping at address 0x  362000
+
+Windows CE Kernel for ARM (Thumb Enabled) Built on Jun 16 2009 at 10:08:15
+Setting up for a Cold Reboot
+Done Setting up for a Cold Reboot
+Windows CE Firmware Init
+BSP 1.0.0 for the SPEARHEAD600AB board (built Feb 22 2012)
+Adaptation performed by ADENEO (c) 2005
++OALIntrInit
+-OALIntrInit(rc = 1)
+Initialize driver globals Zeros area...
+pDrvGlobalArea 0xa0060000  size 0x800 (0xa0060800 -0xa0060000)
+Initialize driver globals Zeros area...done
+ OALKitlStart
+Firmware Init Done.
+OALIoctlHalEnterI2cCriticalSection init i2c cs
+-EDeviceLoadEeprom 00:30:D3:1D:77:C7
+Phy found addr 31 (ticks=2696)
+WaitForLink Start (ticks=2697)
+No Link (ticks=3700)
+<--EDeviceInitialize
+
+GMAC DMA status register = 0x0
+BALDWIN_DDI: cBaldwinHwIf::Init: Initializing...
+BALDWIN_DDI: cBaldwinHwIf::Init: Scope successfully identified.
+BALDWIN_DDI: cBaldwinHwIf::Init: Success!
+Running infiniiVisionInstallHelper
+Failed to start/configure network.
+Starting ProcessStartupFolder
+running \Secure\Startup\infiniivision.lnk...
+
+Ending ProcessStartupFolder

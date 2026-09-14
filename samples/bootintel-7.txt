@@ -1,0 +1,82 @@
+U-Boot SPL 2022.04 (Oct 05 2023 - 14:06:15 +0000)
+power_bd71837_init
+DDRINFO: start DRAM init
+DDRINFO: DRAM rate 1600MTS
+DDRINFO:ddrphy calibration done
+DDRINFO: ddrmix config done
+Normal Boot
+Trying to boot from MMC1
+hab fuse not enabled
+Authenticate image from DDR location 0x401fcdc0...
+NOTICE:  BL31: v2.6(release):lf-5.15.32-2.0.0-0-gc6a19b1a3-dirty
+NOTICE:  BL31: Built : 06:37:22, Jun  7 2022
+U-Boot 2022.04 (Oct 05 2023 - 14:06:15 +0000)
+CPU:   i.MX8MMD rev1.0 1600 MHz (running at 1200 MHz)
+CPU:   Industrial temperature grade (-40C to 105C) at 43C
+Reset cause: POR
+Model: grip-aio_200-02122A
+DRAM:  224 MiB
+board_init
+Core:  61 devices, 21 uclasses, devicetree: separate
+MMC:   FSL_SDHC: 0
+Loading Environment from nowhere... OK
+In:    serial
+Out:   serial
+Err:   serial
+SEC0:  RNG instantiated
+ BuildInfo:
+  - ATF c6a19b1
+facmod value is 1!
+pulse number is 0
+�flash target is MMC:0
+Fastboot: Normal
+Normal Boot
+
+Hit any key to stop autoboot:  2 
+end: 3.4.2 bootloader-interrupt (duration 00:00:04) [common]
+start: 3.4.3 bootloader-commands (timeout 00:02:52) [common]
+Setting prompt string to ['=>']
+bootloader-commands: Wait for prompt ['=>'] (timeout 00:02:52)
+ 0 
+Setting prompt string to ['=>', 'Resetting CPU', 'Must RESET board to recover', 'TIMEOUT', 'Retry count exceeded', 'Retry time exceeded; starting again', 'ERROR: The remote end did not respond in time.', 'File not found', 'Bad Linux ARM64 Image magic!', 'Wrong Ramdisk Image Format', 'Ramdisk image is corrupt', 'ERROR: Failed to allocate', 'TFTP error: trying to overwrite reserved memory', 'Bad Linux RISCV Image magic!', 'Wrong Image Format for boot', 'ERROR: Did not find a cmdline Flattened Device Tree', 'ERROR: RD image overlaps OS image', 'Invalid partition']
+Sending with 5 millisecond of delay
+setenv factorymode 1
+u-boot=> setenv factorymode 1
+bootloader-commands: Wait for prompt ['=>', 'Resetting CPU', 'Must RESET board to recover', 'TIMEOUT', 'Retry count exceeded', 'Retry time exceeded; starting again', 'ERROR: The remote end did not respond in time.', 'File not found', 'Bad Linux ARM64 Image magic!', 'Wrong Ramdisk Image Format', 'Ramdisk image is corrupt', 'ERROR: Failed to allocate', 'TFTP error: trying to overwrite reserved memory', 'Bad Linux RISCV Image magic!', 'Wrong Image Format for boot', 'ERROR: Did not find a cmdline Flattened Device Tree', 'ERROR: RD image overlaps OS image', 'Invalid partition'] (timeout 00:02:51)
+setenv factorymode 1
+Sending with 5 millisecond of delay
+boot
+u-boot=> boot
+Setting prompt string to ['Starting kernel ...', 'Resetting CPU', 'Must RESET board to recover', 'TIMEOUT', 'Retry count exceeded', 'Retry time exceeded; starting again', 'ERROR: The remote end did not respond in time.', 'File not found', 'Bad Linux ARM64 Image magic!', 'Wrong Ramdisk Image Format', 'Ramdisk image is corrupt', 'ERROR: Failed to allocate', 'TFTP error: trying to overwrite reserved memory', 'Bad Linux RISCV Image magic!', 'Wrong Image Format for boot', 'ERROR: Did not find a cmdline Flattened Device Tree', 'ERROR: RD image overlaps OS image', 'Invalid partition']
+bootloader-commands: Wait for prompt ['Starting kernel ...', 'Resetting CPU', 'Must RESET board to recover', 'TIMEOUT', 'Retry count exceeded', 'Retry time exceeded; starting again', 'ERROR: The remote end did not respond in time.', 'File not found', 'Bad Linux ARM64 Image magic!', 'Wrong Ramdisk Image Format', 'Ramdisk image is corrupt', 'ERROR: Failed to allocate', 'TFTP error: trying to overwrite reserved memory', 'Bad Linux RISCV Image magic!', 'Wrong Image Format for boot', 'ERROR: Did not find a cmdline Flattened Device Tree', 'ERROR: RD image overlaps OS image', 'Invalid partition'] (timeout 00:02:51)
+boot
+** Invalid partition 3 **
+Couldn't find partition mmc 0:3
+Can't set block device
+uEnv not found in mmcpart3, checking mmcpart1
+Failed to load '/boot/system/uEnv'
+uEnv not found in mmcpart 1 either!
+Booting from mmc ...
+## Error: \"w\" not defined
+matched a bootloader error message: 'Invalid partition' (17)
+end: 3.4.3 bootloader-commands (duration 00:00:02) [common]
+case: bootloader-commands
+case_id: 223936
+definition: lava
+duration: 1.52
+extra: ...
+level: 3.4.3
+namespace: common
+result: fail
+matched a bootloader error message: 'Invalid partition' (17)
+end: 3.4 uboot-commands (duration 00:00:09) [common]
+case: uboot-commands
+case_id: 223937
+definition: lava
+duration: 9.28
+extra: ...
+level: 3.4
+namespace: common
+result: fail
+uboot-action failed: 3 of 3 attempts. 'matched a bootloader error message: 'Invalid partition' (17)'
+matched a bootloader error message: 'Invalid partition' (17)

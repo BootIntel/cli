@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/bootintel/cli/blob/main/SECURITY.md
+    about: Please report security issues via email — see SECURITY.md. Do NOT file them as public issues.
+  - name: Question about the hosted API (bootintel.com)
+    url: https://bootintel.com/support
+    about: Questions about the paid --api service, billing, account management, or the browser tool live on bootintel.com.
+  - name: Contribution guide
+    url: https://github.com/bootintel/cli/blob/main/CONTRIBUTING.md
+    about: Build loop, coding standards, and PR workflow for first-time contributors.

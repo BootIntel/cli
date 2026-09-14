@@ -1,0 +1,97 @@
+# Self-test for the reusable GH Action wrapper.
+#
+# Composite actions in `.github/actions/*` can be tested end-to-end
+# by invoking them from a workflow in the same repo. This one runs
+# `bootintel-scan` against a checked-in sample boot log and asserts
+# the JSON output contains the expected `findings[]` array + hits
+# on well-known detectors for that sample.
+#
+# Runs on every PR + push to main. Cheap (~1 min) — install.sh
+# downloads a ~1.8 MiB binary, then a single scan.
+
+name: action-selftest
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan-sample:
+    name: action → scan bootintel-4.txt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install libudev (Linux serialport dep)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libudev-dev
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: action-selftest-${{ hashFiles('Cargo.lock') }}
+
+      # Pre-build the binary from source + put on PATH. The action's
+      # install step detects it and no-ops, so we exercise the ACTION'S
+      # scan-invocation logic without depending on the remote
+      # install.sh fetch. (Post-public-flip, install.sh works anon
+      # and the action installs from GH Releases; that path is
+      # already smoke-tested via `install.sh --from-tarball` and
+      # by the release workflow's Docker image build.)
+      - name: Build bootintel from source + put on PATH
+        run: |
+          cargo build --release --features tui
+          mkdir -p "${{ runner.temp }}/bin"
+          cp target/release/bootintel "${{ runner.temp }}/bin/"
+          echo "${{ runner.temp }}/bin" >> "$GITHUB_PATH"
+
+      # Use the action from *this checkout* (./). External consumers
+      # would pin to a tag like `bootintel/cli@cli-v0.2.0`; here we
+      # test the working-tree version so a broken action.yml fails
+      # PR CI immediately, not just at consumer-consumption time.
+      - name: Run bootintel-scan on Qualcomm IPQ8074 sample
+        id: scan
+        uses: ./.github/actions/bootintel-scan
+        with:
+          log-file: samples/bootintel-4.txt
+          format: json
+          output-file: bootintel-4.findings.json
+          gate-critical: 'false'   # sample has no critical exposures
+
+      - name: Assert scan produced expected output
+        run: |
+          set -eu
+          test -f bootintel-4.findings.json || { echo "output file missing"; exit 1; }
+          echo "=== findings JSON ==="
+          jq '.' bootintel-4.findings.json | head -40
+          echo
+          # Expected: matches ../crates/cli/tests/corpus_smoke.rs golden values.
+          jq -e '.findings | length >= 4' bootintel-4.findings.json > /dev/null \
+            || { echo "expected >=4 findings, got $(jq '.findings | length' bootintel-4.findings.json)"; exit 1; }
+          jq -e '.findings[] | select(.label == "Bootloader" and (.value | startswith("U-Boot")))' \
+            bootintel-4.findings.json > /dev/null \
+            || { echo "expected Bootloader=U-Boot* finding"; exit 1; }
+          jq -e '.findings[] | select(.label == "Kernel" and (.value | startswith("Linux")))' \
+            bootintel-4.findings.json > /dev/null \
+            || { echo "expected Kernel=Linux* finding"; exit 1; }
+          jq -e '.findings[] | select(.label == "Device family" and .value == "OpenWrt")' \
+            bootintel-4.findings.json > /dev/null \
+            || { echo "expected Device family=OpenWrt finding"; exit 1; }
+          echo "  ✅ action produced the expected finding set"
+          echo
+          echo "  findings-count output: ${{ steps.scan.outputs.findings-count }}"
+          echo "  findings-json output:  ${{ steps.scan.outputs.findings-json }}"

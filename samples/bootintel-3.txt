@@ -1,0 +1,345 @@
+## Booting kernel from Legacy Image at 80800000 ...
+   Image Name:   Linux-3.0.35-lab126
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    2593860 Bytes =  2.5 MB
+   Load Address: 80008000
+   Entry Point:  80008000
+   Verifying Checksum ... OK
+   Loading Kernel Image ... OK
+OK
+
+Starting kernel ...
+
+[    0.098453] boot: C def:bcut:batterycut=1
+[    0.274943] LPDDR2 MfgId: 0x1 [Samsung]
+[    0.279021] 
+[    0.279024] just text: vaddr c013f678, va 0xc013f200 pa 0x801000c3 attr 0x6
+[    0.291575] 
+[    0.291578] nmx6sl_wfi_iram: vaddr d084e000, va 0xd084e200 pa 0x904043 attr 0x2
+[    0.300422] 
+[    0.300425] mx6sl_ddr: vaddr d0856000, va 0xd0856200 pa 0x905043 attr 0x2
+[    0.308753] 
+[    0.308756] mx6sl_iomux: vaddr f40e0000, va 0xf40e0200 pa 0x20110c3 attr 0x149
+[    0.319595] 
+[    0.319597] ANATOP: vaddr f40c8000, va 0xf40c8200 pa 0x20110c3 attr 0x149
+[    0.333945] 
+[    0.333948] CCM: vaddr f40c4000, va 0xf40c4200 pa 0x20110c3 attr 0x149
+[    0.346088] 
+[    0.346091] MMDC_P0: vaddr f41b0000, va 0xf41b0200 pa 0x21110c3 attr 0x149
+[    0.356499] 
+[    0.356502] L2: vaddr f2a02000, va 0xf2a02200 pa 0xa02043 attr 0x149
+[    0.366400] 
+[    0.366403] arm perif: vaddr f2a00000, va 0xf2a00200 pa 0xa00043 attr 0x149
+3.0.35-lab126 #1 PREEMPT Tue Feb 17 15:18:09 PST 2015 armv7l
+Press [ENTER] for recovery menu...       0 /
+=== kernel printk buffer (20036 bytes) ===
+<5>[    0.000000] Linux version 3.0.35-lab126 (jenkins-official@sjc10-jbuild07) (collect2: ld returned 1 exit status) #1 PREEMPT Tue Feb 17 15:18:09 PST 2015
+<4>[    0.000000] CPU: ARMv7 Processor [412fc09a] revision 10 (ARMv7), cr=10c53c7d
+<4>[    0.000000] CPU: VIPT nonaliasing data cache, VIPT aliasing instruction cache
+<4>[    0.000000] Machine: Freescale i.MX 6SoloLite based Wario Board
+<6>[    0.000000] Will try to place printk log at 8fffc000
+<4>[    0.000000] Memory policy: ECC disabled, Data cache writeback
+<6>[    0.000000] CPU identified as i.MX6SoloLite, silicon rev 1.2
+<7>[    0.000000] On node 0 totalpages: 65536
+<7>[    0.000000] free_area_init_node: node 0, pgdat c05395b8, node_mem_map c2000000
+<7>[    0.000000]   DMA zone: 64 pages used for memmap
+<7>[    0.000000]   DMA zone: 0 pages reserved
+<7>[    0.000000]   DMA zone: 8128 pages, LIFO batch:0
+<7>[    0.000000]   Normal zone: 448 pages used for memmap
+<7>[    0.000000]   Normal zone: 56896 pages, LIFO batch:15
+<7>[    0.000000] pcpu-alloc: s0 r0 d32768 u32768 alloc=1*32768
+<7>[    0.000000] pcpu-alloc: [0] 0 
+<4>[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 65024
+<5>[    0.000000] Kernel command line: rootwait log_pos_goal=0x8fffc000 console=ttymxc0,115200 root=/dev/mmcblk0p1 ro ip=off quiet video=mxcepdcfb:E60,bpp=8,x_mem=3M
+<4>[    0.000000] Prink buffer will be relocated to physical address: 8fff2000
+<6>[    0.000000] log_buf_len: 32768
+<6>[    0.000000] early log buf free: 31333(95%)
+<6>[    0.000000] PID hash table entries: 1024 (order: 0, 4096 bytes)
+<6>[    0.000000] Dentry cache hash table entries: 32768 (order: 5, 131072 bytes)
+<6>[    0.000000] Inode-cache hash table entries: 16384 (order: 4, 65536 bytes)
+<6>[    0.000000] Memory: 256MB = 256MB total
+<5>[    0.000000] Memory: 254288k/254288k available, 7856k reserved, 0K highmem
+<5>[    0.000000] Virtual kernel memory layout:
+<5>[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+<5>[    0.000000]     fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+<5>[    0.000000]     DMA     : 0xfde00000 - 0xffe00000   (  32 MB)
+<5>[    0.000000]     vmalloc : 0xd0800000 - 0xf2000000   ( 536 MB)
+<5>[    0.000000]     lowmem  : 0xc0000000 - 0xd0000000   ( 256 MB)
+<5>[    0.000000]     modules : 0xbf000000 - 0xc0000000   (  16 MB)
+<5>[    0.000000]       .init : 0xc0008000 - 0xc012c000   (1168 kB)
+<5>[    0.000000]       .text : 0xc012c000 - 0xc0505000   (3940 kB)
+<5>[    0.000000]       .data : 0xc0506000 - 0xc053a0e0   ( 209 kB)
+<5>[    0.000000]        .bss : 0xc053a104 - 0xc055f960   ( 151 kB)
+<6>[    0.000000] SLUB: Genslabs=13, HWalign=32, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+<6>[    0.000000] Preemptible hierarchical RCU implementation.
+<6>[    0.000000] 	Verbose stalled-CPUs detection is disabled.
+<6>[    0.000000] NR_IRQS:624
+<6>[    0.000000] MXC GPIO hardware
+<6>[    0.000000] sched_clock: 32 bits at 24MHz, resolution 41ns, wraps every 178956ms
+<6>[    0.000000] arm_max_freq=1GHz
+<6>[    0.000000] MXC_Early serial console at MMIO 0x2020000 (options '115200')
+<6>[    0.000000] bootconsole [ttymxc0] enabled
+<6>[    0.000000] Console: colour dummy device 80x30
+<6>[    0.000272] Calibrating delay loop... 1987.37 BogoMIPS (lpj=9936896)
+<6>[    0.060122] pid_max: default: 32768 minimum: 301
+<6>[    0.060396] Mount-cache hash table entries: 512
+<6>[    0.060758] CPU: Testing write buffer coherency: ok
+<6>[    0.060905] hw perfevents: enabled with ARMv7 Cortex-A9 PMU driver, 7 counters available
+<6>[    0.067778] print_constraints: dummy: 
+<6>[    0.067950] NET: Registered protocol family 16
+<6>[    0.072466] print_constraints: vddpu: 725 <--> 1300 mV at 700 mV fast normal 
+<6>[    0.072786] print_constraints: vddcore: 725 <--> 1300 mV at 1475 mV fast normal 
+<6>[    0.073108] print_constraints: vddsoc: 725 <--> 1300 mV at 1475 mV fast normal 
+<6>[    0.073436] print_constraints: vdd2p5: 2000 <--> 2775 mV at 2400 mV fast normal 
+<6>[    0.073801] print_constraints: vdd1p1: 800 <--> 1400 mV at 1100 mV fast normal 
+<6>[    0.074136] print_constraints: vdd3p0: 2625 <--> 3400 mV at 3000 mV fast normal 
+<4>[    0.075925] LAB126 Board id - 02E2201133860U4W
+<6>[    0.080742] hw-breakpoint: found 6 breakpoint and 1 watchpoint registers.
+<6>[    0.080755] hw-breakpoint: 1 breakpoint(s) reserved for watchpoint single-step.
+<6>[    0.080768] hw-breakpoint: maximum watchpoint size is 4 bytes.
+<6>[    0.080786] L310 cache controller enabled
+<6>[    0.080797] l2x0: 16 ways, CACHE_ID 0x410000c8, AUX_CTRL 0x02030000, Cache size: 262144 B
+<6>[    0.090085] bio: create slab <bio-0> at 0
+<6>[    0.094464] max77696> regulator init
+<6>[    0.095471] spi_imx imx6q-ecspi.0: probed
+<6>[    0.095879] usbcore: registered new interface driver usbfs
+<6>[    0.096007] usbcore: registered new interface driver hub
+<6>[    0.096159] usbcore: registered new device driver usb
+<4>[    0.098422] Reboot Reason - Metric Framework Reporting
+<6>[    0.098437] kernel: kernel_metric_generic,0,counter,event_recorder,ercflags,MR_FRSTRT,1,
+<4>[    0.098445] Reboot Reason - Legacy Metric Reporting
+<3>[    0.098453] boot: C def:bcut:batterycut=1
+<6>[    0.104129] MAX77696 TOPSYS 1.0.0 Installed
+<6>[    0.106906] max77696-gpio max77696-gpio.0: gpio#0 -- -- func-0 in 
+<6>[    0.108421] max77696-gpio max77696-gpio.0: gpio#1 -- -- func--1 in 
+<6>[    0.109930] max77696-gpio max77696-gpio.0: gpio#3 -- -- func-0 in 
+<6>[    0.111836] MAX77696 GPIO Driver 1.0.0 Installed
+<4>[    0.113164] buck mode: 4
+<4>[    0.113927] buck mode: 4
+<6>[    0.114900] print_constraints: max77696_buck1: 900 <--> 1300 mV at 1250 mV fast normal idle standby
+<4>[    0.115493] buck mode: 4
+<6>[    0.116467] print_constraints: max77696_buck1dvs: 600 <--> 1300 mV at 900 mV fast normal idle standby
+<4>[    0.117048] buck mode: 4
+<4>[    0.117808] buck mode: 4
+<6>[    0.118780] print_constraints: max77696_buck2: 900 <--> 1300 mV at 1200 mV fast normal idle standby
+<4>[    0.119329] buck mode: 4
+<6>[    0.120307] print_constraints: max77696_buck2dvs: 600 <--> 1300 mV at 900 mV fast normal idle standby
+<6>[    0.120867] print_constraints: max77696_buck3: 600 <--> 3387 mV at 1300 mV fast normal idle standby
+<4>[    0.121596] buck mode: 4
+<4>[    0.122357] buck mode: 4
+<6>[    0.123134] print_constraints: max77696_buck4: 1200 mV fast normal idle standby
+<4>[    0.123701] buck mode: 4
+<6>[    0.124675] print_constraints: max77696_buck5: 600 <--> 3387 mV at 1800 mV fast normal idle standby
+<4>[    0.125240] buck mode: 4
+<6>[    0.126217] print_constraints: max77696_buck6: 600 <--> 3387 mV at 3200 mV fast normal idle standby
+<6>[    0.126258] MAX77696 Buck Regulators Driver 1.0.1 Installed
+<6>[    0.127107] print_constraints: max77696_ldo1: 800 <--> 3950 mV at 3300 mV normal idle standby
+<6>[    0.127699] print_constraints: max77696_ldo2: 800 <--> 3950 mV at 3000 mV normal idle standby
+<6>[    0.128286] print_constraints: max77696_ldo3: 800 <--> 3950 mV at 2500 mV normal idle standby
+<6>[    0.128862] print_constraints: max77696_ldo4: 800 <--> 2375 mV at 1800 mV normal idle standby
+<6>[    0.129423] print_constraints: max77696_ldo5: 800 <--> 2375 mV at 1800 mV normal idle standby
+<6>[    0.130008] print_constraints: max77696_ldo6: 800 <--> 3950 mV at 3200 mV normal idle standby
+<6>[    0.130592] print_constraints: max77696_ldo7: 800 <--> 3950 mV at 3200 mV normal idle standby
+<6>[    0.131164] print_constraints: max77696_ldo8: 800 <--> 2375 mV at 1100 mV normal idle standby
+<6>[    0.131744] print_constraints: max77696_ldo9: 800 <--> 2375 mV at 1100 mV normal idle standby
+<6>[    0.132326] print_constraints: max77696_ldo10: 2400 <--> 5550 mV at 5200 mV normal idle standby
+<6>[    0.133217] MAX77696 Linear Regulators Driver 1.0.2 Installed
+<6>[    0.133922] print_constraints: max77696_lsw1: 
+<6>[    0.134298] print_constraints: max77696_lsw2: 
+<6>[    0.134633] print_constraints: max77696_lsw3: 
+<6>[    0.134969] print_constraints: max77696_lsw4: 
+<6>[    0.135016] MAX77696 Load Switches Driver 1.0.0 Installed
+<6>[    0.136280] print_constraints: max77696-display: 
+<6>[    0.137069] print_constraints: max77696-vcom: 
+<6>[    0.137413] print_constraints: max77696-vee: 
+<6>[    0.137779] print_constraints: max77696-vneg: 
+<6>[    0.138151] print_constraints: max77696-vpos: 
+<6>[    0.138491] print_constraints: max77696-vddh: 
+<6>[    0.139527] 
+<6>[    0.139531] EPD vreg probe complete!
+<6>[    0.140159] print_constraints: max77696_vddq: 240 <--> 984 mV at 600 mV 
+<6>[    0.140216] MAX77696 LPDDR2 Termination Supply Driver 1.0.1 Installed
+<6>[    0.141656] MAX77696 I2C Driver 1.0.0 Installed
+<4>[    0.145033] i2c-core: driver [max17135] using legacy suspend method
+<4>[    0.145045] i2c-core: driver [max17135] using legacy resume method
+<6>[    0.145079] Switching to clocksource mxc_timer1
+<6>[    0.157325] NET: Registered protocol family 2
+<6>[    0.157423] IP route cache hash table entries: 2048 (order: 1, 8192 bytes)
+<6>[    0.157606] TCP established hash table entries: 8192 (order: 4, 65536 bytes)
+<6>[    0.157727] TCP bind hash table entries: 8192 (order: 3, 32768 bytes)
+<6>[    0.157786] TCP: Hash tables configured (established 8192 bind 8192)
+<6>[    0.157794] TCP reno registered
+<6>[    0.157803] UDP hash table entries: 256 (order: 0, 4096 bytes)
+<6>[    0.157822] UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+<6>[    0.158158] NET: Registered protocol family 1
+<6>[    0.158363] RPC: Registered named UNIX socket transport module.
+<6>[    0.158373] RPC: Registered udp transport module.
+<6>[    0.158380] RPC: Registered tcp transport module.
+<6>[    0.158387] RPC: Registered tcp NFSv4.1 backchannel transport module.
+<4>[    0.162919] etb: probe of etb failed with error -2
+<4>[    0.163223] etm: probe of etm.0 failed with error -2
+<6>[    0.163515] Static Power Management for Freescale i.MX6
+<6>[    0.163526] wait mode is enabled for i.MX6
+<6>[    0.163681] cpaddr = 0 suspend_iram_base=f2900000
+<6>[    0.163725] PM driver module loaded
+<6>[    0.163997] IMX usb wakeup probe
+<7>[    0.164019] the wakeup pdata is 0xce190680
+<6>[    0.164380] IMX usb wakeup probe
+<7>[    0.164398] the wakeup pdata is 0xce190800
+<6>[    0.164561] cpu regulator mode:ldo_bypass
+<6>[    0.164969] i.MXC CPU frequency driver
+<6>[    0.179492] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+<6>[    0.180575] msgmni has been set to 496
+<6>[    0.181054] io scheduler noop registered
+<6>[    0.181136] io scheduler cfq registered (default)
+<6>[    0.181624] MAX77696 Backlight Driver 1.0.0 Installed
+<6>[    0.182463] imx-sdma imx-sdma: loaded firmware 1.1
+<6>[    0.188119] imx-sdma imx-sdma: initialized
+<6>[    0.190152] Serial: IMX driver
+<6>[    0.190274] imx-uart.0: ttymxc0 at MMIO 0x2020000 (irq = 58) is a IMX
+<6>[    0.190304] console [ttymxc0] enabled, bootconsole disabled
+<6>[    0.194370] loop: module loaded
+<6>[    0.194628] MAX77696 32kHz Oscillator Driver 1.0.0 Installed
+<6>[    0.195301] input: max77696-onkey as /devices/platform/imx-i2c.0/i2c-0/0-003c/max77696-onkey.0/input/input0
+<6>[    0.198571] MAX77696 ONKEY Driver 1.0.0 Installed
+<6>[    0.216563] max77696-rtc max77696-rtc.0: rtc core: registered max77696-rtc.0 as rtc0
+<6>[    0.236360] max77696-rtc max77696-rtc.0: rtc core: registered max77696-rtc.1 as rtc1
+<6>[    0.255765] MAX77696 RTC Driver 1.0.2 Installed
+<6>[    0.256511] snvs_rtc snvs_rtc.0: rtc core: registered snvs_rtc as rtc2
+<6>[    0.256689] i2c /dev entries driver
+<6>[    0.260840] max77696-battery max77696-battery.0: Voltage alert     3400mV ... 4260mV
+<6>[    0.261263] max77696-battery max77696-battery.0: SOC alert         (disabled)
+<6>[    0.262199] MAX77696 Fuel Gauge Driver 1.0.0 Installed
+<6>[    0.264134] MAX77696 USB Interface Circuit Driver 1.0.0 Installed
+<6>[    0.265899] max77696-adc max77696-adc.0: ADC average rate: 32 sample(s)
+<6>[    0.265910] max77696-adc max77696-adc.0: ADC delay: 0 nsec
+<6>[    0.265918] max77696-adc max77696-adc.0: ADC cur src: 50 uA
+<6>[    0.265929] MAX77696 ADC Driver 1.0.1 Installed
+<6>[    0.266452] imx2-wdt imx2-wdt.0: IMX2+ Watchdog Timer enabled. timeout=60s (nowayout=1)
+<6>[    0.267339] sdhci: Secure Digital Host Controller Interface driver
+<6>[    0.267353] sdhci: Copyright(c) Pierre Ossman
+<6>[    0.267465] mmc0: no vmmc regulator found
+<7>[    0.268486] sdhci: =========== REGISTER DUMP (mmc0)===========
+<4>[    0.268496] 
+<4>[    0.268498] 0xd0858000:  00000000 00010200 00000000 083a0000
+<4>[    0.268510] 0xd0858010:  00000900 a9ffffff 320f5a33 00000b00
+<4>[    0.268521] 0xd0858020:  00000000 ff888088 08800024 008e0118
+<4>[    0.268532] 0xd0858030:  00000000 007f0003 007f0003 00000000
+<4>[    0.268542] 0xd0858040:  07f3b407 08000880 00000011 00000000
+<4>[    0.268553] 0xd0858050:  00000000 00000000 00000000 00000000
+<4>[    0.268564] 0xd0858060:  00000000 00000200 00000000 0800ff00
+<4>[    0.268575] 0xd0858070:  00000000 00000000 00000000 00000000
+<4>[    0.268585] 0xd0858080:  00000000 00000000 00000000 00000000
+<4>[    0.268595] 0xd0858090:  00000000 00000000 00000000 00000000
+<4>[    0.268606] 0xd08580a0:  00000000 00000000 00000000 00000000
+<4>[    0.268616] 0xd08580b0:  00000000 00000000 00000000 00000000
+<4>[    0.268626] 0xd08580c0:  2000780b 00000000 00000006 00212800
+<7>[    0.268641] CCM: CSCMR1(0x00900040), CSCDR1(0x00490b40)
+<7>[    0.268648] CCM: CCOSR(0x000a000c), CCGR6(0x00000030)
+<7>[    0.268654] CCM: CMEOR(0x7fffffff)
+<7>[    0.268661] sdhci: ===========================================
+<6>[    0.268987] mmc0: SDHCI controller on platform [sdhci-esdhc-imx.1] using DMA
+<6>[    0.270060] mmc1: no vmmc regulator found
+<7>[    0.271078] sdhci: =========== REGISTER DUMP (mmc1)===========
+<4>[    0.271087] 
+<4>[    0.271089] 0xd0860000:  00000000 00010000 00000000 00000000
+<4>[    0.271101] 0xd0860010:  00000000 00000000 00000000 00000000
+<4>[    0.271111] 0xd0860020:  00000000 ff888088 08800020 0080800f
+<4>[    0.271122] 0xd0860030:  00000000 007f0003 007f0003 00000000
+<4>[    0.271133] 0xd0860040:  07f3b407 08100810 80000000 00000000
+<4>[    0.271143] 0xd0860050:  00000000 00000000 00000000 00000000
+<4>[    0.271154] 0xd0860060:  00000000 00000200 00000000 0800ff00
+<4>[    0.271164] 0xd0860070:  00000000 00000000 00000000 00000000
+<4>[    0.271174] 0xd0860080:  00000000 00000000 00000000 00000000
+<4>[    0.271184] 0xd0860090:  00000000 00000000 00000000 00000000
+<4>[    0.271194] 0xd08600a0:  00000000 00000000 00000000 00000000
+<4>[    0.271205] 0xd08600b0:  00000000 00000000 00000000 00000000
+<4>[    0.271215] 0xd08600c0:  2000780b 00000000 00000006 00212800
+<7>[    0.271228] CCM: CSCMR1(0x00900040), CSCDR1(0x00490b40)
+<7>[    0.271236] CCM: CCOSR(0x000a000c), CCGR6(0x000000c0)
+<7>[    0.271242] CCM: CMEOR(0x7fffffff)
+<7>[    0.271248] sdhci: ===========================================
+<6>[    0.271345] mmc0: mmc_rescan_try_freq: trying to init card at 400000 Hz
+<6>[    0.272683] mmc1: SDHCI controller on platform [sdhci-esdhc-imx.2] using DMA
+<7>[    0.273419] Registered led device: max77696-leds.0
+<6>[    0.273429] MAX77696 LED Driver #0 1.0.0 Installed
+<7>[    0.273602] Registered led device: max77696-leds.1
+<6>[    0.273611] MAX77696 LED Driver #1 1.0.0 Installed
+<6>[    0.274051] nf_conntrack version 0.5.0 (3973 buckets, 15892 max)
+<6>[    0.274712] ip_tables: (C) 2000-2006 Netfilter Core Team
+<6>[    0.274781] TCP cubic registered
+<6>[    0.274791] NET: Registered protocol family 17
+<6>[    0.274811] VFP support v0.3: implementor 41 architecture 3 part 30 variant 9 rev 4
+<3>[    0.274943] LPDDR2 MfgId: 0x1 [Samsung]
+<3>[    0.279021] 
+<3>[    0.279024] just text: vaddr c013f678, va 0xc013f200 pa 0x801000c3 attr 0x6
+<3>[    0.291575] 
+<3>[    0.291578] nmx6sl_wfi_iram: vaddr d084e000, va 0xd084e200 pa 0x904043 attr 0x2
+<3>[    0.300422] 
+<3>[    0.300425] mx6sl_ddr: vaddr d0856000, va 0xd0856200 pa 0x905043 attr 0x2
+<3>[    0.308753] 
+<3>[    0.308756] mx6sl_iomux: vaddr f40e0000, va 0xf40e0200 pa 0x20110c3 attr 0x149
+<3>[    0.319595] 
+<3>[    0.319597] ANATOP: vaddr f40c8000, va 0xf40c8200 pa 0x20110c3 attr 0x149
+<3>[    0.333945] 
+<3>[    0.333948] CCM: vaddr f40c4000, va 0xf40c4200 pa 0x20110c3 attr 0x149
+<3>[    0.346088] 
+<3>[    0.346091] MMDC_P0: vaddr f41b0000, va 0xf41b0200 pa 0x21110c3 attr 0x149
+<3>[    0.356499] 
+<3>[    0.356502] L2: vaddr f2a02000, va 0xf2a02200 pa 0xa02043 attr 0x149
+<3>[    0.366400] 
+<3>[    0.366403] arm perif: vaddr f2a00000, va 0xf2a00200 pa 0xa00043 attr 0x149
+<6>[    0.377176] Bus freq driver module loaded
+<6>[    0.377188] Bus freq driver Enabled
+<6>[    0.385674] mxc_dvfs_core_probe
+<6>[    0.385931] DVFS driver module loaded
+<4>[    0.387849] regulator_init_complete: max77696_ldo10: incomplete constraints, leaving on
+<4>[    0.388507] regulator_init_complete: max77696_ldo7: incomplete constraints, leaving on
+<4>[    0.388732] regulator_init_complete: max77696_ldo6: incomplete constraints, leaving on
+<4>[    0.390026] regulator_init_complete: max77696_buck6: incomplete constraints, leaving on
+<4>[    0.390253] regulator_init_complete: max77696_buck5: incomplete constraints, leaving on
+<4>[    0.390719] regulator_init_complete: max77696_buck2dvs: incomplete constraints, leaving on
+<4>[    0.392979] regulator_init_complete: max77696_buck1dvs: incomplete constraints, leaving on
+<6>[    0.407388] 
+<6>[    0.407391] ADC value out of thermistor range! setting display temp to 75 deg C
+<6>[    0.415770] max77696-rtc max77696-rtc.0: setting system clock to 2000-01-05 05:15:13 UTC (947049313)
+<6>[    0.424584] KERNEL: I pmic:charger chgina::charger connected
+<6>[    0.426084] emmc: I def:mmcpartinfo:vendor=micron, host=mmc0:
+<6>[    0.433262] MAX77696 Main Charger Driver 1.0.0 Installed
+<6>[    0.436659] MAX77696 Energy Harvester Driver 1.0.0 Installed
+<6>[    0.437250] Freeing init memory: 1168K
+<6>[    0.461405] mmc0: new high speed DDR MMC card at address 0001
+<6>[    0.461713] mmcblk0: mmc0:0001 MMC02G 1.83 GiB 
+<6>[    0.461843] mmcblk0boot0: mmc0:0001 MMC02G partition 1 2.00 MiB
+<6>[    0.461968] mmcblk0boot1: mmc0:0001 MMC02G partition 2 2.00 MiB
+<6>[    0.463750]  mmcblk0: p1 p2 p3 p4
+<6>[    0.466169]  mmcblk0boot1: unknown partition table
+<6>[    0.468288]  mmcblk0boot0: unknown partition table
+<6>[    0.468466] mmc1: mmc_rescan_try_freq: trying to init card at 400000 Hz
+<6>[    0.543812] mmc1: mmc_rescan_try_freq: trying to init card at 300000 Hz
+<4>[    0.548677] mxc_epdc_eink: module license 'proprietary' taints kernel.
+<4>[    0.548689] Disabling lock debugging due to kernel taint
+<4>[    0.549062] INFO:Loaded module /lib/modules/mxc_epdc_eink.ko  (10784 bytes)
+<6>[    0.614914] mmc1: mmc_rescan_try_freq: trying to init card at 200000 Hz
+<6>[    0.687542] mmc1: mmc_rescan_try_freq: trying to init card at 100000 Hz
+<6>[    1.185121] add wake up source irq 104
+<6>[    1.675707] Retrieved voltage control information
+<6>[    2.255158] KERNEL: I pmic:fg battery id check::wario_battery_valid=0
+<6>[    2.255195] kernel: kernel_metric_high_priority,947049315,counter,kernel,fg,wario battery invalid,1,
+<4>[    3.743037] INFO:Loaded module /lib/modules/mxc_epdc_fb.ko  (91792 bytes)
+<4>[    3.919927] INFO:eink initialized... (786432 bytes)
+<4>[    5.799982] INFO:BATTERY INVALID: -22
+<4>[    6.418773] INFO:
+<4>[    6.418821] ===FL fadedown success===
+<4>[    6.419142] ERROR:
+<4>[    6.419158] === BATTERY ID IS INVALID. STOPPING BOOT ===
+<6>[    6.437278] ARC USBOTG Device Controller driver (1 August 2005)
+<6>[    6.440474] add wake up source irq 75
+<4>[    6.454626] INFO:Loaded module /lib/modules/arcotg_udc.ko  (35324 bytes)
+<6>[    6.478023] g_file_storage gadget: File-backed Storage Gadget, version: 1 September 2010
+<6>[    6.478055] g_file_storage gadget: Number of LUNs=1
+<7>[    6.478083] dr_controller_run: udc enter low power mode 
+<6>[    6.478328] fsl-usb2-udc: bind to driver g_file_storage 
+<4>[    6.478967] INFO:Loaded module /lib/modules/g_file_storage.ko removable=1 vendor=0x1949 product=0x0004 release=0x0100 recovery_mode=1 (39604 bytes)
+
+=== END ===

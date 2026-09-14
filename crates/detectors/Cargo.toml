@@ -1,0 +1,22 @@
+[package]
+name = "bootintel-detectors"
+description = "Client-side boot-log detectors for BootIntel — bootloader / kernel / SoC / exposure identification. Pure regex library, no I/O."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+
+# Deliberately no serde. Callers that want JSON serialize the Finding
+# themselves — keeps this crate WASM-portable and reduces the binary
+# size of the CLI when serde is only needed for one thin layer above.
+# Boot logs are ASCII in practice but we keep the `unicode-case`
+# feature enabled so `(?i)` regexes work correctly (without it, case-
+# insensitive matching errors on the first `(?i)` regex at construction
+# time). Cost: ~200 KiB extra in the release binary — small enough
+# vs. the value of not having to rewrite every regex as `(?i-u)`.
+[dependencies]
+regex = { version = "1.10", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }

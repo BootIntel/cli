@@ -1,0 +1,234 @@
+echo Setting bootargs
+setenv bootargs console=tty0 console=ttyS0,115200 root=/dev/mmcblk0p2 no_console_suspend rootwait quiet
+earlycon=uart,mmio32,0x01c28000 panic=10 consoleblank=0 loglevel=0
+printenv
+echo Loading DTB
+load mmc 0:1 ${fdt_addr_r} /sun50i-a64-pinetab.dtb
+echo Loading kernel Image
+load mmc 0:1 ${kernel_addr_r} /Image
+echo Booting kernel NOW
+booti ${kernel_addr_r} - ${fdt_addr_r}
+
+
+****************************OUTPUT***********************************
+
+U-Boot SPL 2020.07-01100-g072c0577d8 (Oct 01 2020 - 04:08:42 +0000)
+DRAM: 2048 MiB 
+Trying to boot from MMC1
+NOTICE:  BL31: v2.3(release):v2.3-257-gedd8188d3
+NOTICE:  BL31: Built : 04:08:36, Oct  1 2020
+NOTICE:  BL31: Detected Allwinner A64/H64/R18 SoC (1689)
+NOTICE:  BL31: Found U-Boot DTB at 0x4065bc8, model: Pine64 PinePhone Braveheart (1.1)
+NOTICE:  PSCI: System suspend is unavailable
+
+
+U-Boot 2020.07-01100-g072c0577d8 (Oct 01 2020 - 04:08:42 +0000) Allwinner Technology
+
+CPU:   Allwinner A64 (SUN50I)
+Model: Pine64 PinePhone Braveheart (1.1)
+DRAM:  2 GiB   
+MMC:   mmc@1c0f000: 0, mmc@1c10000: 2, mmc@1c11000: 1
+Loading Environment from FAT... Unable to use mmc 1:1... In:    serial@1c28000
+Out:   serial@1c28000
+Err:   serial@1c28000
+starting USB...
+No working controllers found
+Hit any key to stop autoboot:  0
+switch to partitions #0, OK
+mmc0 is current device
+Scanning mmc 0:1...
+Found U-Boot script /boot.scr
+468 bytes read in 2 ms (228.5 KiB/s)
+## Executing script at 4fc00000
+Setting bootargs
+arch=arm
+baudrate=115200
+board=sunxi
+board_name=sunxi
+boot_a_script=load ${devtype} ${devnum}:${distro_bootpart} ${scriptaddr} ${prefix}${sc
+ript}; source ${scriptaddr}
+boot_extlinux=sysboot ${devtype} ${devnum}:${distro_bootpart} any ${scriptaddr} ${prefix}${boot_syslinux_conf}
+boot_net_usb_start=usb start
+boot_prefixes=/ /boot/
+boot_script_dhcp=boot.scr.uimg
+boot_scripts=boot.scr.uimg boot.scr
+boot_syslinux_conf=extlinux/extlinux.conf
+boot_targets=fel mmc_auto usb0
+bootargs=console=tty0 console=ttyS0,115200 root=/dev/mmcblk0p2 no_console_suspend rootwait quiet
+bootcmd=run distro_bootcmd
+bootcmd_fel=if test -n ${fel_booted} && test -n ${fel_scriptaddr}; then echo '(FEL boot)'; source ${fel_scriptaddr}; fi
+bootcmd_mmc0=devnum=0; run mmc_boot
+bootcmd_mmc1=devnum=1; run mmc_boot
+bootcmd_mmc_auto=if test ${mmc_bootdev} -eq 1; then run bootcmd_mmc1; run bootcmd_mmc0; elif test ${mmc_bootdev} -eq 0; then run bootcmd_mmc0; run bootcmd_mmc1; fi
+bootcmd_usb0=devnum=0; run usb_boot
+bootdelay=0
+bootfstype=ext4
+bootm_size=0xa000000
+console=ttyS0,115200
+cpu=armv8
+devplist=1
+dfu_alt_info_ram=kernel ram 0x40080000 0x1000000;fdt ram 0x4FA00000 0x100000;ramdisk ram 0x4FE00000 0x4000000
+distro_bootcmd=for target in ${boot_targets}; do run bootcmd_${target}; done
+ethaddr=02:ba:cc:b6:74:4c
+fdt_addr_r=0x4FA00000
+fdtcontroladdr=bbf59ce0
+fdtfile=allwinner/sun50i-a64-pinephone-1.1.dtb
+fileaddr=4fc00000
+filesize=1d4   
+kernel_addr_r=0x40080000
+mmc_boot=if mmc dev ${devnum}; then devtype=mmc; run scan_dev_for_boot_part; fi
+mmc_bootdev=0  
+partitions=name=loader1,start=8k,size=32k,uuid=${uuid_gpt_loader1};name=loader2,size=984k,uuid=${uuid_gpt_loader2};name=esp,size=128M,bootable,uuid=${uuid_gpt_esp};name=system,size=-,uuid=${uuid_gpt_system};
+preboot=usb start
+pxefile_addr_r=0x4FD00000
+ramdisk_addr_r=0x4FE00000
+scan_dev_for_boot=echo Scanning ${devtype} ${devnum}:${distro_bootpart}...; for prefix in ${boot_prefixes}; do run scan_dev_for_extlinux; run scan_dev_for_scripts; done;
+scan_dev_for_boot_part=part list ${devtype} ${devnum} -bootable devplist; env exists devplist || setenv devplist 1; for distro_bootpart in ${devplist}; do if fstype ${devtype} ${devnum}:${distro_bootpart} bootfstype; then run scan_dev_for_boot; fi; done; setenv devplist   
+scan_dev_for_extlinux=if test -e ${devtype} ${devnum}:${distro_bootpart} ${prefix}${boot_syslinux_conf}; then echo Found ${prefix}${boot_syslinux_conf}; run boot_extlinux; echo SCRIPT FAILED: continuing...; fi
+scan_dev_for_scripts=for script in ${boot_scripts}; do if test -e ${devtype} ${devnum}:${distro_bootpart} ${prefix}${script}; then echo Found U-Boot script ${prefix}${script}; run boot_a_script; echo SCRIPT FAILED: continuing...; fi; done
+scriptaddr=0x4FC00000
+serial#=92c0d2baccb6744c
+soc=sunxi
+stderr=serial@1c28000
+stdin=serial@1c28000
+stdout=serial@1c28000
+usb_boot=usb start; if usb dev ${devnum}; then devtype=usb; run scan_dev_for_boot_part; fi
+uuid_gpt_esp=c12a7328-f81f-11d2-ba4b-00a0c93ec93b
+uuid_gpt_system=b921b045-1df0-41c3-af44-4c6f280d3fae
+
+Environment size: 3020/131068 bytes
+Loading DTB
+32062 bytes read in 4 ms (7.6 MiB/s)
+Loading kernel Image
+18121216 bytes read in 790 ms (21.9 MiB/s)
+Booting kernel NOW
+## Flattened Device Tree blob at 4fa00000
+   Booting using the fdt blob at 0x4fa00000
+   Loading Device Tree to 0000000049ff5000, end 0000000049fffd3d ... OK
+
+Starting kernel ...
+
+[    0.119933] sun50i-de2-bus 1000000.bus: Error couldn't map SRAM to device
+[    0.120642] sun4i-usb-phy 1c19400.phy: Couldn't request ID GPIO
+[    0.285659] sun4i-usb-phy 1c19400.phy: Couldn't request ID GPIO
+[    4.478185] scpi_protocol scpi: incorrect or no SCP firmware found
+[FAILED] Failed to start Create list of requ...ce nodes for the current kernel.
+See 'systemctl status kmod-static-nodes.service' for details.
+[  OK  ] Started Setup Virtual Console.
+[  OK  ] Started Apply Kernel Variables.
+[  OK  ] Started Remount Root and Kernel File Systems.
+[FAILED] Failed to mount FFS mount.
+See 'systemctl status dev-mtp.mount' for details.
+[  OK  ] Started Journal Service.
+         Starting Load/Save Random Seed...
+         Starting Clean RPM db region files at each reboot...
+         Starting udev Coldplug all Devices...
+         Starting Flush Journal to Persistent Storage...
+         Starting Create Static Device Nodes in /dev...
+[  OK  ] Started Load/Save Random Seed.
+[  OK  ] Started Flush Journal to Persistent Storage.
+[  OK  ] Started Clean RPM db region files at each reboot.
+[  OK  ] Started Create Static Device Nodes in /dev.
+[  OK  ] Reached target Local File Systems (Pre).
+[  OK  ] Reached target Local File Systems.
+[  OK  ] Listening on D-Bus System Message Bus Socket.
+         Starting StateFS FUSE filesystem, system-wide...
+         Starting D-Bus System Message Bus...
+[  OK  ] Listening on Nemo device lock socket.
+         Starting Mode Control Entity (MCE)...
+         Starting udev Kernel Device Manager...
+         Starting Create Volatile Files and Directories...
+[  OK  ] Started StateFS FUSE filesystem, system-wide.
+[  OK  ] Started D-Bus System Message Bus.
+[  OK  ] Started Create Volatile Files and Directories.
+[  OK  ] Started udev Coldplug all Devices.
+[  OK  ] Started udev Kernel Device Manager.
+         Starting udev Wait for Complete Device Initialization...
+         Starting Get initial bootstate...
+         Starting Update UTMP about System Boot/Shutdown...
+[  OK  ] Started Get initial bootstate.
+[  OK  ] Started Mode Control Entity (MCE).
+         Starting DSME...
+[  OK  ] Started Update UTMP about System Boot/Shutdown.
+[  OK  ] Found device /dev/ttyS0.
+[    9.154734] musb-sunxi 1c19000.usb: Invalid or missing 'dr_mode' property
+[  OK  ] Stopped StateFS FUSE filesystem, system-wide.
+         Starting StateFS FUSE filesystem, system-wide...
+[  OK  ] Started StateFS FUSE filesystem, system-wide.
+[  OK  ] Stopped StateFS FUSE filesystem, system-wide.
+         Starting StateFS FUSE filesystem, system-wide...
+[  OK  ] Started StateFS FUSE filesystem, system-wide.
+         Starting Clean RPM db region files at each reboot...
+         Starting Create list of required st... nodes for the current kernel...
+[  OK  ] Started Clean RPM db region files at each reboot.
+[FAILED] Failed to start Create list of requ...ce nodes for the current kernel.
+See 'systemctl status kmod-static-nodes.service' for details.
+[  OK  ] Started udev Wait for Complete Device Initialization.
+         Starting usb-moded USB gadget controller...
+         Starting ohm daemon for resource policy management...
+[  OK  ] Reached target System Initialization.
+[  OK  ] Started Daily Cleanup of Temporary Directories.
+[  OK  ] Reached target Timers.
+[  OK  ] Listening on OpenSSH Server Socket.
+[  OK  ] Reached target Sockets.
+[  OK  ] Started Wayland path watcher.
+[  OK  ] Reached target Paths.
+[  OK  ] Reached target Basic System.
+         Starting Indicate boot is done...
+         Starting Disk Manager...
+         Starting Telephony service...
+         Starting GPS (Global Positioning System) Daemon...
+         Starting Unmutes the A64 sound card at boot for PulseAudio...
+         Starting Nemo device lock daemon...
+         Starting Login Service...
+[  OK  ] Started DSME.
+[  OK  ] Stopped StateFS FUSE filesystem, system-wide.
+         Starting StateFS FUSE filesystem, system-wide...
+         Starting Oneshot stuff for root...
+[  OK  ] Started GPS (Global Positioning System) Daemon.
+[FAILED] Failed to start Unmutes the A64 sound card at boot for PulseAudio.
+See 'systemctl status unmute-sound-card.service' for details.
+[  OK  ] Started StateFS FUSE filesystem, system-wide.
+[  OK  ] Started Oneshot stuff for root.
+[  OK  ] Started Telephony service.
+[  OK  ] Started Login Service.
+         Starting Permit User Sessions...
+         Starting Connection service...
+         Starting Sensor daemon for sensor framework...
+[  OK  ] Reached target Sound Card.
+[  OK  ] Started Permit User Sessions.
+         Starting Authorization Manager...
+         Starting Start User Session...
+[  OK  ] Started Serial Getty on ttyS0.
+[  OK  ] Reached target Login Prompts.
+[  OK  ] Started Authorization Manager.
+[  OK  ] Created slice system-autologin.slice.
+[  OK  ] Started Autologin user 100000.
+[  OK  ] Started ohm daemon for resource policy management.
+[  OK  ] Started Sensor daemon for sensor framework.
+[  OK  ] Started Connection service.
+         Starting WPA Supplicant daemon...
+         Starting Hostname Service...
+         Starting ConnMan VPN service...
+[  OK  ] Created slice user-100000.slice.
+[  OK  ] Started ConnMan VPN service.
+[  OK  ] Started Session c1 of user nemo.
+[  OK  ] Created slice system-hw\x2dgroups.slice.
+[  OK  ] Created slice system-create\x2dhome.slice.
+         Starting Create user home directory...
+[  OK  ] Started Hostname Service.
+[  OK  ] Started WPA Supplicant daemon.
+[  OK  ] Started Disk Manager.
+[  OK  ] Reached target Network.
+[  OK  ] Started Create user home directory.
+[  OK  ] Started Nemo device lock daemon.
+         Starting User Manager for UID 100000...
+[  OK  ] Started User Manager for UID 100000.
+[  OK  ] Started Start User Session.
+         Starting Inform dsme about runlevel change...
+[  OK  ] Started Inform dsme about runlevel change.
+
+Sailfish OS 3.3.0.16 (Rokua)
+Kernel 5.7.19-sfos-g915016070e1e-dirty on an aarch64
+
+Pinetab login: 

@@ -1,0 +1,460 @@
+FRESET button pressed, force into HTTP server.
+GIGA: athrs17_link_up lan port...
+
+Emergency web server start......IP is 192.168.1.1 
+
+Trying eth0
+dup 1 speed AUTO(10/100/1000)
+Press 'q' to quit.
+checksum bad
+checksum bad
+checksum bad
+checksum bad
+checksum bad
+checksum bad
+checksum bad
+checksum bad
+checksum bad
+Post up.htm
+verify_seama: data=0x81000000, size=12124200
+SEAMA ==========================================
+  magic      : 5ea3a417
+  meta size  : 24 bytes
+  meta data  : signature=wrgnd13_wd_av
+  image size : 0 bytes
+================================================
+SEAMA ==========================================
+  magic      : 5ea3a417
+  meta size  : 36 bytes
+  meta data  : dev=/dev/mtdblock/1
+  meta data  : type=firmware
+  meta data  : 
+  meta data  : 
+  image size : 12124100 bytes
+  checksum   : 15A3F96C83249B7B34300D5FA4B4BA35
+  digest     : 15A3F96C83249B7B34300D5FA4B4BA35
+  Selected !!!
+================================================
+(ENV) begin addr=0x9f070000,end=0x9ffeffff
+Erase Flash from 0x9f070000 to 0x9ffeffff in Bank # 1 
+First 0x7 last 0xfe sector size 0x10000
+   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89  90  91  92  93  94  95  96  97  98  99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196 197 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230 231 232 233 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248 249 250 251 252 253 254
+Erased 248 sectors
+write addr: 9f070000
+
+Write runtime image into flash...OK,dest addr=0x9f070000
+Upload file OK!
+
+U-Boot 1.1.4 (Jan 11 2012 - 20:59:53)
+
+SVN revision: 48
+Target board: WRG-ND13
+
+DRAM:  
+sri
+Wasp 1.1
+wasp_ddr_initial_config(255): (32bit) ddr2 init
+64 MB
+Top of RAM usable for U-Boot at: 84000000
+Reserving 242k for U-Boot at: 83fc0000
+Reserving 192k for malloc() at: 83f90000
+Reserving 44 Bytes for Board Info at: 83f8ffd4
+Reserving 36 Bytes for Global Data at: 83f8ffb0
+Reserving 128k for boot params() at: 83f6ffb0
+Stack Pointer at: 83f6ff98
+Now running in RAM - U-Boot at: 83fc0000
+id read 0x100000ff
+flash size 16 MB, sector count = 256
+Flash: 16 MB
+pci_init_board: PCIe PLL not set for 40MHz refclk
+In:    serial
+Out:   serial
+Err:   serial
+Net:   ag934x_enet_initialize...
+ wasp  reset mask:c03300 
+WASP  ----> S17 PHY *
+: cfg1 0x7 cfg2 0x7114
+eth0: MAC - HIDDEN FROM LOG!!!!!!!!!
+athrs17_reg_init: complete
+GIGA: athrs17_link_down all port...
+eth0 up
+eth0
+Hit any key to stop autoboot:  1  0 
+## Booting image at 9f070000 ...
+Verifying Checksum ...
+Uncompressing SEAMA linux.lzma ... OK
+do_boot_linux entry = 80002000
+## Transferring control to Linux (at address 00000000) ...
+## Giving linux memsize in bytes, 67108864
+
+Starting kernel ...
+
+[    0.000000] Linux version 4.14.229 (user@svr18) (gcc version 7.5.0 (OpenWrt GCC 7.5.0 r0+11333-cc0b70467d)) #0 Fri Apr 9 13:43:38 2021
+[    0.000000] bootconsole [early0] enabled
+[    0.000000] CPU0 revision is: 0001974c (MIPS 74Kc)
+[    0.000000] MIPS: machine is Western Digital My Net N750
+[    0.000000] SoC: Atheros AR9344 rev 1
+[    0.000000] Determined physical RAM map:
+[    0.000000]  memory: 04000000 @ 00000000 (usable)
+[    0.000000] Initrd not found or empty - disabling initrd
+[    0.000000] Primary instruction cache 64kB, VIPT, 4-way, linesize 32 bytes.
+[    0.000000] Primary data cache 32kB, 4-way, VIPT, cache aliases, linesize 32 bytes
+[    0.000000] Zone ranges:
+[    0.000000]   Normal   [mem 0x0000000000000000-0x0000000003ffffff]
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000000000000-0x0000000003ffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000000000000-0x0000000003ffffff]
+[    0.000000] random: get_random_bytes called from start_kernel+0x90/0x484 with crng_init=0
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 16256
+[    0.000000] Kernel command line: console=ttyS0,115200n8 rootfstype=squashfs,jffs2
+[    0.000000] PID hash table entries: 256 (order: -2, 1024 bytes)
+[    0.000000] Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+[    0.000000] Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Writing ErrCtl register=00000000
+[    0.000000] Readback ErrCtl register=00000000
+[    0.000000] Memory: 58080K/65536K available (3909K kernel code, 151K rwdata, 932K rodata, 1204K init, 204K bss, 7456K reserved, 0K cma-reserved)
+[    0.000000] SLUB: HWalign=32, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+[    0.000000] NR_IRQS: 51
+[    0.000000] CPU clock: 560.000 MHz
+[    0.000000] clocksource: MIPS: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 6825930166 ns
+[    0.000010] sched_clock: 32 bits at 280MHz, resolution 3ns, wraps every 7669584382ns
+[    0.008311] Calibrating delay loop... 278.93 BogoMIPS (lpj=1394688)
+[    0.084948] pid_max: default: 32768 minimum: 301
+[    0.090061] Mount-cache hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.097118] Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.108838] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+[    0.119331] futex hash table entries: 256 (order: -1, 3072 bytes)
+[    0.125887] pinctrl core: initialized pinctrl subsystem
+[    0.132355] NET: Registered protocol family 16
+[    0.142837] GPIO line 15 (mynet-n750:ext:lna0) hogged as output/high
+[    0.149609] GPIO line 18 (mynet-n750:ext:lna1) hogged as output/high
+[    0.158199] PCI host bridge /ahb/pcie-controller@180c0000 ranges:
+[    0.164700]  MEM 0x0000000010000000..0x0000000013ffffff
+[    0.170296]   IO 0x0000000000000000..0x0000000000000000
+[    0.191817] PCI host bridge to bus 0000:00
+[    0.196190] pci_bus 0000:00: root bus resource [mem 0x10000000-0x13ffffff]
+[    0.203549] pci_bus 0000:00: root bus resource [io  0x0000]
+[    0.209480] pci_bus 0000:00: root bus resource [??? 0x00000000 flags 0x0]
+[    0.216718] pci_bus 0000:00: No busn resource found for root bus, will use [bus 00-ff]
+[    0.225649] pci 0000:00:00.0: BAR 0: assigned [mem 0x10000000-0x1001ffff 64bit]
+[    0.233483] pci 0000:00:00.0: BAR 6: assigned [mem 0x10020000-0x1002ffff pref]
+[    0.243685] clocksource: Switched to clocksource MIPS
+[    0.250049] NET: Registered protocol family 2
+[    0.255507] TCP established hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.262934] TCP bind hash table entries: 1024 (order: 0, 4096 bytes)
+[    0.269747] TCP: Hash tables configured (established 1024 bind 1024)
+[    0.276647] UDP hash table entries: 256 (order: 0, 4096 bytes)
+[    0.282872] UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+[    0.289793] NET: Registered protocol family 1
+[    0.297284] Crashlog allocated RAM at address 0x3f00000
+[    0.304145] workingset: timestamp_bits=30 max_order=14 bucket_order=0
+[    0.315847] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.322052] jffs2: version 2.2 (NAND) (SUMMARY) (LZMA) (RTIME) (CMODE_PRIORITY) (c) 2001-2006 Red Hat, Inc.
+[    0.341380] io scheduler noop registered
+[    0.345599] io scheduler deadline registered (default)
+[    0.351400] ar7200-usb-phy usb-phy: phy reset is missing
+[    0.359150] pinctrl-single 1804002c.pinmux: 544 pins at pa b804002c size 68
+[    0.367533] Serial: 8250/16550 driver, 1 ports, IRQ sharing disabled
+[    0.375042] console [ttyS0] disabled
+[    0.378880] 18020000.uart: ttyS0 at MMIO 0x18020000 (irq = 9, base_baud = 2500000) is a 16550A
+[    0.388098] console [ttyS0] enabled
+[    0.388098] console [ttyS0] enabled
+[    0.395527] bootconsole [early0] disabled
+[    0.395527] bootconsole [early0] disabled
+[    0.419547] m25p80 spi0.0: w25q128 (16384 Kbytes)
+[    0.424398] 6 fixed-partitions partitions found on MTD device spi0.0
+[    0.430843] Creating 6 MTD partitions on "spi0.0":
+[    0.435733] 0x000000000000-0x000000040000 : "bootloader"
+[    0.441921] 0x000000040000-0x000000050000 : "bdcfg"
+[    0.447672] 0x000000050000-0x000000060000 : "devdata"
+[    0.453529] 0x000000060000-0x000000070000 : "devconf"
+[    0.459476] 0x000000070000-0x000000ff0000 : "firmware"
+[    0.465709] 2 seama-fw partitions found on MTD device firmware
+[    0.471632] Creating 2 MTD partitions on "firmware":
+[    0.476721] 0x000000000040-0x0000001a0000 : "kernel"
+[    0.482494] 0x0000001a0000-0x000000f80000 : "rootfs"
+[    0.488259] mtd: device 6 (rootfs) set to be root filesystem
+[    0.494083] 1 squashfs-split partitions found on MTD device rootfs
+[    0.500365] 0x000000b90000-0x000000f80000 : "rootfs_data"
+[    0.506607] 0x000000ff0000-0x000001000000 : "art"
+[    0.513202] libphy: Fixed MDIO Bus: probed
+[    0.519643] ag71xx 19000000.eth: invalid MAC address, using random address
+[    0.865477] libphy: ag71xx_mdio: probed
+[    0.871063] switch0: Atheros AR8327 rev. 2 switch registered on mdio-bus.0
+[    1.523880] ag71xx 19000000.eth: connected to PHY at fixed-0:00 [uid=00000000, driver=Generic PHY]
+[    1.533549] eth0: Atheros AG71xx at 0xb9000000, irq 4, mode: rgmii
+[    1.542026] NET: Registered protocol family 10
+[    1.551138] Segment Routing with IPv6
+[    1.555014] NET: Registered protocol family 17
+[    1.559571] 8021q: 802.1Q VLAN Support v1.8
+[    1.570339] VFS: Mounted root (squashfs filesystem) readonly on device 31:6.
+[    1.582708] Freeing unused kernel memory: 1204K
+[    1.587335] This architecture does not have kernel memory protection.
+[    2.312768] init: Console is alive
+[    2.316494] init: - watchdog -
+[    2.513702] random: fast init done
+[    5.229391] kmodloader: loading kernel modules from /etc/modules-boot.d/*
+[    5.516528] usbcore: registered new interface driver usbfs
+[    5.522162] usbcore: registered new interface driver hub
+[    5.527689] usbcore: registered new device driver usb
+[    5.568891] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    5.585401] SCSI subsystem initialized
+[    5.595338] ehci-platform: EHCI generic platform driver
+[    5.600922] ehci-platform 1b000000.usb: EHCI Host Controller
+[    5.606747] ehci-platform 1b000000.usb: new USB bus registered, assigned bus number 1
+[    5.614792] ehci-platform 1b000000.usb: irq 3, io mem 0x1b000000
+[    5.643714] ehci-platform 1b000000.usb: USB 2.0 started, EHCI 1.00
+[    5.650815] hub 1-0:1.0: USB hub found
+[    5.655044] hub 1-0:1.0: 1 port detected
+[    5.664668] usbcore: registered new interface driver usb-storage
+[    5.673597] usbcore: registered new interface driver uas
+[    5.679831] kmodloader: done loading kernel modules from /etc/modules-boot.d/*
+[    5.697618] init: - preinit -
+[    6.205897] usb 1-1: new high-speed USB device number 2 using ehci-platform
+[    6.462618] random: procd: uninitialized urandom read (4 bytes read)
+[    6.469533] hub 1-1:1.0: USB hub found
+[    6.475285] hub 1-1:1.0: 4 ports detected
+[    6.887999] random: jshn: uninitialized urandom read (4 bytes read)
+[    7.117836] random: jshn: uninitialized urandom read (4 bytes read)
+[    7.522664] random: jshn: uninitialized urandom read (4 bytes read)
+[    7.588789] random: jshn: uninitialized urandom read (4 bytes read)
+[    7.684216] random: jshn: uninitialized urandom read (4 bytes read)
+[    8.990909] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+[    8.996956] IPv6: ADDRCONF(NETDEV_UP): eth0.1: link is not ready
+Press the [f] key and hit [enter] to enter failsafe mode
+Press the [1], [2], [3] or [4] key and hit [enter] to select the debug level
+[   10.034837] eth0: link up (1000Mbps/Full duplex)
+[   10.039549] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[   10.046377] IPv6: ADDRCONF(NETDEV_CHANGE): eth0.1: link becomes ready
+[   12.299355] mount_root: loading kmods from internal overlay
+[   12.401490] kmodloader: loading kernel modules from //etc/modules-boot.d/*
+[   12.410187] kmodloader: done loading kernel modules from //etc/modules-boot.d/*
+[   13.049578] block: attempting to load /etc/config/fstab
+[   13.060596] block: unable to load configuration (fstab: Entry not found)
+[   13.067545] block: no usable configuration
+[   13.072515] mount_root: jffs2 not ready yet, using temporary tmpfs overlay
+[   13.173482] urandom-seed: Seed file not found (/etc/urandom.seed)
+[   13.283933] eth0: link down
+[   13.305683] procd: - early -
+[   13.308712] procd: - watchdog -
+[   13.984346] procd: - watchdog -
+[   13.987854] procd: - ubus -
+[   14.109268] urandom_read: 2 callbacks suppressed
+[   14.109276] random: jshn: uninitialized urandom read (4 bytes read)
+[   14.347777] random: ubusd: uninitialized urandom read (4 bytes read)
+[   14.468986] procd: - init -
+Please press Enter to activate this console.
+[   16.162904] kmodloader: loading kernel modules from /etc/modules.d/*
+[   16.387039] device-mapper: ioctl: 4.37.0-ioctl (2017-09-20) initialised: dm-devel@redhat.com
+[   16.467592] Key type dns_resolver registered
+[   16.564532] RPC: Registered named UNIX socket transport module.
+[   16.570545] RPC: Registered udp transport module.
+[   16.575361] RPC: Registered tcp transport module.
+[   16.580127] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[   16.602237] urngd: v1.0.2 started.
+[   16.679160] tun: Universal TUN/TAP device driver, 1.6
+[   16.745400] gre: GRE over IPv4 demultiplexor driver
+[   16.770673] ip_gre: GRE over IPv4 tunneling driver
+[   16.879076] Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+[   16.954211] NFS: Registering the id_resolver key type
+[   16.959376] Key type id_resolver registered
+[   16.963615] Key type id_legacy registered
+[   17.035940] ip6_tables: (C) 2000-2006 Netfilter Core Team
+[   17.081278] nf_conntrack version 0.5.0 (1024 buckets, 4096 max)
+[   17.160914] random: crng init done
+[   17.587710] Netfilter messages via NETLINK v0.30.
+[   17.608484] ip_set: protocol 6
+[   17.905265] Linux video capture interface: v2.00
+[   18.065181] Mirror/redirect action on
+[   18.105395] u32 classifier
+[   18.108151]     input device check on
+[   18.111862]     Actions configured
+[   18.195290] GACT probability on
+[   18.218756] Simple TC action Loaded
+[   18.322555] fuse init (API version 7.26)
+[   18.365225] usbcore: registered new interface driver cdc_acm
+[   18.370973] cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
+[   18.432293] usbcore: registered new interface driver cdc_wdm
+[   18.451363] Loading modules backported from Linux version v4.19.161-0-gdaefdc9eb24b
+[   18.459186] Backport generated by backports.git v4.19.161-1-0-g4bb568fe
+[   18.537123] Ebtables v2.0 registered
+[   18.588987] ip_tables: (C) 2000-2006 Netfilter Core Team
+[   19.415677] usbcore: registered new interface driver ums-alauda
+[   19.458517] usbcore: registered new interface driver ums-cypress
+[   19.497113] usbcore: registered new interface driver ums-datafab
+[   19.526646] usbcore: registered new interface driver ums-freecom
+[   19.557021] usbcore: registered new interface driver ums-isd200
+[   19.577358] usbcore: registered new interface driver ums-jumpshot
+[   19.606723] usbcore: registered new interface driver ums-karma
+[   19.638344] usbcore: registered new interface driver ums-sddr09
+[   19.667101] usbcore: registered new interface driver ums-sddr55
+[   19.690853] usbcore: registered new interface driver ums-usbat
+[   19.728521] usbcore: registered new interface driver usblp
+[   19.804842] usbcore: registered new interface driver usbserial
+[   19.810845] usbcore: registered new interface driver usbserial_generic
+[   19.817592] usbserial: USB Serial support registered for generic
+[   19.940351] wireguard: WireGuard 1.0.20200611 loaded. See www.wireguard.com for information.
+[   19.948966] wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+[   20.178368] xt_time: kernel timezone is -0000
+[   20.206077] usbcore: registered new interface driver cdc_ether
+[   20.251263] usbcore: registered new interface driver cdc_ncm
+[   20.504226] gspca_main: v2.14.0 registered
+[   20.534009] usbcore: registered new interface driver ov534
+[   20.568251] usbcore: registered new interface driver gspca_zc3xx
+[   20.590469] usbcore: registered new interface driver huawei_cdc_ncm
+[   20.819742] PPP generic driver version 2.4.2
+[   20.836686] NET: Registered protocol family 24
+[   20.855497] PPTP driver version 0.8.5
+[   20.867894] usbcore: registered new interface driver qmi_wwan
+[   20.888529] usbcore: registered new interface driver rndis_host
+[   20.904637] usbcore: registered new interface driver sierra
+[   20.910382] usbserial: USB Serial support registered for Sierra USB modem
+[   20.936235] usbcore: registered new interface driver sierra_net
+[   20.985772] usbcore: registered new interface driver uvcvideo
+[   20.991611] USB Video Class driver (1.1.1)
+[   21.137173] usbcore: registered new interface driver cdc_mbim
+[   21.154554] usbcore: registered new interface driver option
+[   21.160289] usbserial: USB Serial support registered for GSM modem (1-port)
+[   21.185582] usbcore: registered new interface driver qcserial
+[   21.191497] usbserial: USB Serial support registered for Qualcomm USB modem
+[   21.236497] ath9k 18100000.wmac: Direct firmware load for ath9k-eeprom-ahb-18100000.wmac.bin failed with error -2
+[   21.246960] ath9k 18100000.wmac: Falling back to user helper
+[   22.240562] ieee80211 phy0: Atheros AR9340 Rev:1 mem=0xb8100000, irq=12
+[   22.247662] PCI: Enabling device 0000:00:00.0 (0000 -> 0002)
+[   22.257781] ath9k 0000:00:00.0: Direct firmware load for ath9k-eeprom-pci-0000:00:00.0.bin failed with error -2
+[   22.268080] ath9k 0000:00:00.0: Falling back to user helper
+[   23.140459] ieee80211 phy1: Atheros AR9300 Rev:3 mem=0xb0000000, irq=14
+[   23.173580] kmodloader: done loading kernel modules from /etc/modules.d/*
+[   67.528053] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+[   67.535183] eth0: link up (1000Mbps/Full duplex)
+[   67.539885] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[   67.567296] device eth0 entered promiscuous mode
+[   67.572652] br-lan: port 1(eth0.1) entered blocking state
+[   67.578197] br-lan: port 1(eth0.1) entered disabled state
+[   67.583993] device eth0.1 entered promiscuous mode
+[   67.607035] br-lan: port 1(eth0.1) entered blocking state
+[   67.612522] br-lan: port 1(eth0.1) entered forwarding state
+[   67.618398] IPv6: ADDRCONF(NETDEV_UP): br-lan: link is not ready
+[   68.641910] IPv6: ADDRCONF(NETDEV_CHANGE): br-lan: link becomes ready
+[  108.231186] jffs2_scan_eraseblock(): End of filesystem marker found at 0x0
+[  108.244031] jffs2_build_filesystem(): unlocking the mtd device... 
+[  108.244087] done.
+
+
+
+
+
+BusyBox v1.30.1 () built-in shell (ash)
+
+
+
+------------------------------------------------------------------
+|            _____                             _                 |
+|           |  __ \                           | |                |
+|           | |  \/ __ _ _ __ __ _  ___  _   _| | ___            |
+|           | | __ / _` | '__/ _` |/ _ \| | | | |/ _ \           |
+|           | |_\ \ (_| | | | (_| | (_) | |_| | |  __/           |
+|            \____/\__,_|_|  \__, |\___/ \__, |_|\___|           |
+|                             __/ |       __/ |                  |
+|                            |___/       |___/                   |
+|                                                                |
+|----------------------------------------------------------------|
+| Gargoyle version 1.13.X   | OpenWrt 19.07 branch               |
+| Gargoyle revision 600bef8e| OpenWrt commit cc0b704             |
+| Built April 23, 2021      | Target  ath79/usb_large            |
+------------------------------------------------------------------
+
+root@Gargoyle:/# 
+root@Gargoyle:/# 
+root@Gargoyle:/# 
+root@Gargoyle:/# 
+root@Gargoyle:/# 
+root@Gargoyle:/# [  108.252306] jffs2_build_filesystem(): erasing all blocks after the end marker... 
+[  117.043881] done.
+[  117.053450] jffs2: notice: (5023) jffs2_build_xattr_subsystem: complete building xattr subsystem, 0 of xdatum (0 unchecked, 0 orphan) and 0 of xref (0 dead, 0 orphan) found.
+[  118.319599] overlayfs: upper fs does not support tmpfile.
+
+root@Gargoyle:/# 
+root@Gargoyle:/# 
+root@Gargoyle:/# echo power cycling here
+power cycling here
+root@Gargoyle:/# 
+root@Gargoyle:/# 
+root@Gargoyle:/# 
+root@Gargoyle:/# 
+root@Gargoyle:/# 
+root@Gargoyle:/# 
+root@Gargoyle:/#   D8Ððÿÿ¿ÿÿÿÿÿÿÿÿÿÿÿÿÿøÿ[D’
+  
+
+U-Boot 1.1.4 (Jan 11 2012 - 20:59:53)
+
+SVN revision: 48
+Target board: WRG-ND13
+
+DRAM:  
+sri
+Wasp 1.1
+wasp_ddr_initial_config(255): (32bit) ddr2 init
+64 MB
+Top of RAM usable for U-Boot at: 84000000
+Reserving 242k for U-Boot at: 83fc0000
+Reserving 192k for malloc() at: 83f90000
+Reserving 44 Bytes for Board Info at: 83f8ffd4
+Reserving 36 Bytes for Global Data at: 83f8ffb0
+Reserving 128k for boot params() at: 83f6ffb0
+Stack Pointer at: 83f6ff98
+Now running in RAM - U-Boot at: 83fc0000
+id read 0x100000ff
+flash size 16 MB, sector count = 256
+Flash: 16 MB
+  Dðÿïÿ¿ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿøßw{‘¨ 
+
+U-Boot 1.1.4 (Jan 11 2012 - 20:59:53)
+
+SVN revision: 48
+Target board: WRG-ND13
+
+DRAM:  
+sri
+Wasp 1.1
+wasp_ddr_initial_config(255): (32bit) ddr2 init
+64 MB
+Top of RAM usable for U-Boot at: 84000000
+Reserving 242k for U-Boot at: 83fc0000
+Reserving 192k for malloc() at: 83f90000
+Reserving 44 Bytes for Board Info at: 83f8ffd4
+Reserving 36 Bytes for Global Data at: 83f8ffb0
+Reserving 128k for boot params() at: 83f6ffb0
+Stack Pointer at: 83f6ff98
+Now running in RAM - U-Boot at: 83fc0000
+id read 0x100000ff
+flash size 16 MB, sector count = 256
+Flash: 16 MB
+pci_init_board: PCIe PLL not set for 40MHz refclk
+In:    serial
+Out:   serial
+Err:   serial
+Net:   ag934x_enet_initialize...
+ wasp  reset mask:c03300 
+WASP  ----> S17 PHY *
+: cfg1 0x7 cfg2 0x7114
+eth0: MAC - HIDDEN FROM LOG!!!!!!!!!
+athrs17_reg_init: complete
+GIGA: athrs17_link_down all port...
+eth0 up
+eth0
+Hit any key to stop autoboot:  1  0 
+## Booting image at 9f070000 ...
+Verifying Checksum ...
+csum:
+£ùlƒ$›{40
+_¤´º5
+afterMD5_we_get_digest:
+I=ciû÷õ1˜Íþ§;A
+Bad Header Checksum.
+GIGA: athrs17_link_up lan port...
+ar7240> 
+
+ar7240> 

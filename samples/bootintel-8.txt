@@ -1,0 +1,390 @@
+S
+PMU TYPE TPS 544C24, AVS3 PMBus Init........... OK
+Board name ..........................HisiCortexA15
+iWare V1R5C00 ARM EFI BIOS L1 Version ..SPC013B010
+Now The <Second> Bootrom is Running.............OK
+HDF LocalBus Init...............................OK
+DDR SIZE ...................................... 2G
+DDR ECC Init....................................OK
+UBBP DDR init ..................................OK
+SRAM ECC ...................................Enable
+iWare V1R5C00 ARM EFI BIOS L2 Version ..SPC013B010
+MAIN Version HDF which is at............0xE0080000
+This chip can be up to 1350Mhz, but now it is running at 1000Mhz.
+PLL0..................................... 1000 Mhz
+Reset Cause ...........................Power Reset
+BSP Normal Mode RamExam begin!
+RamExam: execute simple exam:
+BSP Normal Mode RamExam Succss!
+RAM_ExamInRom: Normal Mode RAMExam End!
+
+DDR ECC Init....................................OK
+UEFI firmware  built at 16:06:38 on Dec 29 2014
+
+L1&L2 Cache ECC and parity enable!
+[Norflash]manufactor ID 0x1!
+[Norflash]Device ID 0x227E, 0x2222, 0x2201!
+[NORFlash Init] ................................OK
+[WatchDog Init] ................................OK
+[DERESET ALL ACC]...............................OK
+
+[80288] PLL2..............................312.5 MHz
+
+There is NO SFP, DO NOT load SNP !!!
+
+FastBoot FLAG is Valid
+
+Go to Fastboot
+3h3hGet default linux atag list
+Get default linux atag list ok!
+LinuxImage= A08000 ,LinuxImagesize= 14E5E0 
+InitrdImage= 3800040 ,InitrdImageSize= 531000 
+
+LinuxImage= 0xA08000, LinuxKernel = 0xA08000, KernelParamsAddress = 0xA00100
+
+
+Starting the kernel:
+
+[    4.978358] ******** Total Boot time: 4978 ms, uncompress initrd cost 37 ms ********
+
+                        -=#  RTOS 1.1  #=-
+                        -=#  Huawei Technologies Co., Ltd #=-
+
+Revision: 126244
+Release: RTOS&SDK V100R003C00
+Kernel: Linux 2.6.34.13 #1 SMP Tue Apr 14 11:18:07 CST 2015
+
+mount file system
+Loading the kernel modules: 
+Loading module: nfs
+Loading module: nfsd
+Loading module: unix
+FATAL: Module unix not found.
+Loading module: af_packet
+FATAL: Module af_packet not found.
+Making device instances:
+Setting hostname: 
+Settingup the sysctl configurations:
+Setting up interface lo: 
+Running local startup scripts.
+S01brdspec running ...
+Board type is UBBP, mounting etc/brd/UBBP.BRD.IMG ...
+Launching /brd/rc.start/S01udev ...
+S01udev running ...
+Launching /brd/rc.start/S02MMU ...
+S02MMU running ...
+UBBPd 2G DDR
+Launching /brd/rc.start/S03module ...
+S03module begin
+mount: mounting nodev on /sys/kernel/debug failed: Device or resource busy
+size is 420
+[    8.174961] Hanboo a [cfi_probe_init]: Entered!
+/usr/local/kbox
+##568M@10M
+num=1 cmd=##568M@10M
+Launching /brd/rc.start/S04config ...
+S04config running ...
+Launching /brd/rc.start/S04idumpd ...
+S04idumpd running ...
+Power Reset
+WARNING -- Please check PRamdisk address : @0x7e400000 + 10(M)!
+fsck.ext2: Bad magic number in super-block while trying to open /dev/pramdisk0
+/dev/pramdisk0: 
+The superblock could not be read or does not describe a correct ext2
+filesystem.  If the device is valid and it really contains an ext2
+filesystem (and not swap or ufs or something else), then the superblock
+is corrupt, and you might try running e2fsck with an alternate superblock:
+    e2fsck -b 8193 <device>
+
+fsck.ext2: Bad magic number in super-block while trying to open /dev/pramdisk0
+/dev/pramdisk0: 
+The superblock could not be read or does not describe a correct ext2
+filesystem.  If the device is valid and it really contains an ext2
+filesystem (and not swap or ufs or something else), then the superblock
+is corrupt, and you might try running e2fsck with an alternate superblock:
+    e2fsck -b 8193 <device>
+
+fsck.ext2: Bad magic number in super-block while trying to open /dev/pramdisk0
+/dev/pramdisk0: 
+The superblock could not be read or does not describe a correct ext2
+filesystem.  If the device is valid and it really contains an ext2
+filesystem (and not swap or ufs or something else), then the superblock
+is corrupt, and you might try running e2fsck with an alternate superblock:
+    e2fsck -b 8193 <device>
+
+fsck.ext2: Bad magic number in super-block while trying to open /dev/pramdisk0
+/dev/pramdisk0: 
+The superblock could not be read or does not describe a correct ext2
+filesystem.  If the device is valid and it really contains an ext2
+filesystem (and not swap or ufs or something else), then the superblock
+is corrupt, and you might try running e2fsck with an alternate superblock:
+    e2fsck -b 8193 <device>
+
+NOTE - RST Cause check : 1
+WARNING - RST Cause [1], dump switch [], will not dump raw log
+WARNING - Reformat pramdisk ...!
+mke2fs 1.41.[   13.263440] [xxx]physmap-flash: info->map[i].phys = 0x2000000, info->map[i].size = 0x0.
+9 (22-Aug-2009)
+Filesyst[   13.384884] NAND device: Manufacturer ID: 0x01, Chip ID: 0xac (AMD NAND 512MiB 1,8V 8-bit)
+em label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+2560 inodes, 2559 blocks
+0 blocks (0.00%) reserved for the super user
+First data block=0
+1 block group
+32768 blocks per group, 32768 fragments per group
+2560 inodes p[   13.745530] BUG: soft lockup - CPU#1 stuck for 401ms! [mount:1298]
+er group
+
+Writing inode tables: done                            
+Writing superblocks and filesystem accounting information: done
+
+This filesystem will be automatically checked every 27 mounts or
+180 days, whichever comes first.  Use tune2fs -c or -i to override.
+/dev/pramdisk0            9900        24      9876   0% /var/idump
+Launching /brd/rc.start/S05startapp ...
+S05starpapp running ...
+Module rsm.ko has been loaded.
+[   16.350176] BUG: soft lockup - CPU#0 stuck for 401ms! [sync_supers:134]
+[   18.153417] BUG: soft lockup - CPU#2 stuck for 401ms! [startapp:1272]
+Power Reset
+insmod: can't insert '/lib/modules/2.6.34.13/gmac_1381.ko': Operation not permitted
+W"Rb : 44=(/HFFS0:/AUTOSTART_DISABLE ?IRTM#V9:sPxWT6/Fp6/
+UBBP.out: OK
+bootcmd_c1_u15: OK
+bootcmd_c2_u14: OK
+bootcmd_c2_u14_2GDDR: OK
+bootcmd_c4_u12: OK
+bootcmd_c4_u12_2GDDR: OK
+:/lib/openhpi/:/lib/comm:/tmp/lib/libUbbpBsp_0.so.IMG:/tmp/lib/libUbbpBsp_1.so.IMG
+Starting kernel based NFS servercat: can't open '/etc/exports': No such file or directory
+exportfs: can't open /etc/exports for reading
+                                                                [done]
+HI1381 / # [main func enter time]:2010-1-1, 0:0:8.
+
+Current pid=1445
+BSP Build time: Aug 16 2015, 10:04:19
+BSP Version: HERTBBUV300R005C10SPC190_03
+[CPBSP_DebugAddOutputModule]: Output module is not initialized
+[HDFM]CPBSP_DebugAddOutputModule return ERROR.
+[App_Root enter time]:2010-1-1, 0:0:8.
+
+Entry root, Tick is 0!
+
+VOS_Start ...... 
+[BSP_BoardInit_1 enter time]:2010-1-1, 0:0:8.
+[BSP_LoadPckDrvCheckBootFlag] file index 0x6 bind in boot
+tar: removing leading '/' from member names
+INFRA_DshellInit Enter!
+[BSP_BoardInit_1 exit time]:2010-1-1, 0:0:10.
+[BSP_InitBoard enter time]:2010-1-1, 0:0:10.
+
+Enter Normal Mode!
+RB config the WorkMode is 0x00004000
+
+Entry DriverInit, Tick is 204!
+
+<:BSP_RstFpga:> Reset FPGA ...
+tool: decompress, unzipped 3825788 bytes, used 0 seconds
+MCSS Lib Version: V100R005C10SPC101B010 SVN:54528, Build Time: Apr  7 2015 14:58:21
+ MC_CommInit, 2072 -----MC_CommInit end
+MC_CommInit end
+MC_BmuDefaultCfg end
+MC_PoeDefaultCfg end
+pkt tbl set, index 0
+group mod 2, default group 0
+qos mod 1, default qos 0
+pkt tbl set, index 1
+group mod 0, default group 17
+qos mod 0, default qos 5
+pkt tbl set, index 2
+group mod 1, default group 0
+qos mod 1, default qos 0
+pkt tbl set, index 3
+group mod 1, default group 0
+qos mod 0, default qos 5
+MC_EthDefaultCfg end
+MC_TmDefaultCfg end
+MC_DefaultCfg end
+MC_UBBPdInit end
+GE_Init end, Eth0 available
+Start GE_RecvPktBySelect...
+[MC_SrioCommInit] line2123:  MCSS_SrioInit Start  
+ [MC_SrioCommInit] line2141:  MCSS_SrioInit End  
+ MC_SrioCommInit, 2151 -----MC_SrioCommInit end
+
+[SD6602_Init] EXEC AS TYPE #0,INIT CNT:1.
+[ESPI_Write]: ESPI is opened for the first time
+[BBDevice_GetPmuAddr]:PMU TYPE tps544c24
+[BBDevice_LoadL1Mng]load 6182,ulDevIndex=1[BBDevice_LoadBbMNG]open DO Type:7  DeviceKey(327681)
+[BBDevice_LoadBbMNG]ODF_Ctrl
+L1 BB COMM(6182) ulDevIndex=1,load success!
+[BBDevice_LoadL1MNG]:deviceNo(1),begain tick:1252
+[BBDevice_CtrL2Loadable]: enter!
+[BSP_InitBoard exit time]:2010-1-1, 0:0:21.
+ ++++++++++++ <FUNC>DEV_DoBoardInit  ulret 0x0, key 0x0 
+[DOPRA-cfgdbDbLkupInAll]: Could not locate 'v_vfsmem.VOS_VFS_MEM_FSINIT_FUNC_PTR'.
+[DOPRA-cfgdbDbLkupInAll]: Could not locate 'v_vfsflash.VOS_VFS_FLASH_FSINIT_FUNC_PTR'.
+[BBDevice_MonL2BBMNGProcTask]execlp input para1:/HFFS0:/local/BBMNG/ubbp_l2bbmng.out, para2:/HFFS0:/local/RESCOMM/res_comm.xml 
+PrmmLoadCfgFile:Load xml /HFFS0:/LOCAL/MAINPROCESSCFG.XML result 0, line 1316
+
+                          ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]  
+  (R)                     ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]  
+Inheritsched:PTHREAD_EXPLICIT_SCHED
+      ]]]]]]]]]]]]]]     ]]]]]]]]]]]]]] ]]]]]]               ]]]]  
+Schedpolicy:SCHED_FIFO
+     ]]]]                ]]]]        ]]]] ]]]]]  ]]]]]]]]]]]]]]]]  
+     ]]]]                ]]]]        ]]]] ]]]]]  ]]]]]]]]]]]]]]]]  
+      ]]]]]]]]]]]]]      ]]]]]]]]]]]]]] ]]]]]]               ]]]]  
+                ]]]]     ]]]]      ]]]] ]]]]]]]  ]]]]]]]]]]]]]]]]  
+                ]]]]     ]]]]        ]]]] ]]]]]  ]]]]]]]]]]]]]]]]  
+     ]]]]]]]]]]]]]]      ]]]]         ]]]] ]]]]              ]]]]  
+                                          ]]]]]]]]]]]]]]]]]]]]]]]  
+     Single Run Environment                 ]]]]]]]]]]]]]]]]]]]]]  
+     SRE 2.0                                  ]]]]]]]]]]]]]]]]]]]  
+     Copyright Huawei Inc. 2011                 ]]]]]]]]]]]]]]]]]  
+
+Max priority:0
+Min priority:0
+sched_priority:0
+Inheritsched:PTHREAD_EXPLICIT_SCHED
+Schedpolicy:SCHED_FIFO
+Max priority:0
+Min priority:0
+sched_priority:1
+Inheritsched:PTHREAD_EXPLICIT_SCHED
+Schedpolicy:SCHED_FIFO
+Max priority:0
+Min priority:0
+sched_priority:2
+[Rosa BB]ParserCommRoot XML Match ResTbl count=14
+[Rosa BB]syscall return memory = 0x16800000, PAddr = 0x78a00!
+[Rosa BB]VOS_CfgdbInitByEmldr SUCCESS! TimeH = 0x0, Time L = 0x51c7d6
+
+ pstrSmpInfo->ulSmpCoreNum is 4
+
+ uiCpupCoreMask is 15
+[EGROUP]:add task write pid to /dev/egroup//tasks err with errno:2
+[SD6182_GetTemprature]chipIndex:1,temprature:46
+[EGROUP]:set cpurate successful!
+[DOPRA-cfgdbDbLkupInAll]: Could not locate 'v_vfsmem.VOS_VFS_MEM_FSINIT_FUNC_PTR'.
+[DOPRA-cfgdbDbLkupInAll]: Could not locate 'v_vfsflash.VOS_VFS_FLASH_FSINIT_FUNC_PTR'.
+[Rosa BB]VOS_Start SUCCESS! TimeH = 0x0, Time L = 0x5a0fd1
+
+[Rosa BB]BBMNG Version: V300R005C00SPC040B00
+[Rosa BB]build time is : Aug 16 2015, 10:06:02 
+[Rosa BB]Svn :HERTBBUV300R005C10SPC190_03
+[Rosa BB]BBMNG_DopraInit SUCCESS! TimeH = 0x0, Time L = 0x5a1005
+INFRA_DshellInit Enter!
+[Rosa BB]INFRA_DshellInit SUCCESS! TimeH = 0x0, Time L = 0x6006b5
+<user-log-ERR>open dev /dev/mcss0 fail
+SRE HighMem set success, virtual address is b2da5000!
+[Rosa BB]BB_MOM_Init SUCCESS! TimeH = 0x0, Time L = 0x6061f1
+[Rosa BB]BBMNG_IntInit SUCCESS! TimeH = 0x0, Time L = 0x6061fa
+[Rosa BB]BBMNG_SWM_Init SUCCESS! TimeH = 0x0, Time L = 0x60638a
+[Rosa BB]Recv Do StaticPara Notify Msg tick = 0x78
+.
+[Rosa BB]Wait Static Para Recv tick = 0x80
+[Rosa BB]BB_MDEV_WaitStaticParaRecv SUCCESS! TimeH = 0x0, Time L = 0x610a7d
+[Rosa BB]BBMNG_ComInit SUCCESS! TimeH = 0x0, Time L = 0x610ee7
+[Rosa BB]BBMNG_DEV_Init SUCCESS! TimeH = 0x0, Time L = 0x610f7e
+[Rosa BB]BBMNG_RM_ComInit SUCCESS! TimeH = 0x0, Time L = 0x6122ae
+[Rosa BB]SWM_LoadInit SUCCESS! TimeH = 0x0, Time L = 0x6122ce
+[Rosa BB]BB Start to Send Apply IDX Res Msg To Node tick = 0x80
+[Rosa BB]SWM_SendSelfTestResultMsg send self test result 2 tick = 0x80
+[Rosa BB]L2 BB Init SUCCESS! TimeH = 0x0, Time L = 0x6128fb
+[Rosa BB]SWM_LoadCommBinMsgProc tick = 0x86
+---------container 2 is in status 0 
+---------container 2 is in status 1 
+[Rosa BB]SWM_PreProcessCmd create task
+[Rosa BB]SWM_ContainerProcTask begin to load Comm Version Bin tick = 0x86
+---------container 2 is in status 0 
+[Rosa BB]SWM_SendSelfTestResultMsg send self test result 0 tick = 0x86
+[BBDevice_Set6182DdrSelfTestMod]: ulSD6182PGNum = 0x61820110
+[   44.761127] BUG: soft lockup - CPU#2 stuck for 401ms! [tBBDeviceL1Load:1533]
+[BBDevice_LoadL1]:deviceNo(1),End tick:2412
+[Rosa BB]Recv IDX2 Apply Admit MSG from Node tick = 0x4a2
+[Rosa BB]Recv IDX1 MSG from Node tick = 0x10f5
+
+HI1381 / # /lib/libc.so.6
+GNU C Library (EGLIBC) stable release version 2.11.1, by Roland McGrath et al.
+Copyright (C) 2009 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.
+Compiled by GNU CC version 4.7.1.
+Compiled on a Linux >>2.6.32.12-0.7-default<< system on 2015-04-14.
+Available extensions:
+        crypt add-on version 2.1 by Michael Glad and others
+        GNU Libidn by Simon Josefsson
+        Native POSIX Threads Library by Ulrich Drepper et al
+        Support for some architectures added on, not maintained in glibc core.
+        BIND-8.2.3-T5B
+For bug reporting instructions, please see:
+<http://www.eglibc.org/issues/>.
+HI1381 / # 
+HI1381 / # uname -a
+Linux HI1381 2.6.34.13 #1 SMP Tue Apr 14 11:18:07 CST 2015 armv7b GNU/Linux
+HI1381 / # cat /proc/cpuinfo
+Processor       : ARMv7 Processor rev 0 (v7b)
+processor       : 0
+BogoMIPS        : 1992.29
+
+processor       : 1
+BogoMIPS        : 1998.84
+
+processor       : 2
+BogoMIPS        : 1998.84
+
+processor       : 3
+BogoMIPS        : 1998.84
+
+processor       : 4
+BogoMIPS        : 1998.84
+
+processor       : 5
+BogoMIPS        : 1998.84
+
+processor       : 6
+BogoMIPS        : 1998.84
+
+processor       : 7
+BogoMIPS        : 1998.84
+
+processor       : 8
+BogoMIPS        : 1998.84
+
+processor       : 9
+BogoMIPS        : 1998.84
+
+processor       : 10
+BogoMIPS        : 1998.84
+
+processor       : 11
+BogoMIPS        : 1998.84
+
+processor       : 12
+BogoMIPS        : 1998.84
+
+processor       : 13
+BogoMIPS        : 1998.84
+
+processor       : 14
+BogoMIPS        : 1998.84
+
+processor       : 15
+BogoMIPS        : 1998.84
+
+Features        : swp half fastmult edsp 
+CPU implementer : 0x41
+CPU architecture: 7
+CPU variant     : 0x4
+CPU part        : 0xc0f
+CPU revision    : 0
+
+Hardware        : hisi
+Revision        : 0000
+Serial          : 0000000000000000
+HI1381 / #
