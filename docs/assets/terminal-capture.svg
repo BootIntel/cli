@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="460" viewBox="0 0 800 460" role="img" aria-labelledby="title desc">
+  <title id="title">BootIntel UART terminal</title><desc id="desc">A dark terminal shows a raw serial capture and the available keyboard controls.</desc>
+  <rect width="800" height="460" rx="16" fill="#111827"/><rect x="1" y="1" width="798" height="458" rx="15" fill="none" stroke="#334155" stroke-width="2"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17"><text x="30" y="42" fill="#94a3b8">bootintel term /dev/ttyUSB0 @ 115200</text><text x="30" y="94" fill="#7dd3fc">$ bootintel term /dev/ttyUSB0 -b 115200 --log-file boot.log</text><text x="30" y="140" fill="#cbd5e1">U-Boot 2020.10</text><text x="30" y="172" fill="#cbd5e1">CPU:  ARM Cortex-A7</text><text x="30" y="204" fill="#cbd5e1">DRAM: 256 MiB</text><text x="30" y="236" fill="#cbd5e1">Hit any key to stop autoboot:  0</text><text x="30" y="280" fill="#f8fafc">=&gt; </text><text x="30" y="420" fill="#64748b">Ctrl-A ? help · Ctrl-A q quit · Ctrl-A b break · raw capture: boot.log</text></g>
+</svg>

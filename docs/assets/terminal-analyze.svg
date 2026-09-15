@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="690" viewBox="0 0 1200 690" role="img" aria-labelledby="title desc">
+  <title id="title">BootIntel live UART analysis</title>
+  <desc id="desc">A dark terminal streams a synthetic U-Boot log while BootIntel identifies the bootloader, kernel, model, and autoboot setting.</desc>
+  <rect width="1200" height="690" rx="20" fill="#111827"/>
+  <rect x="1" y="1" width="1198" height="688" rx="19" fill="none" stroke="#334155" stroke-width="2"/>
+  <circle cx="42" cy="40" r="10" fill="#fb7185"/><circle cx="74" cy="40" r="10" fill="#fbbf24"/><circle cx="106" cy="40" r="10" fill="#4ade80"/>
+  <text x="600" y="47" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="19" text-anchor="middle">bootintel analyze /dev/ttyUSB0 @ 115200</text>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="24">
+    <text x="45" y="105" fill="#7dd3fc">$ bootintel analyze /dev/ttyUSB0 --baud 115200 --log-file boot.log</text>
+    <text x="45" y="158" fill="#cbd5e1">U-Boot 2020.10 (Sep 17 2023 - 11:38:21 +0000)</text>
+    <text x="45" y="198" fill="#f8fafc">SoC:   synthetic ARMv7 evaluation board</text>
+    <text x="45" y="238" fill="#cbd5e1">DRAM:  256 MiB</text>
+    <text x="45" y="278" fill="#cbd5e1">Hit any key to stop autoboot:  3</text>
+    <text x="45" y="340" fill="#86efac">[bootintel] ● Bootloader: U-Boot 2020.10</text>
+    <text x="45" y="380" fill="#86efac">[bootintel] ● Device: synthetic ARMv7 evaluation board</text>
+    <text x="45" y="420" fill="#fcd34d">[bootintel] ▲ Autoboot: interruptible boot window (3 seconds)</text>
+    <text x="45" y="480" fill="#cbd5e1">Starting kernel ...</text>
+    <text x="45" y="520" fill="#cbd5e1">Linux version 5.15.0 (builder@ci) #1 SMP</text>
+    <text x="45" y="580" fill="#86efac">[bootintel] ● Kernel: Linux 5.15.0</text>
+    <text x="45" y="640" fill="#64748b">Ctrl-A ? help · Ctrl-A q quit · Ctrl-A l live findings · raw capture: boot.log</text>
+  </g>
+</svg>

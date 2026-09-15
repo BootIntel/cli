@@ -1,6 +1,76 @@
 # bootintel — Rust CLI
 
-Interactive UART capture + streaming boot-log analysis tool in one static Rust binary. Hybrid client/server split: identification runs client-side (offline, no account), full CVE matching + exploit paths + PDF reports run server-side via bootintel.com's API (paid tiers).
+[![CI](https://github.com/BootIntel/cli/actions/workflows/ci.yml/badge.svg)](https://github.com/BootIntel/cli/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/BootIntel/cli?display_name=tag&sort=semver)](https://github.com/BootIntel/cli/releases/latest)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+![Platforms](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-4c8bf5)
+![MSRV](https://img.shields.io/badge/MSRV-Rust%201.90%2B-dea584)
+
+**A full UART terminal that understands boot logs.** Capture a serial session, save the raw bytes, and identify bootloaders, kernels, devices, and risky boot settings as they arrive. Local identification is free and works offline; opt-in server analysis adds CVE matching and reports.
+
+<p align="center">
+  <img src="docs/assets/terminal-analyze.svg" alt="BootIntel analyze terminal showing a U-Boot serial stream and live findings" width="900">
+</p>
+
+## Start in 60 seconds
+
+Download the [latest release](https://github.com/BootIntel/cli/releases/latest), verify it with [SHA256SUMS](https://github.com/BootIntel/cli/releases/latest), then:
+
+```sh
+# Find the USB serial adapter.
+bootintel ports
+
+# Open the UART, preserve the raw capture, and identify the boot log live.
+bootintel analyze /dev/ttyUSB0 --baud 115200 --log-file boot.log
+
+# Re-scan the saved capture later, fully offline.
+bootintel scan boot.log --format text
+```
+
+On Windows, use a COM port such as `COM3`. See the [getting-started and troubleshooting guide](docs/getting-started.md) for installation, permissions, and a hardware-free virtual-PTY demo.
+
+## What it looks like
+
+| Terminal | Live analysis dashboard | Saved-log scan |
+| --- | --- | --- |
+| ![BootIntel terminal capture](docs/assets/terminal-capture.svg) | ![BootIntel TUI showing stream and findings](docs/assets/terminal-tui.svg) | `bootintel scan boot.log --format sarif` works in CI or from a saved capture. |
+
+## Why BootIntel alongside a serial terminal?
+
+BootIntel is designed to replace the common UART terminal workflow when the boot output itself matters. It retains the interactive controls engineers expect while making a captured boot log useful immediately.
+
+| Capability | BootIntel | minicom / picocom / tio | screen |
+| --- | --- | --- | --- |
+| Interactive serial terminal | Yes | Yes | Yes |
+| Baud, parity, data bits, flow control | Yes | Yes | Yes |
+| Raw serial log file | Yes | Yes | Yes |
+| Terminal controls, break, DTR/RTS, reconnect | Yes | Varies by tool | Limited |
+| Identify bootloader, kernel, and device from output | **Live and offline** | — | — |
+| Surface risky boot settings during capture | **Live and offline** | — | — |
+| Scan saved logs as text, JSON, SARIF, or JUnit | **Yes** | — | — |
+| Diff, replay, batch, and CI gate boot logs | **Yes** | — | — |
+| Optional CVE and exploit-path analysis | **Explicit opt-in** | — | — |
+
+Use `bootintel term` when you want a clean terminal and `bootintel analyze` when you want the same terminal with live boot-log intelligence.
+
+## Common workflows
+
+| Goal | Command | Result |
+| --- | --- | --- |
+| Inspect a newly connected adapter | `bootintel ports` | Lists candidate ports with USB VID/PID and product metadata when available. |
+| Capture and analyze a boot | `bootintel analyze /dev/ttyUSB0 -b 115200 --log-file boot.log` | Preserves raw bytes and prints local findings as the device boots. |
+| Analyze a log without hardware | `bootintel scan boot.log --format text` | Runs the local detector set without an account or network connection. |
+| Compare firmware boots | `bootintel diff before.log after.log` | Shows meaningful boot-log changes between two captures. |
+| Gate a build artifact | `bootintel scan boot.log --format sarif --gate-critical` | Emits CI-friendly output and exits non-zero for critical findings. |
+| Request richer analysis | `bootintel scan --api --preview boot.log` | Explicitly sends the log to BootIntel's API using the anonymous preview quota. |
+
+## Privacy and terminal safety
+
+- Local detection runs on your machine and never requires an account.
+- BootIntel does not send serial input automatically. Any write, break, modem-line action, or full analysis is initiated by you.
+- `--log-file` writes raw capture bytes only to the path you choose.
+- Server analysis is opt-in: use `--api` or `--api --preview`; the CLI states when it is submitting a log.
+- Release artifacts include SHA256 checksums. See [SECURITY.md](SECURITY.md) for reporting guidance.
 
 Subcommands include `scan`, `share`, `ports`, `version`, `term`, `analyze`, plus 15+ others (`batch`, `diff`, `watch`, `cve`, `bench`, `replay`, `manpage`, `detectors`, `schema`, `export`, `view`, `demo`, `init`, `doctor`, `completions`).
 
@@ -26,22 +96,22 @@ cargo install --path crates/cli --features tui
 **GitHub Actions** (reusable composite action):
 
 ```yaml
-- uses: bootintel/cli/.github/actions/bootintel-scan@cli-v0.3.0
+- uses: bootintel/cli/.github/actions/bootintel-scan@cli-v0.3.1
   with:
     log-file: artifacts/boot.log
     format: sarif
     output-file: bootintel.sarif
     gate-critical: true
-    version: 0.3.0   # pin the binary too
+    version: 0.3.1   # pin the binary too
 ```
 
-Pin to a release tag (`@cli-v0.3.0`) or a commit SHA — **never `@main`** (a compromised `main` would execute arbitrary shell in every consumer's pipeline).
+Pin to a release tag (`@cli-v0.3.1`) or a commit SHA — **never `@main`** (a compromised `main` would execute arbitrary shell in every consumer's pipeline).
 
 **Homebrew:** the formula template lives at `packaging/homebrew/bootintel.rb`. A public `bootintel/homebrew-tap` for `brew install bootintel` is planned.
 
 **Windows:** the one-liner above downloads + SHA256-verifies the latest release, extracts `bootintel.exe` into `$env:USERPROFILE\.local\bin`, and prints a `setx PATH` line if that dir isn't already on your PATH. Override with `$env:BOOTINTEL_VERSION` / `$env:BOOTINTEL_INSTALL_DIR`, or use `$env:BOOTINTEL_TARBALL` for offline installs. Currently x86_64 only — ARM64 users need `cargo install --path crates/cli --features tui`.
 
-## Quick start (from source)
+## Build from source
 
 ```
 cargo build --release
