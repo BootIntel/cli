@@ -1,9 +1,36 @@
 //! Thin BufWriter wrapper for `--log-file`.
 //!
-//! Writes every raw byte the serial port emits to a file. Flushes
-//! on drop. Ignores write errors on the second attempt so a full
-//! disk doesn't crash the whole terminal — the terminal keeps
-//! working; the log file just stops growing.
+//! Writes every raw byte the serial port emits to a file. Ignores
+//! write errors on the second attempt so a full disk doesn't crash
+//! the whole terminal — the terminal keeps working; the log file just
+//! stops growing.
+//!
+//! # Durability
+//!
+//! Every `write_bytes` call ends in a `flush`. This is deliberate and
+//! it is the whole point of the type.
+//!
+//! The previous design flushed only on `Drop`, which meant the buffer
+//! reached the filesystem only when the session ended through the
+//! clean quit path. A capture smaller than the 8 KiB buffer — which is
+//! most of them, since a boot log is a short burst followed by an idle
+//! console — sat entirely in user-space memory. Anyone who exited with
+//! Ctrl-C, closed the terminal window, unplugged the adapter, or let
+//! the laptop sleep lost the entire capture while `ls` showed them a
+//! file that existed and the on-screen analysis showed the bytes had
+//! been received and understood. A 0-byte file is the worst possible
+//! outcome for a tool whose job is to not lose your capture.
+//!
+//! Flushing per read also makes the file **tailable**: `tail -f
+//! capture.log` in a second terminal now follows the session live,
+//! which is how people actually use a capture tool.
+//!
+//! The cost is one `write(2)` per serial read rather than one per
+//! 8 KiB. At 115200 baud with the terminal's 100 ms read cadence
+//! that is ~10 syscalls a second. The buffer is retained so a single
+//! read is still a single syscall.
+
+use std::sync::atomic::{AtomicU64, Ordering};
 
 use anyhow::{Context, Result};
 use std::fs::{File, OpenOptions};
@@ -100,7 +127,13 @@ impl LogFile {
         if let Err(e) = res {
             eprintln!("[bootintel] log-file write failed: {e}. Further writes suppressed.");
             self.broken = true;
+            return;
         }
+        // Push to the filesystem now — see the module docs. Without
+        // this the capture exists only in this process's memory until
+        // the buffer happens to fill or the session quits cleanly.
+        self.flush();
+        BYTES_PERSISTED.fetch_add(bytes.len() as u64, Ordering::Relaxed);
     }
 
     /// Split `bytes` on '\n' boundaries and emit a timestamp before
@@ -137,6 +170,17 @@ impl Drop for LogFile {
     fn drop(&mut self) {
         self.flush();
     }
+}
+
+/// Total bytes this process has written **and flushed** to a
+/// `--log-file`. Used by `bootintel term`'s shutdown path to report
+/// what was actually persisted, and by the regression tests to assert
+/// that bytes reach the filesystem mid-session rather than at exit.
+static BYTES_PERSISTED: AtomicU64 = AtomicU64::new(0);
+
+/// Bytes flushed to the log file so far this process.
+pub fn bytes_persisted() -> u64 {
+    BYTES_PERSISTED.load(Ordering::Relaxed)
 }
 
 /// ISO-8601 UTC with millisecond precision, e.g. `2026-08-24T09:12:03.487Z`.
@@ -313,6 +357,146 @@ mod tests {
             }
         }
         false
+    }
+
+    // ── Durability regressions ──────────────────────────────────────
+    //
+    // `--log-file` used to flush only on Drop, so the capture reached
+    // the filesystem only if the session exited through the clean quit
+    // path. Measured against a socat PTY pair on the v0.3.1 release
+    // binary, the log file was 0 bytes at 2, 4, 6, 8 and 10 seconds
+    // into a live session, and 0 bytes after both SIGINT and SIGTERM,
+    // while the session itself was correctly analyzing those same
+    // bytes on screen.
+    //
+    // These tests assert the property that was missing: bytes are on
+    // disk MID-session, not merely by the end of it. Asserting only
+    // the final contents (as `writes_bytes_and_flushes_on_drop` above
+    // does) passes happily against the broken version.
+
+    #[test]
+    fn bytes_are_on_disk_mid_session_not_just_at_drop() {
+        let dir = tempdir_or_current();
+        let path = dir.join("bootintel-logfile-midsession-test.txt");
+        let _ = std::fs::remove_file(&path);
+
+        let mut lf = LogFile::create(&path, LogFileMode::Overwrite).unwrap();
+
+        // Deliberately far less than the 8 KiB buffer — this is the
+        // shape of a real capture (a short boot burst, then an idle
+        // console) and it is exactly the case the old code lost.
+        lf.write_bytes(b"U-Boot 2020.10 (Sep 17 2023 - 11:38:21 +0000)\n");
+
+        // NOTE: `lf` is still alive. No Drop has run.
+        let size_after_first_write = std::fs::metadata(&path).unwrap().len();
+        assert!(
+            size_after_first_write > 0,
+            "log file is still 0 bytes after a write while the session is live — \
+             a Ctrl-C here would lose the whole capture"
+        );
+
+        lf.write_bytes(b"Hit any key to stop autoboot:  3\n");
+        let size_after_second_write = std::fs::metadata(&path).unwrap().len();
+        assert!(
+            size_after_second_write > size_after_first_write,
+            "log file did not grow on the second write ({size_after_first_write} -> \
+             {size_after_second_write}) — it is still being buffered"
+        );
+
+        drop(lf);
+        let _ = std::fs::remove_file(&path);
+    }
+
+    #[test]
+    fn a_second_reader_can_tail_the_file_while_the_session_runs() {
+        // `tail -f capture.log` from another terminal is how people
+        // actually use a capture tool. That only works if the bytes
+        // are in the file, so this reads through an independent handle
+        // while the LogFile is still open.
+        let dir = tempdir_or_current();
+        let path = dir.join("bootintel-logfile-tailable-test.txt");
+        let _ = std::fs::remove_file(&path);
+
+        let mut lf = LogFile::create(&path, LogFileMode::Overwrite).unwrap();
+        lf.write_bytes(b"first burst\n");
+
+        let seen_now = std::fs::read_to_string(&path).unwrap();
+        assert_eq!(
+            seen_now, "first burst\n",
+            "an independent reader could not see the bytes mid-session"
+        );
+
+        lf.write_bytes(b"second burst\n");
+        let seen_later = std::fs::read_to_string(&path).unwrap();
+        assert_eq!(seen_later, "first burst\nsecond burst\n");
+
+        drop(lf);
+        let _ = std::fs::remove_file(&path);
+    }
+
+    #[test]
+    fn nothing_is_lost_when_the_process_never_drops_the_logfile() {
+        // Simulates the signal path: the LogFile is leaked, so Drop
+        // never runs, exactly as when a default-disposition SIGTERM
+        // tears the process down. Everything written must already be
+        // on disk.
+        let dir = tempdir_or_current();
+        let path = dir.join("bootintel-logfile-noflushdrop-test.txt");
+        let _ = std::fs::remove_file(&path);
+
+        {
+            let mut lf = LogFile::create(&path, LogFileMode::Overwrite).unwrap();
+            lf.write_bytes(b"line one\n");
+            lf.write_bytes(b"line two\n");
+            // Never dropped — Drop's flush cannot be what saves us.
+            std::mem::forget(lf);
+        }
+
+        assert_eq!(
+            std::fs::read_to_string(&path).unwrap(),
+            "line one\nline two\n",
+            "bytes were lost when Drop did not run — a signal would lose them too"
+        );
+        let _ = std::fs::remove_file(&path);
+    }
+
+    #[test]
+    fn timestamped_writes_are_also_flushed_mid_session() {
+        // The --log-timestamps path goes through a different write
+        // function; it must be just as durable.
+        let dir = tempdir_or_current();
+        let path = dir.join("bootintel-logfile-ts-midsession-test.txt");
+        let _ = std::fs::remove_file(&path);
+
+        let mut lf = LogFile::create(&path, LogFileMode::Overwrite)
+            .unwrap()
+            .with_timestamps(true);
+        lf.write_bytes(b"U-Boot 2020.10\n");
+
+        let contents = std::fs::read_to_string(&path).unwrap();
+        assert!(
+            contents.contains("U-Boot 2020.10"),
+            "timestamped write not flushed mid-session, got {contents:?}"
+        );
+        drop(lf);
+        let _ = std::fs::remove_file(&path);
+    }
+
+    #[test]
+    fn bytes_persisted_counter_tracks_flushed_writes() {
+        let before = bytes_persisted();
+        let dir = tempdir_or_current();
+        let path = dir.join("bootintel-logfile-counter-test.txt");
+        let _ = std::fs::remove_file(&path);
+        {
+            let mut lf = LogFile::create(&path, LogFileMode::Overwrite).unwrap();
+            lf.write_bytes(b"12345");
+        }
+        assert!(
+            bytes_persisted() >= before + 5,
+            "persisted-byte counter did not advance"
+        );
+        let _ = std::fs::remove_file(&path);
     }
 
     fn tempdir_or_current() -> std::path::PathBuf {

@@ -30,9 +30,9 @@
 //!   * `context.rs` — `--context N` grep-C excerpts + UTF-8-safe
 //!     `adjust_char_boundary` helper.
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use clap::Args as ClapArgs;
-use std::io::{self, Read};
+use std::io;
 use std::path::PathBuf;
 
 use bootintel_detectors::{analyze, CRITICAL_LABELS};
@@ -150,8 +150,43 @@ pub struct Args {
 // are defined in `bootintel_detectors::CRITICAL_LABELS` — the single
 // source of truth used across scan, batch, output, analyze, and tui.
 
+/// Exit code for input that could not be inspected at all: an empty
+/// file, an empty pipe, whitespace only. **Never 0** — a CI job whose
+/// UART never came up, whose adapter fell out, or whose artifact path
+/// was wrong must not report green. See `EXIT_UNRECOGNIZED`.
+pub(super) const EXIT_EMPTY_INPUT: i32 = 2;
+
+/// Exit code for input that had content but matched no detector.
+/// Distinct from 2 so a caller can tell "nothing to look at" from
+/// "looked, recognized nothing" — the second usually means the capture
+/// started too late, or the baud was wrong and the bytes are garbage.
+pub(super) const EXIT_UNRECOGNIZED: i32 = 3;
+
 pub fn run(args: Args) -> Result<()> {
-    let raw = read_input(&args)?;
+    let log = read_input(&args)?;
+    log.report_replacements();
+    let raw = log.text;
+
+    // An empty capture is not a passing scan.
+    //
+    // Previously `scan --gate-critical` on a 0-byte file printed an
+    // empty finding list and exited 0, so every CI gate downstream went
+    // green on a capture that never happened. The legacy Node analyzer
+    // has always exited 2 here, and its README warns in as many words
+    // never to treat an empty capture as a successful gate. Checked
+    // before the --api branch as well: there is no point posting
+    // nothing to the server either.
+    if raw.trim().is_empty() {
+        eprintln!(
+            "bootintel: empty capture; no inspection performed ({})\n  \
+             Nothing was analyzed, so this is not a passing scan.\n  \
+             Check that the serial capture actually ran, that the adapter is still \
+             attached, and that the path is the one your capture step wrote.",
+            log.source_label
+        );
+        record_history(&args, 0, 0, EXIT_EMPTY_INPUT);
+        std::process::exit(EXIT_EMPTY_INPUT);
+    }
 
     if args.api {
         return api::run_api(&args, &raw);
@@ -161,7 +196,14 @@ pub fn run(args: Args) -> Result<()> {
     let stdout = io::stdout();
     let color = output::resolve_color_mode(args.no_color, &stdout);
     let mut out = stdout.lock();
-    output::write(&mut out, &findings, args.format, &raw, color)?;
+    output::write(
+        &mut out,
+        &findings,
+        args.format,
+        &raw,
+        color,
+        &log.source_label,
+    )?;
     if args.context > 0 && matches!(args.format, Format::Text) {
         context::write_context_blocks(&mut out, &findings, &raw, args.context, color)?;
     }
@@ -175,6 +217,26 @@ pub fn run(args: Args) -> Result<()> {
         .count() as u32;
 
     use std::io::Write as _;
+
+    // Non-empty input, but no detector recognized anything. Same
+    // reasoning as the empty case: report it rather than calling it a
+    // clean bill of health. Ordered ahead of the gate checks to match
+    // the Node analyzer's ladder; with zero findings neither
+    // --gate-critical nor a positive --gate assertion can fire anyway.
+    if findings.is_empty() {
+        let _ = out.flush();
+        eprintln!(
+            "bootintel: no recognized evidence in {}; this is not a successful inspection\n  \
+             The capture has content but matched none of the {} detectors. Common causes: \
+             the capture started after the boot banner scrolled past, or the baud rate \
+             was wrong and the bytes are noise.",
+            log.source_label,
+            bootintel_detectors::detector_labels().len()
+        );
+        record_history(&args, 0, 0, EXIT_UNRECOGNIZED);
+        std::process::exit(EXIT_UNRECOGNIZED);
+    }
+
     if args.gate_critical {
         let hit = findings
             .iter()
@@ -203,6 +265,17 @@ pub fn run(args: Args) -> Result<()> {
     }
     record_history(&args, findings.len() as u32, critical_count, 0);
     Ok(())
+}
+
+/// How to name this scan's input in output that has to identify it
+/// (SARIF's `artifactLocation`, the empty/unrecognized messages).
+/// `stdin` for a pipe, the path as the user typed it otherwise.
+pub(super) fn source_label(args: &Args) -> String {
+    if args.stdin || args.file == "-" {
+        "stdin".to_string()
+    } else {
+        args.file.clone()
+    }
 }
 
 /// Append one history line for this scan. Best-effort — a locked file
@@ -238,13 +311,9 @@ pub(super) fn record_history(args: &Args, findings: u32, critical: u32, exit_cod
     });
 }
 
-fn read_input(args: &Args) -> Result<String> {
+fn read_input(args: &Args) -> Result<crate::input::LoadedLog> {
     if args.stdin || args.file == "-" {
-        let mut buf = String::new();
-        io::stdin()
-            .read_to_string(&mut buf)
-            .context("reading log from stdin")?;
-        return Ok(buf);
+        return crate::input::read_stdin();
     }
     // Skip a pre-flight exists() check — that would misreport a
     // permission-denied file as "not found" (TOCTOU) and swallow
@@ -252,7 +321,10 @@ fn read_input(args: &Args) -> Result<String> {
     // io::Error, then translate the common kinds into an actionable
     // hint instead of the bare libc-style "No such file or directory".
     let path = PathBuf::from(&args.file);
-    std::fs::read_to_string(&path).map_err(|e| match e.kind() {
+    // Bytes, not `read_to_string`: a UART capture is frequently not
+    // valid UTF-8 and rejecting it outright loses a perfectly
+    // analyzable log. See `crate::input`.
+    crate::input::read_file(&path).map_err(|e| match e.kind() {
         std::io::ErrorKind::NotFound => anyhow::anyhow!(
             "no such file: {}\n  Check the path, or pipe from stdin: bootintel scan - < path/to/log.txt",
             args.file

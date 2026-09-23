@@ -66,6 +66,11 @@ fn scan_schema() -> serde_json::Value {
                 "type":        "array",
                 "description": "Per-detector matches, in detector-registration order.",
                 "items":       { "$ref": "#/$defs/Finding" }
+            },
+            "analysis_status": {
+                "type":        "string",
+                "enum":        ["matched", "unrecognized"],
+                "description": "Whether any detector recognized anything. Pairs with the process exit code: `matched` -> 0, `unrecognized` -> 3. An empty or unusable capture never reaches this document at all — it exits 2 before output. Lets a consumer distinguish 'clean' from 'we did not recognize this capture' without inferring it from an empty findings array."
             }
         },
         "additionalProperties": false,
@@ -88,7 +93,12 @@ fn scan_schema() -> serde_json::Value {
                     },
                     "source": {
                         "type":        ["string", "null"],
-                        "description": "Optional source line the detector matched against. Useful for finding provenance."
+                        "description": "The original log line this finding came from, as it appeared in the capture — including any timestamp or ANSI prefix. Detector matching runs over a normalized copy, but evidence is reported verbatim so it can be found again in the log. May be absent."
+                    },
+                    "line_number": {
+                        "type":        ["integer", "null"],
+                        "minimum":     1,
+                        "description": "1-based line number of `source` within the analyzed log. Absent when the evidence could not be located."
                     }
                 },
                 "additionalProperties": false
@@ -118,10 +128,11 @@ mod tests {
         let props = &schema["$defs"]["Finding"]["properties"];
         let keys: std::collections::HashSet<_> =
             props.as_object().unwrap().keys().cloned().collect();
-        let expected: std::collections::HashSet<String> = ["label", "value", "detail", "source"]
-            .iter()
-            .map(|s| s.to_string())
-            .collect();
+        let expected: std::collections::HashSet<String> =
+            ["label", "value", "detail", "source", "line_number"]
+                .iter()
+                .map(|s| s.to_string())
+                .collect();
         assert_eq!(
             keys, expected,
             "Finding schema drifted from output::FindingOut — update BOTH"

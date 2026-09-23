@@ -67,6 +67,7 @@ mod tests {
             value: "x".into(),
             detail: None,
             source: None,
+            line_number: None,
         }
     }
 

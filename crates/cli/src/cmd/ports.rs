@@ -3,6 +3,19 @@
 //! Enumerates via `serialport::available_ports()`. Text format shows
 //! path + USB VID:PID + product string; --json emits a structured
 //! array so scripts can filter on VID/PID or bus type without regex.
+//!
+//! # Ordering
+//!
+//! USB ports come first, then everything else, each group sorted
+//! naturally by port number.
+//!
+//! This matters because `available_ports()` returns whatever order the
+//! platform enumerated in, and on a typical Linux box that is 32
+//! motherboard `/dev/ttyS*` stubs in essentially random order. The one
+//! port the user cares about — the USB adapter they just plugged in —
+//! was somewhere in the middle of that wall of text with nothing to
+//! distinguish it. The adapter is the answer to the question being
+//! asked, so it goes at the top, labelled.
 
 use anyhow::{Context, Result};
 use clap::Args as ClapArgs;
@@ -21,8 +34,33 @@ pub struct Args {
     json: bool,
 }
 
+/// Sort key: USB first, then by a natural ordering of the port name so
+/// `/dev/ttyS9` sorts before `/dev/ttyS10` instead of after it.
+fn sort_key(p: &serialport::SerialPortInfo) -> (u8, String, u32, String) {
+    let bus_rank = match &p.port_type {
+        SerialPortType::UsbPort(_) => 0,
+        SerialPortType::BluetoothPort => 1,
+        SerialPortType::PciPort => 2,
+        SerialPortType::Unknown => 3,
+    };
+    // Split the trailing digit run off so numbers compare as numbers.
+    let name = &p.port_name;
+    let digits_start = name
+        .rfind(|c: char| !c.is_ascii_digit())
+        .map(|i| i + 1)
+        .unwrap_or(0);
+    let (stem, num) = name.split_at(digits_start);
+    (
+        bus_rank,
+        stem.to_string(),
+        num.parse::<u32>().unwrap_or(0),
+        name.clone(),
+    )
+}
+
 pub fn run(args: Args) -> Result<()> {
-    let ports = serialport::available_ports().context("enumerating serial ports")?;
+    let mut ports = serialport::available_ports().context("enumerating serial ports")?;
+    ports.sort_by_key(sort_key);
 
     if args.json {
         let items: Vec<serde_json::Value> = ports.iter().map(port_json).collect();
@@ -45,16 +83,42 @@ pub fn run(args: Args) -> Result<()> {
         }
         return Ok(());
     }
+    let usb_count = ports
+        .iter()
+        .filter(|p| matches!(p.port_type, SerialPortType::UsbPort(_)))
+        .count();
+
+    // Pad the name column so the annotations line up into a readable
+    // second column rather than ragging off each path.
+    let width = ports
+        .iter()
+        .map(|p| p.port_name.chars().count())
+        .max()
+        .unwrap_or(0)
+        .min(32);
+
+    let mut printed_divider = false;
     for p in &ports {
-        print!("{}", p.port_name);
+        let is_usb = matches!(p.port_type, SerialPortType::UsbPort(_));
+        // One blank line between the USB adapters and the built-in
+        // ports, so the interesting group reads as a group.
+        if !is_usb && usb_count > 0 && !printed_divider && !args.quiet {
+            println!();
+            printed_divider = true;
+        }
+        print!("{:width$}", p.port_name);
         match &p.port_type {
             SerialPortType::UsbPort(info) => {
                 print!("  USB {:04x}:{:04x}", info.vid, info.pid);
-                if let Some(m) = &info.manufacturer {
-                    print!("  {m}");
-                }
-                if let Some(prod) = &info.product {
-                    print!(" / {prod}");
+                // The product string is how a human recognises their
+                // adapter ("FT232R USB UART", "CP2102 USB to UART
+                // Bridge Controller"), so it is the part that must
+                // always show.
+                match (&info.manufacturer, &info.product) {
+                    (Some(m), Some(prod)) => print!("  {m} / {prod}"),
+                    (None, Some(prod)) => print!("  {prod}"),
+                    (Some(m), None) => print!("  {m}"),
+                    (None, None) => print!("  (USB serial adapter)"),
                 }
                 if let Some(sn) = &info.serial_number {
                     print!("  SN={sn}");
@@ -62,9 +126,20 @@ pub fn run(args: Args) -> Result<()> {
             }
             SerialPortType::PciPort => print!("  (PCI serial)"),
             SerialPortType::BluetoothPort => print!("  (Bluetooth)"),
-            SerialPortType::Unknown => {}
+            // Not "unknown" to a human: on Linux these are the
+            // motherboard's 8250 stubs, which almost never have
+            // anything attached.
+            SerialPortType::Unknown => print!("  (built-in / no USB descriptor)"),
         }
         println!();
+    }
+
+    if !args.quiet && usb_count > 0 && ports.len() > usb_count {
+        eprintln!();
+        eprintln!(
+            "  {usb_count} USB adapter(s) listed first; the remaining {} are built-in ports \n               with nothing attached in the usual case.",
+            ports.len() - usb_count
+        );
     }
     Ok(())
 }

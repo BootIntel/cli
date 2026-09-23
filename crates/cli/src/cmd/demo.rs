@@ -42,7 +42,16 @@ pub fn run(args: Args) -> Result<()> {
         writeln!(out, "{SAMPLE}")?;
         writeln!(out, "── findings ──")?;
     }
-    output::write(&mut out, &findings, args.format, SAMPLE, color)?;
+    // The built-in sample has no on-disk path; name it as such
+    // so SARIF from `demo` never claims a real repository file.
+    output::write(
+        &mut out,
+        &findings,
+        args.format,
+        SAMPLE,
+        color,
+        "bootintel-sample-log",
+    )?;
     if !args.show_log && matches!(args.format, Format::Text) && !crate::verbose::is_quiet() {
         writeln!(out)?;
         writeln!(

@@ -29,6 +29,12 @@ pub struct Finding {
     pub value: String,
     pub detail: Option<String>,
     pub source: Option<String>,
+    /// 1-based line number of `source` within the analyzed log.
+    /// Populated by `analyze()`; `None` when the evidence could not be
+    /// located (or when a `Finding` is constructed by hand, e.g. from
+    /// an archived JSON envelope). Additive — existing consumers that
+    /// don't know about it are unaffected.
+    pub line_number: Option<usize>,
 }
 
 impl Finding {
@@ -38,6 +44,7 @@ impl Finding {
             value: value.into(),
             detail: None,
             source: None,
+            line_number: None,
         }
     }
     fn detail(mut self, d: impl Into<String>) -> Self {
@@ -53,8 +60,135 @@ impl Finding {
 /// Analyze a boot log against every detector; return findings in
 /// detector-registration order. Detectors that don't match are
 /// silently dropped.
+///
+/// # Line normalization
+///
+/// Several detectors are line-anchored (`(?m)^U-Boot`, `(?m)^GRUB`,
+/// `(?m)^coreboot-`, `(?m)^procd:`). Real captures very often carry a
+/// per-line prefix that defeats a bare `^`:
+///
+///   * `[12:34:56.789] ` — minicom / picocom / tio timestamping
+///   * `[2026-09-23T10:00:00.000Z] ` — **our own** `--log-timestamps`
+///   * `[    0.000000] ` — kernel printk timestamps
+///   * `\x1b[32m` — ANSI colour from a colourising bootloader
+///
+/// Before `--log-timestamps` existed this was merely common; now the
+/// tool's own capture mode breaks its own `scan`, which is why the
+/// normalization lives here rather than being pushed onto callers.
+///
+/// So: split into lines, strip ANSI CSI sequences and any run of
+/// leading bracketed timestamps, and run the detectors over the
+/// normalized text. Evidence is then mapped back to the **original**
+/// (unmodified) line, so `source` always shows the user what their
+/// capture actually contained, prefix and all.
+///
+/// Ported from the legacy Node analyzer's `analyze()` so both
+/// implementations agree on what a "line" is and what gets stripped.
 pub fn analyze(log: &str) -> Vec<Finding> {
-    ALL_DETECTORS.iter().filter_map(|d| (d.run)(log)).collect()
+    let original = split_lines(log);
+    let normalized: Vec<String> = original.iter().map(|l| normalize_line(l)).collect();
+    let norm_log = normalized.join("\n");
+    ALL_DETECTORS
+        .iter()
+        .filter_map(|d| (d.run)(&norm_log))
+        .map(|f| attach_evidence(f, &original, &normalized))
+        .collect()
+}
+
+/// Split on any of CRLF / LF / CR. `str::lines()` only handles LF and
+/// CRLF; a bare-CR stream (some bootloaders emit CR-only line endings)
+/// would otherwise arrive as one giant line and defeat every
+/// line-anchored detector.
+fn split_lines(log: &str) -> Vec<&str> {
+    let mut out = Vec::new();
+    let bytes = log.as_bytes();
+    let mut start = 0usize;
+    let mut i = 0usize;
+    while i < bytes.len() {
+        match bytes[i] {
+            b'\n' => {
+                out.push(&log[start..i]);
+                i += 1;
+                start = i;
+            }
+            b'\r' => {
+                out.push(&log[start..i]);
+                // CRLF counts as one terminator.
+                i += if i + 1 < bytes.len() && bytes[i + 1] == b'\n' {
+                    2
+                } else {
+                    1
+                };
+                start = i;
+            }
+            _ => i += 1,
+        }
+    }
+    out.push(&log[start..]);
+    out
+}
+
+/// ANSI CSI escape sequence: ESC `[` params intermediates final.
+/// Same character classes as the Node analyzer's
+/// `/\x1b\[[0-?]*[ -/]*[@-~]/g`.
+static RE_ANSI_CSI: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"\x1b\[[0-?]*[ -/]*[@-~]").unwrap());
+
+/// One leading bracketed timestamp. Three accepted shapes, matching
+/// the Node analyzer:
+///   * `[12:34:56]` / `[12:34:56.789]`     — wall-clock terminal logger
+///   * `[2026-09-23T10:00:00.000Z]`        — ISO-8601 (our --log-timestamps)
+///   * `[    0.000000]`                    — kernel printk seconds
+static RE_LEADING_TS: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(
+        r"^\s*\[(?:\d{2}:\d{2}:\d{2}(?:\.\d+)?|\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?|\s*\d+\.\d+)\]\s*",
+    )
+    .unwrap()
+});
+
+/// Strip ANSI CSI sequences and leading bracketed timestamps from one
+/// line. The timestamp strip loops: `bootintel analyze --log-timestamps`
+/// over a Linux console produces *two* stacked prefixes
+/// (`[2026-…Z] [    0.000000] Linux version …`), and the Node
+/// analyzer's single-shot strip would leave the second one in place.
+fn normalize_line(line: &str) -> String {
+    let mut s = RE_ANSI_CSI.replace_all(line, "").into_owned();
+    // Bounded loop — a pathological line of nothing but bracketed
+    // timestamps must not spin forever.
+    for _ in 0..8 {
+        match RE_LEADING_TS.find(&s) {
+            Some(m) if m.end() > 0 => {
+                s = s[m.end()..].to_string();
+            }
+            _ => break,
+        }
+    }
+    s
+}
+
+/// Point a finding's `source` at the original, unmodified line that
+/// produced it, and record that line's 1-based number.
+///
+/// Detectors return the matched substring as `source`, taken from the
+/// normalized text. Locating it is a plain substring search over the
+/// normalized lines — far cheaper than the Node analyzer's re-run of
+/// every detector against every line, and exact for the same reason
+/// (the needle came out of that text verbatim).
+fn attach_evidence(mut f: Finding, original: &[&str], normalized: &[String]) -> Finding {
+    let Some(src) = f.source.clone() else {
+        return f;
+    };
+    // A few regexes (`[^)]+`) can span a newline; anchor on the first
+    // physical line of the match.
+    let needle = src.split('\n').next().unwrap_or(&src);
+    if needle.is_empty() {
+        return f;
+    }
+    if let Some(i) = normalized.iter().position(|l| l.contains(needle)) {
+        f.source = Some(original[i].to_string());
+        f.line_number = Some(i + 1);
+    }
+    f
 }
 
 /// Return the labels of every registered detector, in order. Used by

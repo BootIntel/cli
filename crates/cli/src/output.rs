@@ -44,6 +44,11 @@ struct FindingOut<'a> {
     detail: Option<&'a str>,
     #[serde(skip_serializing_if = "Option::is_none")]
     source: Option<&'a str>,
+    /// 1-based line of `source` in the analyzed log. Additive field —
+    /// omitted when unknown, so consumers written against the older
+    /// shape are unaffected.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    line_number: Option<usize>,
 }
 
 impl<'a> From<&'a Finding> for FindingOut<'a> {
@@ -53,7 +58,25 @@ impl<'a> From<&'a Finding> for FindingOut<'a> {
             value: &f.value,
             detail: f.detail.as_deref(),
             source: f.source.as_deref(),
+            line_number: f.line_number,
         }
+    }
+}
+
+/// Did this scan actually inspect something, and did it recognize
+/// anything? Mirrors the legacy Node analyzer's field of the same name
+/// and pairs with the exit ladder in `cmd::scan` (2 = empty input,
+/// 3 = unrecognized).
+///
+/// Consumers that only ever looked at `findings` keep working; this is
+/// an added key, and it exists so that "zero findings" can be
+/// distinguished from "clean" without inferring it from an array
+/// length.
+fn analysis_status(findings: &[Finding]) -> &'static str {
+    if findings.is_empty() {
+        "unrecognized"
+    } else {
+        "matched"
     }
 }
 
@@ -63,6 +86,8 @@ struct Envelope<'a> {
     analysis_source: &'a str,
     detector_count: usize,
     findings: Vec<FindingOut<'a>>,
+    /// Added field — see `analysis_status`.
+    analysis_status: &'a str,
 }
 
 /// Whether the `text` format should emit ANSI colour escapes.
@@ -148,17 +173,24 @@ pub fn resolve_color_mode_from_tty(no_color_flag: bool, is_tty: bool) -> ColorMo
     }
 }
 
+/// Render `findings` in `format`.
+///
+/// `source_uri` identifies the analyzed input — the path as the user
+/// gave it, or `stdin` for a pipe. SARIF needs it to point its
+/// `artifactLocation` at a file that actually exists in the caller's
+/// workspace; the other formats ignore it.
 pub fn write<W: Write>(
     out: &mut W,
     findings: &[Finding],
     format: Format,
     raw_log: &str,
     color: ColorMode,
+    source_uri: &str,
 ) -> Result<()> {
     match format {
         Format::Json => write_json(out, findings),
         Format::Text => write_text(out, findings, color),
-        Format::Sarif => write_sarif(out, findings, raw_log),
+        Format::Sarif => write_sarif(out, findings, raw_log, source_uri),
         Format::Junit => write_junit(out, findings),
         Format::Csv => write_csv(out, findings, None),
         Format::Html => write_html(out, findings),
@@ -390,6 +422,7 @@ fn write_json<W: Write>(out: &mut W, findings: &[Finding]) -> Result<()> {
         analysis_source: "client",
         detector_count: bootintel_detectors::detector_labels().len(),
         findings: findings.iter().map(FindingOut::from).collect(),
+        analysis_status: analysis_status(findings),
     };
     serde_json::to_writer_pretty(&mut *out, &env)?;
     writeln!(out)?;
@@ -441,26 +474,30 @@ fn write_text<W: Write>(out: &mut W, findings: &[Finding], color: ColorMode) -> 
             writeln!(out, "  {:<24}    {styled_detail}", "")?;
         }
     }
-    writeln!(out)?;
-    writeln!(
-        out,
-        "  {} findings identified locally (client-side detectors only).",
-        findings.len()
-    )?;
-    writeln!(out, "  For CVE matches + exploit paths + AI report:")?;
-    writeln!(
-        out,
-        "    bootintel scan --api <log>            (with BOOTINTEL_API_KEY set)"
-    )?;
-    writeln!(
-        out,
-        "    bootintel scan --api --preview <log>  (anonymous free preview — 3/day per IP)"
-    )?;
-    writeln!(
-        out,
-        "    bootintel share <log>                 (share via URL, log embedded, no upload)"
-    )?;
+    write_text_summary(findings.len());
     Ok(())
+}
+
+/// The trailing count + "here is what the paid tier adds" block.
+///
+/// Goes to **stderr**, unconditionally, and not at all under `-q`.
+///
+/// It used to go to stdout and ignore `-q` entirely, which meant
+/// `bootintel scan --format text > report.txt` shipped a three-line
+/// advertisement inside a customer's report, and `-q` — whose own help
+/// text promises it "suppresses banners + status hints" — did nothing.
+/// stdout carries findings; commentary about them belongs on stderr
+/// with every other status hint in this CLI.
+fn write_text_summary(count: usize) {
+    if crate::verbose::is_quiet() {
+        return;
+    }
+    eprintln!();
+    eprintln!("  {count} findings identified locally (client-side detectors only).");
+    eprintln!("  For CVE matches + exploit paths + AI report:");
+    eprintln!("    bootintel scan --api <log>            (with BOOTINTEL_API_KEY set)");
+    eprintln!("    bootintel scan --api --preview <log>  (anonymous free preview — 3/day per IP)");
+    eprintln!("    bootintel share <log>                 (share via URL, log embedded, no upload)");
 }
 
 // ── SARIF v2.1.0 ─────────────────────────────────────────────────────
@@ -468,8 +505,53 @@ fn write_text<W: Write>(out: &mut W, findings: &[Finding], color: ColorMode) -> 
 // Small hand-rolled builder — SARIF is verbose but our subset is
 // tractable. Enough to satisfy GitHub Code Scanning ingestion.
 
-fn write_sarif<W: Write>(out: &mut W, findings: &[Finding], raw_log: &str) -> Result<()> {
+/// Turn the input's identity into a SARIF `artifactLocation.uri`.
+///
+/// This used to be the constant `"boot.log"`, which quietly broke the
+/// flagship CI integration: GitHub's SARIF upload attaches each result
+/// to the file named here, so every annotation pointed at a path that
+/// is not in the repository and landed nowhere.
+///
+/// SARIF wants a URI relative to the run's root when it can be one, so:
+/// an absolute path under the workspace (`$GITHUB_WORKSPACE`, else the
+/// current directory) is emitted relative to it; anything else is
+/// emitted as given. `stdin` passes through unchanged — there is no
+/// file to annotate, and a consumer can see that plainly.
+fn sarif_artifact_uri(source_uri: &str) -> String {
+    if source_uri == "stdin" || source_uri == "-" {
+        return "stdin".to_string();
+    }
+    let path = std::path::Path::new(source_uri);
+    let root = std::env::var_os("GITHUB_WORKSPACE")
+        .map(std::path::PathBuf::from)
+        .or_else(|| std::env::current_dir().ok());
+    if let Some(root) = root {
+        // Compare canonicalized forms so `./log.txt`, `log.txt` and a
+        // symlinked workspace all resolve the same way, but emit the
+        // *uncanonicalized* relative path so it matches what is
+        // actually checked in.
+        if let (Ok(abs_path), Ok(abs_root)) = (path.canonicalize(), root.canonicalize()) {
+            if let Ok(rel) = abs_path.strip_prefix(&abs_root) {
+                // SARIF URIs use forward slashes on every platform.
+                return rel
+                    .components()
+                    .map(|c| c.as_os_str().to_string_lossy().into_owned())
+                    .collect::<Vec<_>>()
+                    .join("/");
+            }
+        }
+    }
+    source_uri.to_string()
+}
+
+fn write_sarif<W: Write>(
+    out: &mut W,
+    findings: &[Finding],
+    raw_log: &str,
+    source_uri: &str,
+) -> Result<()> {
     let ver = env!("CARGO_PKG_VERSION");
+    let artifact_uri = sarif_artifact_uri(source_uri);
     let results: Vec<serde_json::Value> = findings
         .iter()
         .map(|f| {
@@ -482,11 +564,18 @@ fn write_sarif<W: Write>(out: &mut W, findings: &[Finding], raw_log: &str) -> Re
             if let Some(d) = &f.detail {
                 msg.push_str(&format!(" ({d})"));
             }
+            // Prefer the line number the detector library recorded;
+            // fall back to locating the evidence text for findings
+            // rehydrated from an older archived envelope.
             let line_index = f
-                .source
-                .as_ref()
-                .and_then(|s| raw_log.lines().position(|line| line.contains(s)))
-                .map(|i| i as i64 + 1)
+                .line_number
+                .map(|n| n as i64)
+                .or_else(|| {
+                    f.source
+                        .as_ref()
+                        .and_then(|s| raw_log.lines().position(|line| line.contains(s)))
+                        .map(|i| i as i64 + 1)
+                })
                 .unwrap_or(1);
             serde_json::json!({
                 "ruleId": f.label,
@@ -494,7 +583,7 @@ fn write_sarif<W: Write>(out: &mut W, findings: &[Finding], raw_log: &str) -> Re
                 "message": { "text": msg },
                 "locations": [{
                     "physicalLocation": {
-                        "artifactLocation": { "uri": "boot.log" },
+                        "artifactLocation": { "uri": artifact_uri },
                         "region": { "startLine": line_index }
                     }
                 }]
@@ -613,6 +702,7 @@ mod tests {
             value: value.into(),
             detail: None,
             source: None,
+            line_number: None,
         }
     }
 

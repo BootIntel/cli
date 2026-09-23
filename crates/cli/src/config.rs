@@ -382,7 +382,6 @@ pub const ALL_KEYS: &[ConfigKey] = &[
     ConfigKey::NoHistory,
 ];
 
-
 /// Resolve the effective `api_base` URL for a subcommand, layering:
 ///   CLI flag > `$BOOTINTEL_API_BASE` env > config file > built-in default.
 ///
@@ -636,8 +635,8 @@ mod tests {
     #[test]
     fn write_atomic_sets_0600_on_unix() {
         use std::os::unix::fs::PermissionsExt;
-        let tmp = std::env::temp_dir()
-            .join(format!("bootintel-perms-test-{}.toml", std::process::id()));
+        let tmp =
+            std::env::temp_dir().join(format!("bootintel-perms-test-{}.toml", std::process::id()));
         let _ = std::fs::remove_file(&tmp);
         write_atomic(&tmp, b"api_base = \"https://x\"\n").unwrap();
         let mode = std::fs::metadata(&tmp).unwrap().permissions().mode() & 0o777;
@@ -649,8 +648,7 @@ mod tests {
     #[test]
     fn restrict_dir_perms_sets_0700_on_unix() {
         use std::os::unix::fs::PermissionsExt;
-        let tmp = std::env::temp_dir()
-            .join(format!("bootintel-perms-dir-{}", std::process::id()));
+        let tmp = std::env::temp_dir().join(format!("bootintel-perms-dir-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&tmp);
         std::fs::create_dir_all(&tmp).unwrap();
         restrict_dir_perms(&tmp).unwrap();

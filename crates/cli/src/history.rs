@@ -22,6 +22,20 @@
 //! (single generation) and truncate. A perfectly-behaved daily-use
 //! account would take years to hit this — the cap exists to keep a
 //! script-driven CI loop from silently filling the user's disk.
+//!
+//! # Disclosure
+//!
+//! bootintel's pitch is that it uploads nothing. That promise is kept
+//! — nothing here leaves the machine — but "we write a record of every
+//! scan you run to disk, including the path of every log you scanned"
+//! is still a thing a privacy-conscious user is entitled to be told
+//! rather than to discover. It was previously on by default and
+//! announced nowhere.
+//!
+//! So the first time this file is created, we say so on stderr, once,
+//! naming the path and how to turn it off. Subsequent runs are silent.
+//! `-q` suppresses it like every other status hint, and the notice is
+//! never printed when history is already disabled.
 
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
@@ -133,6 +147,9 @@ fn try_append(entry: &Entry) -> Result<()> {
     let mut line = serde_json::to_string(entry).context("serializing entry")?;
     line.push('\n');
     let file_existed = path.exists();
+    if !file_existed {
+        announce_first_write(&path);
+    }
     let mut file = open_history_for_append(&path)?;
     file.write_all(line.as_bytes())
         .with_context(|| format!("writing to {}", path.display()))?;
@@ -142,6 +159,27 @@ fn try_append(entry: &Entry) -> Result<()> {
         crate::config::restrict_file_perms(&path)?;
     }
     Ok(())
+}
+
+/// Tell the user, once, that we are keeping a local scan history.
+///
+/// Called only when the history file is about to be created for the
+/// first time. stderr, so it never lands in a redirected report.
+fn announce_first_write(path: &std::path::Path) {
+    if crate::verbose::is_quiet() {
+        return;
+    }
+    eprintln!(
+        "[bootintel] note: recording a local scan history at {}",
+        path.display()
+    );
+    eprintln!("[bootintel]   One line per scan: timestamp, log path, finding counts, exit code.");
+    eprintln!("[bootintel]   It stays on this machine — bootintel uploads nothing without --api.");
+    eprintln!("[bootintel]   Turn it off with `bootintel config set no_history true`, or");
+    eprintln!(
+        "[bootintel]   per-run with BOOTINTEL_NO_HISTORY=1. Inspect it with `bootintel history`."
+    );
+    eprintln!("[bootintel]   This notice prints once.");
 }
 
 /// Open the history file for append. On Unix we use `.mode(0o600)`

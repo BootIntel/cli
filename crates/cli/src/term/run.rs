@@ -117,6 +117,15 @@ pub fn run_session(mut opts: TermOptions) -> Result<()> {
         opts.flow_control,
     )?;
 
+    // Catch SIGINT / SIGTERM / SIGHUP so the loop below can exit
+    // through its normal path instead of the process being torn down
+    // where it stands. That matters for two things we are holding: the
+    // user's terminal (raw mode must be restored) and, with
+    // --log-file, the capture itself (must be flushed). Installed
+    // before the log file is opened so there is no window where a
+    // signal can kill us with bytes buffered.
+    super::signals::install();
+
     // Log-file writer (optional).
     let mut log = if let Some(p) = &opts.log_file {
         Some(LogFile::create(p, opts.log_mode)?.with_timestamps(opts.log_timestamps))
@@ -130,7 +139,29 @@ pub fn run_session(mut opts: TermOptions) -> Result<()> {
 
     // Enter raw mode. Held for the life of the loop; dropped on any
     // exit path (success, error, panic) via RAII.
-    let mut _raw = RawModeGuard::enter().context("entering terminal raw mode")?;
+    let mut _raw = RawModeGuard::enter().map_err(|e| {
+        // The only error in the CLI that used to arrive with no
+        // recovery hint at all: bare "entering terminal raw mode:
+        // No such device or address (os error 6)". It means stdin is
+        // not a terminal, which happens constantly — in CI, under
+        // nohup, in a cron job, inside a pipeline — and the fix
+        // depends on which of those you are doing.
+        anyhow::anyhow!(
+            "{e:#}\n\
+             \n\
+             \x20 This subcommand is interactive: it puts your terminal into raw mode so\n\
+             \x20 keystrokes reach the device, which needs stdin to be a terminal.\n\
+             \n\
+             \x20 Running under CI / cron / nohup / a pipeline? Use a non-interactive\n\
+             \x20 subcommand instead:\n\
+             \x20   bootintel scan <file>     analyze a log you already captured\n\
+             \x20   bootintel watch <file>    follow a growing log file\n\
+             \n\
+             \x20 Want the interactive terminal from a script? Allocate a TTY:\n\
+             \x20   script -qec 'bootintel ...' /dev/null\n\
+             \x20   ssh -tt host bootintel ..."
+        )
+    })?;
 
     // Channel that both background threads push into. Main thread
     // reads. 64-slot bounded channel — a slow terminal getting behind
@@ -232,6 +263,14 @@ pub fn run_session(mut opts: TermOptions) -> Result<()> {
     }
 
     let exit_reason = loop {
+        // A signal handler may have asked us to stop. Break out so the
+        // teardown below runs: threads joined, raw mode restored, log
+        // file flushed. The 100 ms recv timeout bounds how long this
+        // takes to notice.
+        if super::signals::shutdown_requested() {
+            break format!("received {}", super::signals::shutdown_reason());
+        }
+
         // Bounded recv — poll every 100ms so the analyze mode's pacer
         // can time-flush partial-line findings even on a quiet line.
         let ev_opt = match rx.recv_timeout(Duration::from_millis(100)) {
@@ -876,6 +915,14 @@ pub fn run_session(mut opts: TermOptions) -> Result<()> {
 
     if let Some(mut l) = log {
         l.flush();
+        drop(l);
+        if let Some(p) = &opts.log_file {
+            eprintln!(
+                "[bootintel] capture saved — {} bytes in {}",
+                super::logfile::bytes_persisted(),
+                p.display()
+            );
+        }
     }
     Ok(())
 }
@@ -1129,6 +1176,57 @@ fn _serial_port_traits_are_sane<P: SerialPort>(_p: P) {}
 /// (or bootintel + picocom, etc.) sessions from silently corrupting
 /// each other's stream. Windows: no equivalent; serial ports there are
 /// exclusive by default via the CreateFile semantics.
+/// Reject a path that exists but is not a serial device, before we try
+/// to open it.
+///
+/// `bootintel analyze /etc/hostname` used to report "permission denied
+/// opening /etc/hostname" and advise adding the user to the `dialout`
+/// group — on a world-readable regular file. The diagnosis was simply
+/// wrong (the open fails because a regular file has no termios state,
+/// not because of permissions) and the advice sent people off to
+/// change their group membership for no reason.
+///
+/// A serial port is a character device. Anything else that exists — a
+/// regular file, a directory, a socket — gets told what it actually is,
+/// and pointed at the subcommand that does want a file.
+#[cfg(unix)]
+fn reject_non_serial_path(port_name: &str) -> Result<()> {
+    use std::os::unix::fs::FileTypeExt;
+    let Ok(meta) = std::fs::metadata(port_name) else {
+        // Doesn't exist, or we can't stat it — let open() produce the
+        // authoritative error.
+        return Ok(());
+    };
+    let ft = meta.file_type();
+    if ft.is_char_device() {
+        return Ok(());
+    }
+    let what = if ft.is_dir() {
+        "a directory"
+    } else if ft.is_file() {
+        "a regular file"
+    } else if ft.is_socket() {
+        "a socket"
+    } else if ft.is_fifo() {
+        "a FIFO"
+    } else if ft.is_block_device() {
+        "a block device"
+    } else {
+        "not a character device"
+    };
+    bail!(
+        "{port_name} is {what}, not a serial device\n\
+         \n\
+         \x20 This subcommand opens a UART and reads it live; it needs a character\n\
+         \x20 device such as /dev/ttyUSB0 or /dev/ttyACM0.\n\
+         \x20 Run `bootintel ports` to list what's here.\n\
+         \n\
+         \x20 To analyze a log you already have on disk:\n\
+         \x20   bootintel scan {port_name}     one-shot analysis\n\
+         \x20   bootintel watch {port_name}    follow the file as it grows"
+    );
+}
+
 pub fn open_serial_with_hints(
     port_name: &str,
     baud: u32,
@@ -1137,6 +1235,9 @@ pub fn open_serial_with_hints(
     stop_bits: StopBits,
     flow_control: FlowControl,
 ) -> Result<Box<dyn SerialPort>> {
+    #[cfg(unix)]
+    reject_non_serial_path(port_name)?;
+
     let builder = serialport::new(port_name, baud)
         .data_bits(data_bits)
         .parity(parity)

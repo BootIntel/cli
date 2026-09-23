@@ -68,7 +68,10 @@ Use `bootintel term` when you want a clean terminal and `bootintel analyze` when
 
 - Local detection runs on your machine and never requires an account.
 - BootIntel does not send serial input automatically. Any write, break, modem-line action, or full analysis is initiated by you.
-- `--log-file` writes raw capture bytes only to the path you choose.
+- `--log-file` writes raw capture bytes only to the path you choose. Bytes
+  are flushed as they arrive, so the capture survives Ctrl-C, a closed
+  terminal window, an unplugged adapter or a suspended laptop — and you can
+  `tail -f` it from another terminal while the session runs.
 - Server analysis is opt-in: use `--api` or `--api --preview`; the CLI states when it is submitting a log.
 - Release artifacts include SHA256 checksums. See [SECURITY.md](SECURITY.md) for reporting guidance.
 
@@ -110,6 +113,26 @@ Pin to a release tag (`@cli-v0.3.1`) or a commit SHA — **never `@main`** (a co
 **Homebrew:** the formula template lives at `packaging/homebrew/bootintel.rb`. A public `bootintel/homebrew-tap` for `brew install bootintel` is planned.
 
 **Windows:** the one-liner above downloads + SHA256-verifies the latest release, extracts `bootintel.exe` into `$env:USERPROFILE\.local\bin`, and prints a `setx PATH` line if that dir isn't already on your PATH. Override with `$env:BOOTINTEL_VERSION` / `$env:BOOTINTEL_INSTALL_DIR`, or use `$env:BOOTINTEL_TARBALL` for offline installs. Currently x86_64 only — ARM64 users need `cargo install --path crates/cli --features tui`.
+
+### Verify a download
+
+Checksums for every release are in `SHA256SUMS`:
+
+```sh
+sha256sum -c SHA256SUMS --ignore-missing
+```
+
+Every archive also carries a signed [build-provenance attestation](https://docs.github.com/actions/security-for-github-actions/using-artifact-attestations). That binds the artifact to the workflow, repository and commit that built it — a stronger statement than a code-signing certificate, which only says an organisation paid a CA:
+
+```sh
+gh attestation verify bootintel-v0.3.1-x86_64-linux.tar.gz --repo BootIntel/cli
+```
+
+Container images are attested the same way:
+
+```sh
+gh attestation verify oci://ghcr.io/bootintel/cli:latest --repo BootIntel/cli
+```
 
 ## Build from source
 
@@ -181,13 +204,42 @@ Rate-limit UX: `HTTP 429` is never a silent fallback to client-side. The CLI pri
 
 | Exit | Meaning | Trigger |
 | --- | --- | --- |
-| 0   | OK | success |
-| 1   | gate-critical failure | `--gate-critical` and a critical finding fired |
+| 0   | OK | the scan ran and recognized at least one thing |
+| 1   | gate failure | `--gate-critical` and a critical finding fired; a failed `--gate` assertion; `--baseline` drift |
+| 2   | empty / unusable input | the log was empty or whitespace only — **nothing was inspected** |
+| 3   | nothing recognized | the log had content but matched no detector |
 | 65  | EX_DATAERR | server rejected the request body (log too large) |
 | 69  | EX_UNAVAILABLE | network / DNS / TLS failure |
 | 75  | EX_TEMPFAIL | rate-limited (429) |
 | 76  | EX_PROTOCOL | server 5xx or malformed response body |
 | 77  | EX_NOPERM | 401/403 auth failure |
+
+### 2 and 3 exist so an empty capture can't pass a gate
+
+`scan` used to exit 0 on a 0-byte file, so `--gate-critical` reported
+green for a CI job whose UART never came up, whose adapter fell out, or
+whose artifact path was wrong. An empty capture is not a clean bill of
+health — it is the absence of evidence, and the two are not the same
+result.
+
+Codes 2 and 3 match the legacy Node analyzer's ladder, so a pipeline can
+be pointed at either implementation and dispatch the same way. Treat
+**any** non-zero exit as "do not merge":
+
+```sh
+bootintel scan boot.log --format sarif --gate-critical > results.sarif
+case $? in
+  0) echo "clean" ;;
+  1) echo "critical exposure found"       ; exit 1 ;;
+  2) echo "capture was empty — did the UART come up?" ; exit 1 ;;
+  3) echo "nothing recognized — wrong baud, or capture started too late" ; exit 1 ;;
+  *) echo "scan failed"                    ; exit 1 ;;
+esac
+```
+
+The `json` envelope carries the same answer in the added
+`analysis_status` field (`matched` / `unrecognized`), so a consumer
+parsing stdout does not have to infer it from an empty `findings` array.
 
 Response schema is auto-follow with graceful degrade (Stripe-style): unknown fields are preserved via a passthrough map so a server-side schema addition never crashes an older CLI. See `api/response.rs` for the parser.
 
@@ -273,7 +325,10 @@ crates/cli/src/term/
 ├── mod.rs      — module glue
 ├── hotkey.rs   — Ctrl-A escape state machine (pure, unit-tested)
 ├── raw_mode.rs — RAII guard that restores terminal on drop even under panic
-├── logfile.rs  — BufWriter for --log-file, error-tolerant on disk-full
+├── logfile.rs  — BufWriter for --log-file, flushed per read so the
+│                capture is durable + tailable; error-tolerant on disk-full
+├── signals.rs  — SIGINT/SIGTERM/SIGHUP → graceful exit (restores the
+│                terminal, flushes the capture)
 └── run.rs      — main terminal loop (2 background threads + mpsc), takes optional analyzer
 ```
 
@@ -325,9 +380,22 @@ The tui loop reuses `AnalyzeState` + `ScanClient` + `ApiConfig` unchanged. When 
 
 Downstream consumers reading `.findings[]` can rely on the array shape across releases. The envelope grows additively (new top-level fields never break parsing).
 
+Two fields were added and no existing key changed name or meaning:
+
+| Field | Where | Meaning |
+| --- | --- | --- |
+| `analysis_status` | envelope | `matched` or `unrecognized` — pairs with exit codes 0 / 3 |
+| `line_number` | each finding | 1-based line of `source` in the analyzed log; omitted when unknown |
+
+`source` now carries the **original** log line, prefix and all, rather
+than only the substring the detector regex matched. Prefixed captures
+(`[12:34:56.789] `, ISO-8601 timestamps, ANSI colour) are normalized
+before matching, so a line-anchored detector still fires — but the
+evidence shown back to you is what your capture actually contained.
+
 SARIF v2.1.0 and JUnit XML outputs conform to their respective specs and validate against GitHub Code Scanning and standard `junit-report` consumers.
 
-`--gate-critical` returns exit 0 (no critical exposures) or 1 (at least one — currently `Autoboot interruptable` or `Telnet exposure`).
+`--gate-critical` returns exit 0 (no critical exposures) or 1 (at least one — currently `Autoboot interruptable` or `Telnet exposure`). It returns 2 for an empty capture and 3 when nothing was recognized; see the exit-code table above — an empty capture must never read as a passing gate.
 
 ## Detector sync discipline
 

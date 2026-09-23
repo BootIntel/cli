@@ -24,7 +24,6 @@ use serde::Deserialize;
 use std::io::{self, Write};
 use std::time::Duration;
 
-
 /// sysexits.h EX_NOPERM.
 const EX_NOPERM: i32 = 77;
 /// sysexits.h EX_UNAVAILABLE.
@@ -540,11 +539,7 @@ mod tests {
                 if path == "/api/whoami" {
                     status(404, r#"{"detail":"not found"}"#)
                 } else {
-                    status_with_header(
-                        429,
-                        &[("Retry-After", "42")],
-                        r#"{"detail":"slow down"}"#,
-                    )
+                    status_with_header(429, &[("Retry-After", "42")], r#"{"detail":"slow down"}"#)
                 }
             },
             4,
@@ -552,7 +547,10 @@ mod tests {
         let id = probe(&base, "bik_test_xyz9", Duration::from_millis(500)).unwrap();
         assert_eq!(id.status, "authenticated (rate-limited)");
         assert_eq!(id.rate_limited, Some(42));
-        assert!(id.tier.is_none(), "tier must NOT be hijacked with retry-in-Ns");
+        assert!(
+            id.tier.is_none(),
+            "tier must NOT be hijacked with retry-in-Ns"
+        );
     }
 
     #[test]

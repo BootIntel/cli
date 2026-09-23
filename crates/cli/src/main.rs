@@ -14,6 +14,7 @@ mod config;
 mod detector_filter;
 mod gate;
 mod history;
+mod input;
 mod output;
 mod spinner;
 mod term;
@@ -24,10 +25,35 @@ mod verbose;
 #[cfg(test)]
 mod test_util;
 
-/// Exit code the CLI returns when its stdout is closed by a downstream
-/// consumer (e.g. `bootintel scan foo.log | head -20`). Matches the
-/// convention every real Unix filter uses — 141 = 128 + SIGPIPE(13).
-const EXIT_SIGPIPE: i32 = 141;
+/// Whether this error (or anything in its `anyhow` cause chain) is a
+/// broken-pipe I/O error.
+///
+/// Two shapes have to be recognised, and the old code caught neither
+/// reliably:
+///
+///   * `io::Error` behind any number of `.context(...)` wrappers — the
+///     previous `err.downcast_ref::<io::Error>()` only ever inspected
+///     the *outermost* error, so a single `.context("reading …")` hid
+///     it;
+///   * `serde_json::Error` wrapping an `io::Error` — every JSON/SARIF
+///     path goes through `serde_json::to_writer_pretty`, so this is
+///     the common case, and `serde_json::Error` does not downcast to
+///     `io::Error` at all. Its `Display` is what produced the observed
+///     `Error: Broken pipe (os error 32)`.
+///
+/// `serde_json::Error::io_error_kind()` is the documented way to ask
+/// the second question without string-matching the message.
+pub fn is_broken_pipe(err: &anyhow::Error) -> bool {
+    err.chain().any(|cause| {
+        if let Some(io_err) = cause.downcast_ref::<std::io::Error>() {
+            return io_err.kind() == std::io::ErrorKind::BrokenPipe;
+        }
+        if let Some(json_err) = cause.downcast_ref::<serde_json::Error>() {
+            return json_err.io_error_kind() == Some(std::io::ErrorKind::BrokenPipe);
+        }
+        false
+    })
+}
 
 #[derive(Parser)]
 #[command(
@@ -183,15 +209,27 @@ fn main() -> Result<()> {
         Cmd::Version(args) => cmd::version::run(args),
     };
 
-    // Graceful handling of a downstream consumer closing stdout mid-
-    // write (e.g. `bootintel scan foo.log | head -20`). Without this
-    // we'd panic on the underlying Broken-pipe io error, which is
-    // ugly + wrong for a Unix filter. Exit 141 per convention.
+    // A downstream consumer closing stdout mid-write (`bootintel
+    // manpage | head`, `bootintel batch … --format json | head -2`) is
+    // not an error — it is the reader saying "I have enough".
+    //
+    // The Rust runtime sets SIGPIPE to SIG_IGN before `main`, so the
+    // write returns EPIPE instead of killing us, and the old code then
+    // gave three different answers for one command: exit 1 with
+    // `Error: Broken pipe (os error 32)` when the error arrived wrapped
+    // (serde_json, or any `.context(…)`), and a race between 141 and 0
+    // when it did not.
+    //
+    // Collapse all of it into one deterministic, silent success. This
+    // is checked here rather than by restoring SIG_DFL so the behaviour
+    // is identical on Windows, where there is no SIGPIPE to restore.
     if let Err(err) = &result {
-        if let Some(io_err) = err.downcast_ref::<std::io::Error>() {
-            if io_err.kind() == std::io::ErrorKind::BrokenPipe {
-                std::process::exit(EXIT_SIGPIPE);
-            }
+        if is_broken_pipe(err) {
+            // Best-effort: drop any buffered stdout on the floor rather
+            // than letting the runtime's own flush-at-exit print a
+            // second broken-pipe complaint to stderr.
+            let _ = std::io::Write::flush(&mut std::io::stdout());
+            std::process::exit(0);
         }
     }
     result

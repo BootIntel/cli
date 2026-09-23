@@ -159,6 +159,7 @@ mod tests {
             value: value.into(),
             detail: None,
             source: None,
+            line_number: None,
         }
     }
 
