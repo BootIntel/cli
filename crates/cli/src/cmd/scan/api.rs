@@ -1,7 +1,7 @@
 //! `scan --api` — server-side path. POSTs the log to bootintel.com
 //! (or the configured `--api-base`) for CVE matching + exploit paths
-//! + AI summary. Falls back to `--api --preview` for anonymous /
-//! rate-limited free use.
+//! + AI summary. Falls back to `--api --preview` for anonymous,
+//!   rate-limited free use.
 //!
 //! Split from mod.rs so the auth flow, error taxonomy, and
 //! sysexits-mapping are testable in isolation from the offline path.
@@ -94,6 +94,7 @@ pub(super) fn run_api(args: &Args, raw: &str) -> Result<()> {
                 args.format,
                 raw,
                 output::ColorMode::Off,
+                &super::source_label(args),
             )?;
         }
     }

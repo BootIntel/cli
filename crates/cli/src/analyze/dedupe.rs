@@ -72,6 +72,7 @@ mod tests {
             value: value.to_string(),
             detail: None,
             source: None,
+            line_number: None,
         }
     }
 
@@ -81,6 +82,7 @@ mod tests {
             value: value.to_string(),
             detail: None,
             source: Some(source.to_string()),
+            line_number: None,
         }
     }
 
@@ -146,12 +148,14 @@ mod tests {
             value: "Linux 5.15".to_string(),
             detail: Some("gcc-11.2.0".to_string()),
             source: Some("Linux version 5.15…".to_string()),
+            line_number: None,
         }];
         let b = vec![Finding {
             label: "Kernel".to_string(),
             value: "Linux 5.15".to_string(),
             detail: Some("gcc-11.2.0 (OpenWrt GCC 11.2.0)".to_string()),
             source: Some("Linux version 5.15…".to_string()),
+            line_number: None,
         }];
         assert_eq!(d.new_findings(&a).len(), 1);
         assert_eq!(d.new_findings(&b).len(), 0);

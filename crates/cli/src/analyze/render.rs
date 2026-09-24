@@ -160,6 +160,7 @@ mod tests {
             value: value.to_string(),
             detail: None,
             source: None,
+            line_number: None,
         }
     }
 

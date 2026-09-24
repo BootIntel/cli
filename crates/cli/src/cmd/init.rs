@@ -48,7 +48,8 @@ const MACROS_STUB: &str = "\
 
 pub fn run(args: Args) -> Result<()> {
     let stdout = io::stdout();
-    let color_on = crate::output::resolve_color_mode(false, &stdout) == crate::output::ColorMode::On;
+    let color_on =
+        crate::output::resolve_color_mode(false, &stdout) == crate::output::ColorMode::On;
     let (bold_open, bold_close) = if color_on {
         ("\x1b[1m", "\x1b[0m")
     } else {

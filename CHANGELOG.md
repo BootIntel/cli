@@ -8,7 +8,107 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
-_No unreleased changes since 0.3.1._
+Correctness batch from an SME review that installed the v0.3.1 release
+binary and exercised it against socat PTY pairs. Every item below was
+reproduced by running, not by reading.
+
+**This batch changes exit-code policy** (see MAJOR in the versioning
+policy above): `scan` now exits 2 for an empty/unusable capture and 3
+when nothing was recognized, where it previously exited 0 for both.
+
+### Fixed
+- **`--log-file` no longer loses the capture.** Bytes were buffered and
+  flushed only on `Drop`, so a capture smaller than the 8 KiB buffer —
+  which is most of them — reached the filesystem only if the session
+  quit through the clean path. Measured on the v0.3.1 binary: the log
+  file was 0 bytes at 2, 4, 6, 8 and 10 seconds into a live session and
+  0 bytes after both SIGINT and SIGTERM, while the session correctly
+  analyzed those same bytes on screen. Writes are now flushed as they
+  arrive, which also makes the file `tail -f`-able from another
+  terminal. SIGINT/SIGTERM/SIGHUP handlers were added so the terminal
+  exits through its normal path — raw mode restored, capture flushed —
+  instead of the process dying where it stands.
+- **An empty capture no longer passes `--gate-critical` with exit 0.** A
+  CI job whose UART never came up, whose adapter fell out, or whose
+  artifact path was wrong reported green. `scan` now follows the legacy
+  Node analyzer's ladder: 2 for empty or unusable input, 3 for
+  non-empty input that matched no detector.
+- **Line-anchored detectors no longer die on a line prefix.** A plain
+  `U-Boot 2020.10` line was detected, but the same line behind a
+  `[12:34:56.789]` prefix, an ISO-8601 timestamp, or an ANSI colour
+  escape produced no findings and exit 0. This was self-inflicted:
+  `bootintel analyze --log-timestamps` prefixes every line with an
+  ISO-8601 timestamp, so the tool's own capture mode broke its own
+  `scan`. Lines are now normalized (ANSI CSI stripper + bracketed
+  timestamp stripper, ported from the Node analyzer) before matching,
+  while evidence still reports the original line verbatim.
+- **A non-UTF-8 byte is no longer a hard error.** A capture containing
+  `\xff\xfe\x80\x81\xc0\xc1` failed with "stream did not contain valid
+  UTF-8" and exit 1, while the Node analyzer read the same file and
+  returned findings. That is the normal shape of a real UART capture
+  (pre-baud-lock noise, framing errors, a binary splash, a reset
+  mid-line) — and since `--log-file` writes raw bytes, `analyze
+  --log-file` followed by `scan` could fail on the tool's own output.
+  Logs are now read as bytes and decoded lossily; `-v` reports how many
+  bytes were replaced. Line numbers are unaffected.
+- **A closed pipe is one silent outcome instead of three.** `bootintel
+  batch … --format json | head -2` gave exit 1 plus `Error: Broken pipe
+  (os error 32)` on 6 of 6 runs when output exceeded the 64 KiB pipe
+  buffer, while smaller outputs raced between 141 and 0. `bootintel
+  manpage | head` — a packager's first command — hit the same thing.
+  The broken-pipe check now walks the whole `anyhow` cause chain and
+  understands `serde_json::Error`, which is how the error actually
+  arrived, and the result is a silent exit 0 every time.
+- **SARIF names the real input file.** Every result carried
+  `artifactLocation.uri = "boot.log"` regardless of the input, so the
+  SARIF upload action attached findings to a file not in the repository
+  and the annotations landed nowhere. The real path is now emitted,
+  relative to `$GITHUB_WORKSPACE` (or the working directory) where
+  possible, and `stdin` for piped input. `startLine` now comes from the
+  detector library rather than a substring search.
+- **`-q` quiets, and the upsell is off stdout.** `scan --format text -q`
+  still printed a three-line block advertising `--api`, on stdout — so
+  `scan --format text > report.txt` shipped marketing inside a
+  customer's report, and `-q` did nothing despite its own help text
+  promising it suppresses banners and status hints. The summary block
+  now goes to stderr and honours `-q`; stdout carries findings only.
+- **`bootintel cve` works when installed.** It resolved
+  `./data/embedded-cves-feed.json` relative to the working directory, so
+  it only ever worked from inside a source checkout. The feed is now
+  read from the platform state dir, populated by a new `--refresh` that
+  fetches the public feed. Repo-relative paths are still tried last.
+- **`bootintel analyze /etc/hostname` is diagnosed correctly.** A
+  readable regular file reported "permission denied" and advised adding
+  the user to the `dialout` group. It now says the path is not a serial
+  device and points at `scan` / `watch`.
+- **The non-TTY error has a recovery hint.** `entering terminal raw
+  mode: No such device or address` was the only error in the CLI that
+  arrived with no suggested next step.
+
+### Changed
+- `bootintel ports` sorts USB adapters first and annotates them with the
+  manufacturer/product string. Previously 32 bare `/dev/ttyS*` paths
+  came back in enumeration order with nothing to distinguish the one
+  adapter the user was looking for.
+- `bootintel scan`'s local history write is disclosed on first use — one
+  stderr notice naming the file, what it records, and how to turn it
+  off. It remains on by default and entirely local; it was simply never
+  announced, which sits badly with a tool whose pitch is that it uploads
+  nothing.
+
+### Added
+- `analysis_status` (`matched` / `unrecognized`) on the `scan --format
+  json` envelope, and `line_number` on each finding. Both are additive;
+  no existing key changed name or meaning. `bootintel schema` and the
+  bundled GitHub Action are updated to match.
+- Signed build-provenance attestations
+  (`actions/attest-build-provenance`) for every release artifact and for
+  the container image. Free for public repositories, keyless, and a
+  stronger claim than a paid signing certificate — it binds an artifact
+  to the workflow and commit that built it. `SHA256SUMS` is unchanged.
+- Regression tests for each of the above, including four that assert the
+  log file is non-zero **mid-session** (the pre-existing
+  flush-on-drop test passed against the broken code).
 
 ## [0.3.1] — 2026-08-30 — security-hygiene + refactor + dep bumps
 

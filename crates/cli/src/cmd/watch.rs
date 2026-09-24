@@ -67,8 +67,8 @@ pub struct Args {
 
 pub fn run(args: Args) -> Result<()> {
     let stdout = io::stdout();
-    let color_on = crate::output::resolve_color_mode(args.no_color, &stdout)
-        == crate::output::ColorMode::On;
+    let color_on =
+        crate::output::resolve_color_mode(args.no_color, &stdout) == crate::output::ColorMode::On;
 
     // Track inode so we can detect log rotation (a fresh file appears
     // at the same path with a different inode). On non-Unix, `dev`

@@ -85,11 +85,18 @@ pub(super) fn extract_findings_from_json(v: &serde_json::Value) -> Option<Vec<Fi
             .get("source")
             .and_then(|s| s.as_str())
             .map(String::from);
+        // Additive field — archived envelopes written before
+        // line_number existed simply leave it None.
+        let line_number = item
+            .get("line_number")
+            .and_then(|n| n.as_u64())
+            .map(|n| n as usize);
         out.push(Finding {
             label,
             value,
             detail,
             source,
+            line_number,
         });
     }
     Some(out)

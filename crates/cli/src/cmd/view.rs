@@ -63,7 +63,14 @@ pub fn run(args: Args) -> Result<()> {
         // heuristic uses it and gracefully degrades to line 1 when
         // it can't find the source string.
         let raw_hint = extract_raw_log(&parsed).unwrap_or_default();
-        output::write(&mut out, &findings, args.format, &raw_hint, color)?;
+        output::write(
+            &mut out,
+            &findings,
+            args.format,
+            &raw_hint,
+            color,
+            &args.file.display().to_string(),
+        )?;
     }
     let _ = out.flush();
     Ok(())
@@ -100,11 +107,18 @@ fn extract_findings(v: &serde_json::Value) -> Option<Vec<Finding>> {
             .get("source")
             .and_then(|s| s.as_str())
             .map(String::from);
+        // Additive field — archived envelopes written before
+        // line_number existed simply leave it None.
+        let line_number = item
+            .get("line_number")
+            .and_then(|n| n.as_u64())
+            .map(|n| n as usize);
         out.push(Finding {
             label,
             value,
             detail,
             source,
+            line_number,
         });
     }
     Some(out)

@@ -1,16 +1,28 @@
 //! `bootintel cve <ID>` — look up a CVE in the local feed data.
 //!
-//! Reads `data/embedded-cves-feed.json` (the same file the cron
-//! rewrites every 4h and that the /feed/embedded-cves.* routes
-//! serve) and prints the entry for the requested CVE, or lists all
-//! entries if no ID is given.
+//! Prints the entry for the requested CVE from a local copy of the
+//! embedded-CVE feed (the same data the cron rewrites every 4h and
+//! that the `/feed/embedded-cves.*` routes serve), or lists every
+//! entry if no ID is given.
 //!
 //! The point isn't to replace `nvd` — it's to make the "which of my
 //! covered targets got a fresh CVE this week" data usable without a
-//! browser, and to give the CLI a natural extension of the feed
-//! ecosystem. Deliberately reads the LOCAL file (not the HTTPS
-//! endpoint) so the command works offline / air-gapped once you've
-//! pulled the data down.
+//! browser. Lookups read the LOCAL file, never the network, so the
+//! command works offline / air-gapped once the data is on disk.
+//!
+//! # Where the feed lives
+//!
+//! In the platform state dir — `~/.local/state/bootintel/` on Linux,
+//! `~/Library/Application Support/bootintel/` on macOS,
+//! `%LOCALAPPDATA%\bootintel\` on Windows — populated by
+//! `bootintel cve --refresh`.
+//!
+//! This used to resolve `./data/embedded-cves-feed.json` relative to
+//! the working directory, which meant the command worked only when run
+//! from inside a checkout of the source repo and failed everywhere an
+//! installed binary actually runs — while its own help implied the
+//! feed shipped with the binary. The repo-relative paths are still
+//! tried, last, so working in a checkout keeps behaving as before.
 
 use anyhow::{bail, Context, Result};
 use clap::Args as ClapArgs;
@@ -27,12 +39,19 @@ pub struct Args {
     #[arg(value_name = "ID")]
     id: Option<String>,
 
-    /// Feed file to read. Defaults to $BOOTINTEL_CVE_FEED, or
-    /// ./data/embedded-cves-feed.json, or /data/embedded-cves-feed.json
-    /// (whichever exists first). Handy for pointing at a copy pulled
-    /// from an air-gapped mirror.
+    /// Feed file to read. Defaults to $BOOTINTEL_CVE_FEED, then the
+    /// cached copy in the platform state dir (see `--refresh`), then
+    /// ./data/embedded-cves-feed.json for in-repo use. Handy for
+    /// pointing at a copy pulled from an air-gapped mirror.
     #[arg(long, value_name = "PATH")]
     feed: Option<PathBuf>,
+
+    /// Download the current feed from bootintel.com into the platform
+    /// state dir, then continue with the lookup. The feed is a moving
+    /// 72h window, so refresh before trusting an absence. Needs
+    /// network; everything else in this subcommand is offline.
+    #[arg(long)]
+    refresh: bool,
 
     /// Filter by severity floor (CRITICAL, HIGH, MEDIUM). Only
     /// meaningful in list mode (no ID given).
@@ -84,16 +103,62 @@ struct Entry {
     posted_to_bluesky: Option<bool>,
 }
 
+/// Public URL the feed is published at. Returns the same JSON the
+/// `--feed` file holds.
+const FEED_URL: &str = "https://bootintel.com/feed/embedded-cves.json";
+
+/// Where a refreshed feed is cached. Same state dir `history` uses.
+pub fn cached_feed_path() -> Option<PathBuf> {
+    let root = dirs::state_dir().or_else(dirs::data_local_dir)?;
+    Some(root.join("bootintel").join("embedded-cves-feed.json"))
+}
+
+/// Fetch the feed and write it to the cache path. Returns the path.
+fn refresh_feed() -> Result<PathBuf> {
+    let path = cached_feed_path()
+        .context("no platform state dir resolvable, so there is nowhere to cache the feed; use --feed PATH instead")?;
+    crate::vinfo!("fetching {FEED_URL}");
+    let body = ureq::get(FEED_URL)
+        .call()
+        .with_context(|| format!("fetching {FEED_URL}"))?
+        .into_string()
+        .context("reading feed response body")?;
+
+    // Parse before writing so a captive-portal HTML page or a
+    // truncated transfer can't replace a good cached copy with junk.
+    let parsed: FeedFile =
+        serde_json::from_str(&body).context("the feed URL did not return a valid feed document")?;
+
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)
+            .with_context(|| format!("creating {}", parent.display()))?;
+    }
+    std::fs::write(&path, &body).with_context(|| format!("writing {}", path.display()))?;
+    if !crate::verbose::is_quiet() {
+        eprintln!(
+            "[bootintel] feed refreshed — {} entries, generated {}, cached at {}",
+            parsed.count,
+            parsed.generated_at,
+            path.display()
+        );
+    }
+    Ok(path)
+}
+
 pub fn run(args: Args) -> Result<()> {
-    let path = resolve_feed_path(&args.feed)?;
+    let path = if args.refresh {
+        refresh_feed()?
+    } else {
+        resolve_feed_path(&args.feed)?
+    };
     let text = std::fs::read_to_string(&path)
         .with_context(|| format!("reading feed {}", path.display()))?;
     let feed: FeedFile =
         serde_json::from_str(&text).with_context(|| format!("parsing feed {}", path.display()))?;
 
     let stdout = io::stdout();
-    let color_on = crate::output::resolve_color_mode(args.no_color, &stdout)
-        == crate::output::ColorMode::On;
+    let color_on =
+        crate::output::resolve_color_mode(args.no_color, &stdout) == crate::output::ColorMode::On;
 
     let mut out = stdout.lock();
 
@@ -160,6 +225,16 @@ fn resolve_feed_path(explicit: &Option<PathBuf>) -> Result<PathBuf> {
     if let Ok(env) = std::env::var("BOOTINTEL_CVE_FEED") {
         return Ok(PathBuf::from(env));
     }
+    // The cached copy written by `--refresh`. This is the path that
+    // makes the command work for an installed binary, from any cwd.
+    if let Some(p) = cached_feed_path() {
+        if p.is_file() {
+            return Ok(p);
+        }
+    }
+    // Repo-relative fallbacks, last: convenient when hacking on the
+    // source tree or running the container image, but never the thing
+    // an installed binary should depend on.
     for candidate in [
         "data/embedded-cves-feed.json",
         "/data/embedded-cves-feed.json",
@@ -169,8 +244,16 @@ fn resolve_feed_path(explicit: &Option<PathBuf>) -> Result<PathBuf> {
             return Ok(p);
         }
     }
+    let cached = cached_feed_path()
+        .map(|p| p.display().to_string())
+        .unwrap_or_else(|| "<no platform state dir>".to_string());
     bail!(
-        "no CVE feed file found. Tried $BOOTINTEL_CVE_FEED, ./data/embedded-cves-feed.json, /data/embedded-cves-feed.json.\n  Fetch a fresh copy: curl -o /tmp/feed.json https://bootintel.com/feed/embedded-cves.json\n  Then: bootintel cve --feed /tmp/feed.json"
+        "no CVE feed on disk yet.\n  \
+         Download it:\n    bootintel cve --refresh\n  \
+         That caches {FEED_URL} at {cached}.\n  \
+         Already have a copy (air-gapped mirror, CI artifact)? Point at it:\n    \
+         bootintel cve --feed /path/to/embedded-cves-feed.json\n  \
+         Or set $BOOTINTEL_CVE_FEED to the same path."
     );
 }
 

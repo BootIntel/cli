@@ -14,6 +14,8 @@
 #      the "Publish release" button.
 #   4. Computes a combined SHA256SUMS file across all binaries so
 #      install.sh can verify.
+#   5. Generates a signed build-provenance attestation for every
+#      released artifact (see "Provenance" below).
 #
 # What it does NOT do:
 #   - No auto-publish to Homebrew tap / winget / apt / Nix registry.
@@ -45,8 +47,32 @@ on:
         type: boolean
         default: false
 
+# Provenance
+# ----------
+# Every released artifact gets a signed build-provenance attestation
+# via actions/attest-build-provenance. That is a Sigstore signature
+# over the artifact digest plus a SLSA statement recording which
+# workflow, at which commit, on which runner produced it — so a user
+# can verify an artifact really came from this repository's release
+# workflow and not from someone's laptop:
+#
+#   gh attestation verify bootintel-v0.3.2-x86_64-linux.tar.gz \
+#     --repo BootIntel/cli
+#
+# It is free for public repositories, needs no key material of our own
+# (keyless: the runner's OIDC identity is what gets signed, and the
+# certificate lives in the public Rekor transparency log), and gives a
+# stronger guarantee than a paid code-signing certificate would for
+# this audience — it binds the artifact to a *build*, not merely to an
+# organisation that paid a CA.
+#
+# SHA256SUMS stays exactly as it was: it answers "did this download
+# arrive intact", which is a different question and still the one
+# install.sh asks.
 permissions:
   contents: write   # needed to create the release draft
+  id-token: write   # OIDC identity for keyless attestation signing
+  attestations: write  # write the attestation to the repo's store
 
 jobs:
   build:
@@ -152,6 +178,19 @@ jobs:
           fi
           cat ${{ matrix.asset_name }}.sha256
 
+      # Attest the archive we are about to ship. Runs per-matrix-leg so
+      # each platform's artifact is attested on the runner that built
+      # it, which is what makes the provenance meaningful.
+      #
+      # Skipped on dry runs: a dry run produces nothing anyone will
+      # download, and attesting it would put a misleading entry in the
+      # public transparency log.
+      - name: Attest build provenance
+        if: '!inputs.dry_run'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: ${{ matrix.asset_name }}
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -194,6 +233,29 @@ jobs:
           echo "─────────────────────────────────────"
           cat release-assets/SHA256SUMS
 
+      - name: Write release notes
+        run: |
+          cat > RELEASE_NOTES.md <<'NOTES'
+          Release notes: see CHANGELOG.md.
+
+          This is a DRAFT — publish manually after verifying artifacts.
+
+          ## Verify what you downloaded
+
+          Checksums are in `SHA256SUMS`:
+
+              sha256sum -c SHA256SUMS --ignore-missing
+
+          Every archive also carries a signed build-provenance attestation,
+          so you can confirm it was produced by this repository's release
+          workflow rather than by someone's laptop:
+
+              gh attestation verify <archive> --repo BootIntel/cli
+          NOTES
+          # Strip the leading indentation the YAML block required.
+          sed -i 's/^          //' RELEASE_NOTES.md
+          cat RELEASE_NOTES.md
+
       - name: Create GH Release DRAFT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -201,7 +263,7 @@ jobs:
           gh release create "cli-v${{ inputs.version }}" \
             --draft \
             --title "bootintel-cli v${{ inputs.version }}" \
-            --notes "Release notes: see CHANGELOG.md. This is a DRAFT — publish manually after verifying artifacts." \
+            --notes-file RELEASE_NOTES.md \
             release-assets/*
 
   docker:
@@ -212,6 +274,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
+      attestations: write
     steps:
       - uses: actions/checkout@v4
 
@@ -226,6 +290,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build + push (linux/amd64, linux/arm64)
+        id: docker_build
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -237,3 +302,9 @@ jobs:
             ghcr.io/bootintel/cli:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Attest image provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ghcr.io/bootintel/cli
+          subject-digest: ${{ steps.docker_build.outputs.digest }}
+          push-to-registry: true

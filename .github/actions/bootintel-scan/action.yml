@@ -27,6 +27,18 @@
 #
 # For full server-side analysis (CVE matching, exploit paths, PDF),
 # add `--api` to your own workflow step with a $BOOTINTEL_API_KEY secret.
+#
+# Exit codes this step can fail with:
+#
+#   1  a critical-exposure detector fired (with gate-critical: true)
+#   2  the log was empty — nothing was inspected
+#   3  the log had content but matched no detector
+#
+# 2 and 3 are failures on purpose. A capture that never happened (the
+# UART did not come up, the adapter fell out, the artifact path was
+# wrong) used to report green, which is the worst possible answer for a
+# gate. If your logs legitimately contain nothing bootintel recognizes,
+# set gate-critical: false and inspect `analysis-status` yourself.
 
 name: bootintel-scan
 description: Run BootIntel client-side detectors against a boot log, optionally gating on critical exposure findings.
@@ -61,6 +73,9 @@ outputs:
   findings-count:
     description: Number of findings in the report (only populated when format=json).
     value: ${{ steps.run.outputs.findings-count }}
+  analysis-status:
+    description: "'matched', 'unrecognized', or 'empty' — whether the capture was actually inspected and whether anything was recognized."
+    value: ${{ steps.run.outputs.analysis-status }}
 
 runs:
   using: composite
@@ -107,6 +122,13 @@ runs:
 
         echo "findings-json=$out" >> "$GITHUB_OUTPUT"
 
+        case "$rc" in
+          2) status=empty ;;
+          3) status=unrecognized ;;
+          *) status=matched ;;
+        esac
+        echo "analysis-status=$status" >> "$GITHUB_OUTPUT"
+
         if [ "${{ inputs.format }}" = "json" ]; then
           if command -v jq >/dev/null; then
             count=$(jq '.findings | length' "$out" 2>/dev/null || echo 0)
@@ -118,4 +140,14 @@ runs:
         if [ "${{ inputs.format }}" != "junit" ]; then
           cat "$out" || true
         fi
+
+        # Say plainly why the step failed. Exit 2 and 3 mean the scan
+        # did not actually inspect anything; without this the run log
+        # shows a bare non-zero exit and a reader assumes a detector
+        # fired.
+        case "$rc" in
+          2) echo "::error title=Empty capture::The boot log at '${{ inputs.log-file }}' was empty, so nothing was inspected. This is not a passing scan — check that the capture step ran and that the path is correct." ;;
+          3) echo "::error title=Nothing recognized::The boot log at '${{ inputs.log-file }}' had content but matched none of bootintel's detectors. Common causes: the capture started after the boot banner, or the baud rate was wrong." ;;
+        esac
+
         exit $rc
