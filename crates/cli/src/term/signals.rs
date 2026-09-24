@@ -33,6 +33,14 @@ static SHUTDOWN: AtomicBool = AtomicBool::new(false);
 
 /// Number (as `c_int`) of the signal that asked us to stop, or 0.
 /// Only used to name the signal in the goodbye line.
+///
+/// Gated because the only reader is the `cfg(unix)` arm of
+/// `shutdown_reason` and the only writers are the `cfg(unix)` handler and
+/// `reset_for_test`. A Windows release build has neither, so an
+/// ungated static is dead code, and this crate denies warnings: it broke
+/// `cargo build --release` on windows-latest while every other target
+/// stayed green.
+#[cfg(any(unix, test))]
 static SHUTDOWN_SIGNAL: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
 
 /// Whether a shutdown signal has been received.
