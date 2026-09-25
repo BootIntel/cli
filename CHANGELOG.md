@@ -8,6 +8,15 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-09-25 — correctness batch: capture loss, CI gates, detector robustness
+
+Numbered 0.4.0 rather than 1.0.0. The policy above calls an exit-code
+change MAJOR, and this batch changes one, but the crate is pre-1.0: the
+leading zero is the major component, so a breaking change moves the
+minor. Releasing 1.0.0 would assert an API-stability commitment this
+project has not made. Treat 0.3.x to 0.4.0 as breaking and read the
+exit-code note below before upgrading a CI job.
+
 Correctness batch from an SME review that installed the v0.3.1 release
 binary and exercised it against socat PTY pairs. Every item below was
 reproduced by running, not by reading.
@@ -297,7 +306,8 @@ Initial release. All six subcommands live; five branch-based milestones (M1-M5) 
 - PDF report download subcommand — server-side endpoint exists but no client-side wrapper yet.
 - Windows support — the Rust code compiles for Windows and the release workflow builds it, but install.sh doesn't handle Windows yet (`.ps1` installer is a follow-up).
 
-[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.3.1...HEAD
+[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.4.0...HEAD
+[0.4.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.4.0
 [0.3.1]: https://github.com/bootintel/cli/releases/tag/cli-v0.3.1
 [0.3.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.3.0
 [0.2.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.2.0
