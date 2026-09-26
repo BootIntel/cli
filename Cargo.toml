@@ -10,7 +10,7 @@
 #     `lz-str` (for /decode-compatible share URLs).
 #
 # Ships `bootintel scan / share / ports / version / term / analyze`
-# with the 9-detector streaming subset + json/text/sarif/junit output.
+# with the 14-detector set + json/text/sarif/junit output.
 # Client-side identification is offline + free; full CVE matching runs
 # server-side via bootintel.com's API (opt-in via --api).
 

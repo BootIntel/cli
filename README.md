@@ -307,7 +307,7 @@ Distribution scope deliberately excludes: no auto-update (attack surface), no te
 Cargo.toml                       # workspace manifest
 crates/
 ├── detectors/                   # pure client-side detector library
-│   ├── src/lib.rs               # 9 detectors
+│   ├── src/lib.rs               # 14 detectors
 │   └── tests/detector_tests.rs  # unit tests
 └── cli/                         # the `bootintel` binary
     ├── src/
@@ -392,6 +392,8 @@ Two fields were added and no existing key changed name or meaning:
 | `analysis_status` | envelope | `matched` or `unrecognized` — pairs with exit codes 0 / 3 |
 | `line_number` | each finding | 1-based line of `source` in the analyzed log; omitted when unknown |
 
+Both are **derived** from the log, not set by the detector: the detector is re-run against each line on its own and the first line that reproduces the same `value` + `detail` is the evidence. An aggregate finding whose value spans many lines — `Flash layout` counts partitions across the whole MTD table — therefore carries neither field, because no single line is its source.
+
 `source` now carries the **original** log line, prefix and all, rather
 than only the substring the detector regex matched. Prefixed captures
 (`[12:34:56.789] `, ISO-8601 timestamps, ANSI colour) are normalized
@@ -404,7 +406,7 @@ SARIF v2.1.0 and JUnit XML outputs conform to their respective specs and validat
 
 ## Detector sync discipline
 
-Nine detectors live at `crates/detectors/src/lib.rs` and mirror the browser detector library at bootintel.com/tools/fingerprint. When adding a detector, keep the label set aligned between the two so JSON output round-trips cleanly.
+Fourteen detectors live at `crates/detectors/src/lib.rs` and mirror the browser detector library at bootintel.com/tools/fingerprint, which is the source of truth for the set — labels *and* registration order, so JSON output is comparable between the two. `cargo test -p bootintel --test browser_parity` proves it: it runs the browser library over all 31 corpus logs and asserts the `{label, value, detail}` sequence matches this crate's, log for log. When adding a detector, add it to the browser library first.
 
 ## Contributing
 

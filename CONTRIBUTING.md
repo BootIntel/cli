@@ -119,13 +119,14 @@ Component names loosely mirror the tree — `cli`, `detectors`, `tui`, `api`, `d
 
 ## Adding a detector
 
-New detectors live in `crates/detectors/src/lib.rs`.
+New detectors live in `crates/detectors/src/lib.rs`, but the browser detector library at bootintel.com/tools/fingerprint is the source of truth for the set — it is what the web tool and the legacy Node analyzer run. Add the detector there first, then port it here.
 
 1. Add the regex as a `static LazyLock<Regex>`.
-2. Add a `fn detect_thing(&str) -> Option<Finding>` that runs the regex and returns a `Finding`.
-3. Wire it into `analyze()` alongside the existing detectors.
-4. Add unit tests: at least one positive case and one negative-case log excerpt that shouldn't match.
-5. If the detector should sync with the browser detector library at bootintel.com/tools/fingerprint, coordinate with a maintainer — the browser + CLI detector sets should stay label-aligned.
+2. Add a `fn run_thing(&str) -> Option<Finding>` that runs the regex and returns a `Finding`. Do not set `source` from anything but the matched text, and never set `line_number` — `analyze()` derives both by re-running the detector per line, so a hand-set `source` breaks the original-evidence contract.
+3. Wire it into `ALL_DETECTORS` at the same position its browser counterpart occupies. Order and labels are part of the output contract.
+4. Add a description to `cmd::detectors::DESCRIPTIONS` (a missing one fails a test) and update `detector_labels_stable`.
+5. Add unit tests: at least one positive case and one negative-case log excerpt that shouldn't match.
+6. Run `cargo test -p bootintel --test browser_parity` against a checkout of the website repo (`BOOTINTEL_BROWSER_DETECTORS=/path/to/frontend/src/lib/detectors.ts`, `BOOTINTEL_REQUIRE_PARITY=1` so it cannot silently skip). It runs the browser library over all 31 corpus logs and diffs the findings against this crate's.
 
 ## Adding a subcommand
 

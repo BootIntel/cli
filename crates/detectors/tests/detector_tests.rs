@@ -64,13 +64,6 @@ fn bootloader_coreboot() {
 }
 
 #[test]
-fn bootloader_opensbi() {
-    let log = "OpenSBI v1.4\nBoot HART ID              : 1\n";
-    let f = find(log, "Bootloader").unwrap();
-    assert_eq!(f.value, "OpenSBI 1.4");
-}
-
-#[test]
 fn bootloader_esp_rom() {
     let log = "rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\n";
     let f = find(log, "Bootloader").unwrap();
@@ -84,7 +77,66 @@ fn bootloader_none_on_gibberish() {
     assert!(find(log, "Bootloader").is_none());
 }
 
-// ── 2. Kernel ────────────────────────────────────────────────────────
+// ── 2. Runtime firmware ──────────────────────────────────────────────
+
+#[test]
+fn runtime_firmware_opensbi() {
+    let log = "OpenSBI v1.4\nBoot HART ID              : 1\n";
+    let f = find(log, "Runtime firmware").unwrap();
+    assert_eq!(f.value, "OpenSBI 1.4");
+    // OpenSBI is a runtime, not a bootloader. It used to be reported
+    // under `Bootloader`, which disagreed with the browser tool on the
+    // same input.
+    assert!(find(log, "Bootloader").is_none());
+}
+
+#[test]
+fn runtime_firmware_and_bootloader_coexist() {
+    // A RISC-V board hands off OpenSBI → U-Boot → Linux, and reports
+    // both. Folding them into one detector hid whichever lost.
+    let log = "OpenSBI v1.0\nU-Boot 2021.10 (Nov 10 2022 - 13:29:36 +0800)\n";
+    assert_eq!(find(log, "Runtime firmware").unwrap().value, "OpenSBI 1.0");
+    assert_eq!(find(log, "Bootloader").unwrap().value, "U-Boot 2021.10");
+}
+
+#[test]
+fn runtime_firmware_needs_a_dotted_version() {
+    // `\d+(?:\.\d+)+` — a bare major refuses rather than reporting
+    // "OpenSBI 1".
+    assert!(find("OpenSBI v1\n", "Runtime firmware").is_none());
+}
+
+// ── 3. ROM identifier ────────────────────────────────────────────────
+
+#[test]
+fn rom_identifier_esp_rom() {
+    let log = "ESP-ROM:esp32s3-20210327\nBuild:Mar 27 2021\n";
+    let f = find(log, "ROM identifier").unwrap();
+    assert_eq!(f.value, "Espressif ROM esp32s3-20210327");
+}
+
+#[test]
+fn rom_identifier_absent_on_non_esp_log() {
+    assert!(find("U-Boot 2020.10 (Sep 17 2023)\n", "ROM identifier").is_none());
+}
+
+// ── 4. Firmware SDK ──────────────────────────────────────────────────
+
+#[test]
+fn firmware_sdk_esp_idf() {
+    let log = "I (27) boot: ESP-IDF v5.1.2 2nd stage bootloader\n";
+    let f = find(log, "Firmware SDK").unwrap();
+    assert_eq!(f.value, "ESP-IDF v5.1.2");
+}
+
+#[test]
+fn firmware_sdk_absent_without_the_bootloader_banner() {
+    // The version has to come off the 2nd-stage bootloader line; a
+    // passing mention of ESP-IDF is not a version claim.
+    assert!(find("built with ESP-IDF v5.1.2\n", "Firmware SDK").is_none());
+}
+
+// ── 5. Kernel ────────────────────────────────────────────────────────
 
 #[test]
 fn kernel_linux() {
@@ -92,6 +144,16 @@ fn kernel_linux() {
     let f = find(log, "Kernel").unwrap();
     assert_eq!(f.value, "Linux 5.15.137");
     assert!(f.detail.unwrap().starts_with("gcc-11.2.0"));
+}
+
+#[test]
+fn kernel_linux_without_build_metadata() {
+    // Plenty of vendor kernels print the version and stop. The build
+    // parentheses are optional, and `detail` is then absent.
+    let log = "Linux version 3.0.15-ts-armv7l\n";
+    let f = find(log, "Kernel").unwrap();
+    assert_eq!(f.value, "Linux 3.0.15-ts-armv7l");
+    assert_eq!(f.detail, None);
 }
 
 #[test]
@@ -108,7 +170,7 @@ fn kernel_zephyr() {
     assert_eq!(f.value, "Zephyr v3.5.0-2547-g1234567");
 }
 
-// ── 3. CPU / Arch ────────────────────────────────────────────────────
+// ── 6. CPU / Arch ────────────────────────────────────────────────────
 
 #[test]
 fn cpu_mips() {
@@ -131,7 +193,104 @@ fn cpu_riscv_from_hart() {
     assert_eq!(f.value, "RISC-V");
 }
 
-// ── 4. Init system ───────────────────────────────────────────────────
+#[test]
+fn cpu_xtensa_needs_the_arch_name() {
+    // `esp32` alone is a device family, not a CPU — it is reported by
+    // `Device family`. Claiming an arch from it disagreed with the
+    // browser tool.
+    assert_eq!(
+        find("xtensa: booting\n", "CPU / Arch").unwrap().value,
+        "Xtensa (ESP)"
+    );
+    assert!(find("esp_image: segment 0\n", "CPU / Arch").is_none());
+}
+
+// ── 7. Userland ──────────────────────────────────────────────────────
+
+#[test]
+fn userland_busybox() {
+    let log = "BusyBox v1.35.0 (2022-03-01) built-in shell (ash)\n";
+    let f = find(log, "Userland").unwrap();
+    assert_eq!(f.value, "BusyBox 1.35.0");
+}
+
+#[test]
+fn userland_busybox_is_not_an_init_claim() {
+    // A BusyBox banner says what the userland is, not what PID 1 is.
+    // This crate used to report "BusyBox init" for it, which the
+    // browser tool never did.
+    let log = "BusyBox v1.35.0 (2022-03-01) built-in shell (ash)\n";
+    assert!(find(log, "Init system").is_none());
+}
+
+#[test]
+fn userland_absent_without_a_version() {
+    assert!(find("starting busybox applets\n", "Userland").is_none());
+}
+
+// ── 8. Flash layout ──────────────────────────────────────────────────
+
+const MTD_TABLE: &str = concat!(
+    "0x000000000000-0x000000020000 : \"u-boot\"\n",
+    "0x000000020000-0x000000030000 : \"u-boot-env\"\n",
+    "0x000000030000-0x000000200000 : \"kernel\"\n",
+);
+
+#[test]
+fn flash_layout_lists_partitions_with_sizes() {
+    let f = find(MTD_TABLE, "Flash layout").unwrap();
+    assert_eq!(f.value, "3 partitions");
+    assert_eq!(
+        f.detail.unwrap(),
+        "u-boot (128K), u-boot-env (64K), kernel (1.8M)"
+    );
+}
+
+#[test]
+fn flash_layout_is_an_aggregate_so_it_has_no_single_line_evidence() {
+    // The value counts partitions across many lines, so no single line
+    // reproduces it and the evidence fields stay empty. Pointing at one
+    // arbitrary MTD line would be a lie about where the value came from.
+    let f = find(MTD_TABLE, "Flash layout").unwrap();
+    assert_eq!(f.source, None);
+    assert_eq!(f.line_number, None);
+}
+
+#[test]
+fn flash_layout_deduplicates_a_repeated_table() {
+    // A reset loop (or two flash devices registering) prints the table
+    // twice. The same offsets must be listed once.
+    let log = format!("{MTD_TABLE}reset\n{MTD_TABLE}");
+    let f = find(&log, "Flash layout").unwrap();
+    assert_eq!(f.value, "3 partitions");
+    let names: Vec<&str> = f.detail.as_deref().unwrap().split(", ").collect();
+    let unique: std::collections::HashSet<&&str> = names.iter().collect();
+    assert_eq!(
+        unique.len(),
+        names.len(),
+        "no partition may be listed twice"
+    );
+}
+
+#[test]
+fn flash_layout_whole_megabytes_drop_the_decimal() {
+    let log = "0x000000000000-0x000000100000 : \"one\"\n0x000000100000-0x000000280000 : \"onepointfive\"\n";
+    let f = find(log, "Flash layout").unwrap();
+    assert_eq!(f.detail.unwrap(), "one (1M), onepointfive (1.5M)");
+}
+
+#[test]
+fn flash_layout_singular_for_one_partition() {
+    let log = "0x000000000000-0x000000020000 : \"u-boot\"\n";
+    assert_eq!(find(log, "Flash layout").unwrap().value, "1 partition");
+}
+
+#[test]
+fn flash_layout_absent_without_a_partition_map() {
+    assert!(find("mtd: device 0 (boot)\n", "Flash layout").is_none());
+}
+
+// ── 9. Init system ───────────────────────────────────────────────────
 
 #[test]
 fn init_procd() {
@@ -148,14 +307,7 @@ fn init_systemd() {
     assert_eq!(f.value, "systemd");
 }
 
-#[test]
-fn init_busybox() {
-    let log = "BusyBox v1.35.0 (2022-03-01) built-in shell (ash)\n";
-    let f = find(log, "Init system").unwrap();
-    assert_eq!(f.value, "BusyBox init");
-}
-
-// ── 5. Device family ─────────────────────────────────────────────────
+// ── 10. Device family ─────────────────────────────────────────────────
 
 #[test]
 fn family_openwrt() {
@@ -178,7 +330,7 @@ fn family_qualcomm() {
     assert_eq!(f.value, "Qualcomm IPQ");
 }
 
-// ── 6. Network ───────────────────────────────────────────────────────
+// ── 11. Network ───────────────────────────────────────────────────────
 
 #[test]
 fn network_dhcp() {
@@ -195,7 +347,7 @@ fn network_dnsmasq() {
     assert_eq!(f.value, "dnsmasq 2.86 active");
 }
 
-// ── 7. Web admin ─────────────────────────────────────────────────────
+// ── 12. Web admin ─────────────────────────────────────────────────────
 
 #[test]
 fn web_uhttpd() {
@@ -212,7 +364,7 @@ fn web_nginx() {
     assert_eq!(f.value, "nginx 1.20.1");
 }
 
-// ── 8. Telnet exposure ───────────────────────────────────────────────
+// ── 13. Telnet exposure ───────────────────────────────────────────────
 
 #[test]
 fn telnet_started() {
@@ -228,7 +380,7 @@ fn telnet_absent_on_clean_log() {
     assert!(find(log, "Telnet exposure").is_none());
 }
 
-// ── 9. Autoboot interruptable ────────────────────────────────────────
+// ── 14. Autoboot interruptable ────────────────────────────────────────
 
 #[test]
 fn autoboot_3_second_countdown() {
@@ -256,15 +408,21 @@ fn detector_labels_stable() {
         labels,
         vec![
             "Bootloader",
+            "Runtime firmware",
+            "ROM identifier",
+            "Firmware SDK",
             "Kernel",
             "CPU / Arch",
+            "Userland",
+            "Flash layout",
             "Init system",
             "Device family",
             "Network",
             "Web admin",
             "Telnet exposure",
             "Autoboot interruptable",
-        ]
+        ],
+        "order and labels must match the browser detector library exactly"
     );
 }
 
