@@ -8,6 +8,8 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-09-26 — detector parity, and terminal login
+
 Detector-set parity with the browser detector library at
 bootintel.com/tools/fingerprint, which is the source of truth for the
 set: it is what the web tool and the legacy Node analyzer both run. This
@@ -24,6 +26,29 @@ releasing is handled separately, and the 0.4.0 entry records how this
 project numbers a breaking change while pre-1.0.
 
 ### Added
+- **`bootintel login`** — browser-approved terminal sign-in, replacing
+  `export BOOTINTEL_API_KEY=...` by hand. Prints a link with the code
+  already in it so the normal path is one click, and prints the code
+  separately so you can check it against what the page shows. That
+  comparison is the only thing stopping a malicious local process having
+  its own login approved, so the wording asks for it rather than just
+  offering a button.
+
+  There is a second reason it exists. The server gates `x-api-key` auth at
+  the Pro plan, because "API access" there means CI and scripting. Applying
+  that to interactive terminal use would have put the applicability lookup,
+  the one path usable on a client device under an NDA, out of reach of the
+  entry paid tier. The `bic_` token this issues resolves ahead of the
+  API-key gate server-side, so programmatic access stays Pro while
+  `bootintel login` starts at Researcher.
+
+  Shape is RFC 8628. Token lasts 90 days, is revocable from the account
+  page, and is stored via the existing config file so everything that
+  already reads `api_key` keeps working. Transient poll failures retry
+  quietly and are bounded: a long poll outliving keep-alive is routine, and
+  the first live run of this command proved it by surviving a connection
+  reset where the only thing that looked wrong was the warning.
+
 - Five detectors, bringing the set to 14 and `bootintel version` to
   `client-side detectors: 14`:
   - **Runtime firmware** — OpenSBI, the RISC-V M-mode runtime.
@@ -458,7 +483,8 @@ Initial release. All six subcommands live; five branch-based milestones (M1-M5) 
 - PDF report download subcommand — server-side endpoint exists but no client-side wrapper yet.
 - Windows support — the Rust code compiles for Windows and the release workflow builds it, but install.sh doesn't handle Windows yet (`.ps1` installer is a follow-up).
 
-[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.4.2...HEAD
+[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.5.0...HEAD
+[0.5.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.5.0
 [0.4.2]: https://github.com/bootintel/cli/releases/tag/cli-v0.4.2
 [0.4.1]: https://github.com/bootintel/cli/releases/tag/cli-v0.4.1
 [0.4.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.4.0

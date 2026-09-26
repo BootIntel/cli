@@ -161,6 +161,11 @@ enum Cmd {
     /// set / edit. Precedence at runtime is: CLI flag > env var >
     /// config file > built-in default.
     Config(cmd::config::Args),
+    /// Sign in from this terminal by approving it in a browser.
+    /// Replaces exporting BOOTINTEL_API_KEY by hand, and is the path
+    /// that reaches Researcher-tier features the API-key gate does not.
+    Login(cmd::login::Args),
+
     /// Verify the current API key without running a scan. Prints the
     /// key's identity (email + tier + today's quota) or exits with
     /// a sysexits-style code (77 = unauthorized, 69 = network error).
@@ -204,6 +209,7 @@ fn main() -> Result<()> {
         Cmd::Doctor(args) => cmd::doctor::run(args),
         Cmd::Completions(args) => cmd::completions::run(args),
         Cmd::Config(args) => cmd::config::run(args),
+        Cmd::Login(args) => cmd::login::run(args),
         Cmd::Whoami(args) => cmd::whoami::run(args),
         Cmd::History(args) => cmd::history::run(args),
         Cmd::Version(args) => cmd::version::run(args),

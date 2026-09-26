@@ -257,3 +257,24 @@ mod tests {
         });
     }
 }
+
+/// Device-authorization endpoints for `bootintel login`.
+///
+/// Deliberately not under `/analysis`: these are auth routes, and the
+/// first two are reached with no credentials at all, which is the whole
+/// point of the flow.
+pub fn device_start_url(base: &str) -> String {
+    format!(
+        "{}{}/auth/device/start",
+        base.trim_end_matches('/'),
+        path_prefix()
+    )
+}
+
+pub fn device_token_url(base: &str) -> String {
+    format!(
+        "{}{}/auth/device/token",
+        base.trim_end_matches('/'),
+        path_prefix()
+    )
+}

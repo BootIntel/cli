@@ -188,6 +188,9 @@ Client-side scan is always free and offline. Server-side integration (paid) laye
 bootintel scan --api --preview boot.log
 
 # authenticated full analysis — needs an API key:
+bootintel login          # browser-approved, no key to paste
+
+# Or, for CI and scripting (needs Pro):
 export BOOTINTEL_API_KEY=bik_...
 bootintel scan --api boot.log
 
