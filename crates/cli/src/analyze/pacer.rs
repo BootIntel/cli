@@ -6,7 +6,7 @@
 //! CPU on high-baud lines; running on a plain timer would delay
 //! findings on quiet lines that emit one banner and then wait.
 //!
-//! The full re-run of all 9 detectors against a 40 KiB log takes
+//! The full re-run of all 14 detectors against a 40 KiB log takes
 //! <5ms on modern hardware, so the pacer's job is really about
 //! amortizing display flicker + not blocking the serial reader,
 //! not about compute cost.

@@ -8,6 +8,119 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+Detector-set parity with the browser detector library at
+bootintel.com/tools/fingerprint, which is the source of truth for the
+set: it is what the web tool and the legacy Node analyzer both run. This
+crate shipped 9 of its 14 detectors and folded two others into the wrong
+label, so the same log produced different JSON depending on which
+implementation read it.
+
+**This is an output-schema change, which the policy at the top of this
+file calls MAJOR.** One finding moves to a different label, one moves out
+of a label it never belonged in, and five new labels appear (all three
+below), so anything parsing `.findings[]` by label needs a look before
+upgrading. The version is deliberately not bumped here —
+releasing is handled separately, and the 0.4.0 entry records how this
+project numbers a breaking change while pre-1.0.
+
+### Added
+- Five detectors, bringing the set to 14 and `bootintel version` to
+  `client-side detectors: 14`:
+  - **Runtime firmware** — OpenSBI, the RISC-V M-mode runtime.
+  - **ROM identifier** — the Espressif mask-ROM build stamp
+    (`ESP-ROM:esp32-20160718`), which is what a ROM-level exploit is
+    written against.
+  - **Firmware SDK** — ESP-IDF version off the 2nd-stage bootloader
+    banner. On an ESP target this is the CVE-relevant identifier; the ROM
+    stamp rarely moves, the SDK does.
+  - **Userland** — BusyBox version. It is printed by 7 of the 31 public
+    corpus logs and this crate reported it zero times, so the offline
+    story was missing the most common userland component in the category.
+  - **Flash layout** — the MTD partition map (15 of the 31 corpus logs
+    register one), as `N partitions` plus the named list with sizes. This
+    is what a flash-clip read needs in order to know where to read.
+- `cargo test -p bootintel --test browser_parity` — runs the browser
+  library over all 31 corpus logs (transpiled in-process and evaluated in
+  a `vm`, the same way the website repo's own parity test does) and
+  asserts the `{label, value, detail}` sequence matches this crate's, log
+  for log. Each log is compared twice, as captured and with
+  `[12:34:56.123] ` in front of every line, because line-prefix
+  normalization is the one place the two could agree on a bare log and
+  still disagree on a real capture. It skips loudly when `node` or the website checkout is absent,
+  since the crate is published and `cargo test` has to pass for someone
+  who only has this repo; `BOOTINTEL_REQUIRE_PARITY=1` turns a skip into
+  a failure and `BOOTINTEL_BROWSER_DETECTORS` points at `detectors.ts`.
+- Corpus coverage guards: BusyBox must fire on every corpus log that
+  prints its banner (7), the partition map on every log that registers
+  one (15), and no log may report the same partition twice.
+
+### Changed
+- **`OpenSBI x.y` moves from `Bootloader` to `Runtime firmware`.** It is
+  the M-mode runtime that hands off to U-Boot, not a bootloader, and the
+  browser has always reported it under its own label. Folding it into
+  `Bootloader` also *hid* it: on a RISC-V board that prints both (sample
+  `bootintel-6.txt`), U-Boot won the precedence chain and the OpenSBI
+  version disappeared from CLI output entirely. It is now reported
+  alongside the bootloader.
+- **An ESP log gains `ROM identifier` and `Firmware SDK` findings.** The
+  `Bootloader: Espressif ROM bootloader` finding is unchanged — the ROM
+  build stamp and the SDK version are additional labels, not a rename.
+- Consumers parsing JSON by label: the two bullets above are the whole
+  behaviour change. `Bootloader` for U-Boot / coreboot / GRUB / ESP,
+  `Kernel`, `CPU / Arch`, `Init system`, `Device family`, `Network`,
+  `Web admin`, `Telnet exposure` and `Autoboot interruptable` keep their
+  labels, values and relative order; the five new labels are interleaved
+  in the browser's registration order (`Bootloader`, `Runtime firmware`,
+  `ROM identifier`, `Firmware SDK`, `Kernel`, `CPU / Arch`, `Userland`,
+  `Flash layout`, `Init system`, …) because order is part of what makes
+  the two implementations comparable.
+
+### Fixed
+- Four divergences from the browser found by the new parity test, each of
+  which made the CLI assert something the web tool did not:
+  - **Garbled `Kernel` detail.** The build-metadata group was mandatory
+    and `\s`-separated, so on a kernel banner that prints no toolchain
+    parentheses the match ran across line breaks and swept up unrelated
+    text: `bootintel-6.txt` reported a detail of
+    `riscv64-unk2OF: fdt: Ignoring memory range 0x40000000 …` and
+    `bootintel-17.txt` one of
+    `gcc version 4.6.3 (Ti2CPU: ARMv7 Processor [412fc09a] revision 10 …`,
+    each stitched out of two different lines. The group is now optional
+    and line-bounded, so a banner with no toolchain parentheses yields a
+    version and no detail. No log loses its `Kernel` finding.
+  - **`CPU / Arch: Xtensa (ESP)` claimed from `esp32` / `esp8266`.**
+    Those name a device family, not a CPU, and are reported as such by
+    `Device family`. Only the literal arch name counts now.
+  - **`Init system: BusyBox init`.** A BusyBox banner says what the
+    userland is, not what PID 1 is. The claim is replaced by the new
+    `Userland` finding — `bootintel-17.txt` reported
+    `Init system: BusyBox init` and now reports
+    `Userland: BusyBox 1.20.2`.
+  - **`Init system: systemd` inferred from a `Welcome to … Linux`
+    greeting.** A distro greeting is not evidence of PID 1;
+    `systemd[1]:` is.
+- `source` and `line_number` are now derived exactly the way the browser
+  derives them — the detector is re-run against each line on its own and
+  the first line reproducing the same `value` + `detail` is the evidence.
+  The old substring search over the normalized lines could attach a
+  `source` for a match that exists on no single line. An aggregate
+  finding (`Flash layout`, whose value counts partitions across the whole
+  table) correctly carries neither field.
+- The two policy detectors (`Telnet exposure`, `Autoboot interruptable`)
+  read the original lines rather than the normalized ones, as the browser
+  does. Stripping timestamps and ANSI is a presentation choice for the
+  inventory detectors; a policy rule should see what the capture
+  contained.
+- Partition offsets are de-duplicated, so a capture that prints the table
+  twice (a reset loop, or two flash devices registering) does not inflate
+  the count — `bootintel-9.txt` reports its real 7 partitions rather
+  than 14.
+- Partition sizes round the way JavaScript's `toFixed` does (ties away
+  from zero) rather than the way Rust's formatter does (ties to even).
+  Exact ties are common in a partition table: the 1280 KiB `kernel`
+  region in `bootintel-12.txt` is `1.3M` in the browser and was `1.2M`
+  here.
+
 ## [0.4.2] — 2026-09-26 — published as `bootintel`
 
 ### Changed

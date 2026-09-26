@@ -1,7 +1,7 @@
 //! Client-side boot-log detectors for BootIntel.
 //!
-//! Mirrors the 9-detector streaming subset of the browser detector
-//! library at bootintel.com/tools/fingerprint. Kept pure (no I/O, no
+//! Mirrors the 14-detector browser detector library at
+//! bootintel.com/tools/fingerprint. Kept pure (no I/O, no
 //! async, no serde) so this crate can be reused in other contexts —
 //! a future WASM build for the browser tool, a plugin for third-party
 //! firmware-analysis tooling, etc.
@@ -82,18 +82,37 @@ impl Finding {
 /// (unmodified) line, so `source` always shows the user what their
 /// capture actually contained, prefix and all.
 ///
-/// Ported from the legacy Node analyzer's `analyze()` so both
-/// implementations agree on what a "line" is and what gets stripped.
+/// Ported from the browser `analyze()` so both implementations agree
+/// on what a "line" is and what gets stripped.
+///
+/// Two exceptions, mirroring the browser: the policy observations
+/// (`Telnet exposure`, `Autoboot interruptable`) run against the
+/// **original** lines. Normalizing is a presentation choice for the
+/// inventory detectors; a policy rule should see exactly what the
+/// capture contained.
 pub fn analyze(log: &str) -> Vec<Finding> {
     let original = split_lines(log);
-    let normalized: Vec<String> = original.iter().map(|l| normalize_line(l)).collect();
+    let normalized_owned: Vec<String> = original.iter().map(|l| normalize_line(l)).collect();
+    let normalized: Vec<&str> = normalized_owned.iter().map(String::as_str).collect();
     let norm_log = normalized.join("\n");
+    let orig_log = original.join("\n");
     ALL_DETECTORS
         .iter()
-        .filter_map(|d| (d.run)(&norm_log))
-        .map(|f| attach_evidence(f, &original, &normalized))
+        .filter_map(|d| {
+            let (joined, lines) = if ORIGINAL_INPUT_LABELS.contains(&d.label) {
+                (&orig_log, &original)
+            } else {
+                (&norm_log, &normalized)
+            };
+            let finding = (d.run)(joined)?;
+            Some(attach_evidence(d, finding, &original, lines))
+        })
         .collect()
 }
+
+/// Detectors that read the user's original lines instead of the
+/// normalized ones. Same two labels the browser exempts.
+const ORIGINAL_INPUT_LABELS: &[&str] = &["Telnet exposure", "Autoboot interruptable"];
 
 /// Split on any of CRLF / LF / CR. `str::lines()` only handles LF and
 /// CRLF; a bare-CR stream (some bootloaders emit CR-only line endings)
@@ -169,22 +188,29 @@ fn normalize_line(line: &str) -> String {
 /// Point a finding's `source` at the original, unmodified line that
 /// produced it, and record that line's 1-based number.
 ///
-/// Detectors return the matched substring as `source`, taken from the
-/// normalized text. Locating it is a plain substring search over the
-/// normalized lines — far cheaper than the Node analyzer's re-run of
-/// every detector against every line, and exact for the same reason
-/// (the needle came out of that text verbatim).
-fn attach_evidence(mut f: Finding, original: &[&str], normalized: &[String]) -> Finding {
-    let Some(src) = f.source.clone() else {
-        return f;
-    };
-    // A few regexes (`[^)]+`) can span a newline; anchor on the first
-    // physical line of the match.
-    let needle = src.split('\n').next().unwrap_or(&src);
-    if needle.is_empty() {
-        return f;
-    }
-    if let Some(i) = normalized.iter().position(|l| l.contains(needle)) {
+/// `source` and `line_number` are **derived**, never set by the
+/// detector: the detector is re-run against each line on its own and
+/// the first line that reproduces the same `value` + `detail` is the
+/// originating evidence. Byte-for-byte the browser's algorithm, which
+/// matters for two reasons:
+///
+///   * a detector that set its own `source` from a whole-log match
+///     could point at text that is not on any single line, breaking
+///     the "source is the original line" contract the CSV/JSON
+///     consumers rely on;
+///   * an **aggregate** detector (`Flash layout`, whose `value` counts
+///     partitions across many lines) cannot be reproduced from one
+///     line, so no line matches and the finding correctly ends up with
+///     no `source` / `line_number` — the evidence is the whole table.
+///
+/// When no line reproduces the finding, whatever `source` the detector
+/// itself recorded is left in place (also the browser's behavior: it
+/// spreads the located evidence over the finding only when found).
+fn attach_evidence(d: &Detector, mut f: Finding, original: &[&str], lines: &[&str]) -> Finding {
+    if let Some(i) = lines
+        .iter()
+        .position(|line| (d.run)(line).is_some_and(|c| c.value == f.value && c.detail == f.detail))
+    {
         f.source = Some(original[i].to_string());
         f.line_number = Some(i + 1);
     }
@@ -243,12 +269,32 @@ static ALL_DETECTORS: &[Detector] = &[
         run: run_bootloader,
     },
     Detector {
+        label: "Runtime firmware",
+        run: run_runtime_firmware,
+    },
+    Detector {
+        label: "ROM identifier",
+        run: run_rom_identifier,
+    },
+    Detector {
+        label: "Firmware SDK",
+        run: run_firmware_sdk,
+    },
+    Detector {
         label: "Kernel",
         run: run_kernel,
     },
     Detector {
         label: "CPU / Arch",
         run: run_cpu_arch,
+    },
+    Detector {
+        label: "Userland",
+        run: run_userland,
+    },
+    Detector {
+        label: "Flash layout",
+        run: run_flash_layout,
     },
     Detector {
         label: "Init system",
@@ -286,8 +332,6 @@ static RE_COREBOOT: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(?m)^coreboot-([\w.\-]+)").unwrap());
 static RE_GRUB: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(?m)^GRUB\s+(?:version\s+)?([\d.]+)").unwrap());
-static RE_OPENSBI: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"(?i)OpenSBI\s+v?([\d.]+)").unwrap());
 static RE_ESP_ROM: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(?i)(rst:0x1\s+\(POWERON_RESET\)|esp_image:|chip is)").unwrap());
 
@@ -312,11 +356,6 @@ fn run_bootloader(log: &str) -> Option<Finding> {
         let source = m.get(0)?.as_str();
         return Some(Finding::new("Bootloader", format!("GRUB {ver}")).source(source));
     }
-    if let Some(m) = RE_OPENSBI.captures(log) {
-        let ver = m.get(1)?.as_str();
-        let source = m.get(0)?.as_str();
-        return Some(Finding::new("Bootloader", format!("OpenSBI {ver}")).source(source));
-    }
     if let Some(m) = RE_ESP_ROM.captures(log) {
         let source = m.get(0)?.as_str();
         return Some(
@@ -328,10 +367,66 @@ fn run_bootloader(log: &str) -> Option<Finding> {
     None
 }
 
-// ── 2. Kernel ────────────────────────────────────────────────────────
+// ── 2. Runtime firmware ──────────────────────────────────────────────
+//
+// OpenSBI is the RISC-V M-mode runtime that hands off to U-Boot, not a
+// bootloader — a RISC-V board reports both, and folding OpenSBI into
+// `Bootloader` (as this crate used to) both mislabeled it and hid
+// whichever of the two lost the precedence race.
 
-static RE_LINUX: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"Linux version\s+(\S+)\s+\([^)]+\)\s+\(([^)]+)\)").unwrap());
+static RE_OPENSBI: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?m)^\s*OpenSBI\s+v?(\d+(?:\.\d+)+(?:[-+][A-Za-z0-9_.+\-]+)?)").unwrap()
+});
+
+fn run_runtime_firmware(log: &str) -> Option<Finding> {
+    let m = RE_OPENSBI.captures(log)?;
+    let ver = m.get(1)?.as_str();
+    Some(Finding::new("Runtime firmware", format!("OpenSBI {ver}")))
+}
+
+// ── 3. ROM identifier ────────────────────────────────────────────────
+//
+// The mask-ROM build stamp an ESP prints before anything else
+// (`ESP-ROM:esp32s3-20210327`). It identifies the silicon revision's
+// ROM image, which is what a ROM-level exploit is written against —
+// separate from the `Bootloader` finding the same log also produces.
+
+static RE_ESP_ROM_ID: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?m)^\s*ESP-ROM:([A-Za-z0-9._+\-]+)").unwrap());
+
+fn run_rom_identifier(log: &str) -> Option<Finding> {
+    let m = RE_ESP_ROM_ID.captures(log)?;
+    let id = m.get(1)?.as_str();
+    Some(Finding::new(
+        "ROM identifier",
+        format!("Espressif ROM {id}"),
+    ))
+}
+
+// ── 4. Firmware SDK ──────────────────────────────────────────────────
+//
+// ESP-IDF version out of the 2nd-stage bootloader banner. The SDK
+// version is the CVE-relevant identifier on an ESP target — the ROM
+// stamp above rarely moves, the SDK does.
+
+static RE_ESP_IDF: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\bboot: ESP-IDF\s+([A-Za-z0-9._+\-]+)\s+2nd stage bootloader\b").unwrap()
+});
+
+fn run_firmware_sdk(log: &str) -> Option<Finding> {
+    let m = RE_ESP_IDF.captures(log)?;
+    let ver = m.get(1)?.as_str();
+    Some(Finding::new("Firmware SDK", format!("ESP-IDF {ver}")))
+}
+
+// ── 5. Kernel ────────────────────────────────────────────────────────
+
+// The build-metadata parentheses are optional: plenty of vendor kernels
+// print `Linux version 3.0.15-ts-armv7l` and stop. `[ \t]` rather than
+// `\s` so the match cannot run past the end of the banner line.
+static RE_LINUX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"Linux version[ \t]+(\S+)(?:[ \t]+\([^\r\n)]+\)[ \t]+\(([^\r\n)]+)\))?").unwrap()
+});
 static RE_DARWIN: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"Darwin Kernel Version\s+([^:]+):").unwrap());
 static RE_FREERTOS: LazyLock<Regex> =
@@ -342,16 +437,14 @@ static RE_ZEPHYR: LazyLock<Regex> =
 fn run_kernel(log: &str) -> Option<Finding> {
     if let Some(m) = RE_LINUX.captures(log) {
         let ver = m.get(1)?.as_str();
-        let toolchain = m.get(2)?.as_str();
         let source_full = m.get(0)?.as_str();
-        // Match the TS slicing: detail truncated at 80, source at 200.
-        let detail: String = toolchain.chars().take(80).collect();
+        // Match the browser slicing: detail truncated at 80, source at 200.
         let source: String = source_full.chars().take(200).collect();
-        return Some(
-            Finding::new("Kernel", format!("Linux {ver}"))
-                .detail(detail)
-                .source(source),
-        );
+        let mut f = Finding::new("Kernel", format!("Linux {ver}")).source(source);
+        if let Some(toolchain) = m.get(2) {
+            f = f.detail(toolchain.as_str().chars().take(80).collect::<String>());
+        }
+        return Some(f);
     }
     if let Some(m) = RE_DARWIN.captures(log) {
         let ver = m.get(1)?.as_str().trim();
@@ -371,7 +464,7 @@ fn run_kernel(log: &str) -> Option<Finding> {
     None
 }
 
-// ── 3. CPU / Arch ────────────────────────────────────────────────────
+// ── 6. CPU / Arch ────────────────────────────────────────────────────
 
 static RE_MIPS: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"(?i)CPU\s*\d?\s+revision is:\s+\w+\s+\((MIPS\s+[\w\-]+)\)").unwrap()
@@ -385,8 +478,10 @@ static RE_RISCV: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(?i)Linux version.*riscv|hart\s+\d+:\s+running").unwrap());
 static RE_X86: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(?i)Linux version.*x86_64").unwrap());
-static RE_XTENSA: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"(?i)(xtensa|esp32|esp8266)").unwrap());
+// Only the literal architecture name. `esp32` / `esp8266` are a device
+// family, not a CPU, and are reported as such by `Device family` —
+// matching them here made the CLI claim an arch the browser did not.
+static RE_XTENSA: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?i)\bxtensa\b").unwrap());
 
 fn run_cpu_arch(log: &str) -> Option<Finding> {
     if let Some(m) = RE_MIPS.captures(log) {
@@ -410,16 +505,120 @@ fn run_cpu_arch(log: &str) -> Option<Finding> {
     None
 }
 
-// ── 4. Init system ───────────────────────────────────────────────────
+// ── 7. Userland ──────────────────────────────────────────────────────
+//
+// BusyBox prints its version on 7 of the 31 public corpus captures and
+// this crate reported it zero times, so the offline story was missing
+// the most common userland component in the category.
+
+static RE_BUSYBOX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?i)BusyBox\s+v?(\d[\d.]*)").unwrap());
+
+fn run_userland(log: &str) -> Option<Finding> {
+    let m = RE_BUSYBOX.captures(log)?;
+    let ver = m.get(1)?.as_str();
+    Some(Finding::new("Userland", format!("BusyBox {ver}")))
+}
+
+// ── 8. Flash layout ──────────────────────────────────────────────────
+//
+// The partition map is what a flash-clip read needs, and it appears in
+// roughly half the corpus. Offsets come straight from the kernel's own
+// MTD registration lines.
+//
+// The one **aggregate** detector: it folds many lines into a single
+// finding whose `value` counts partitions, so no single line reproduces
+// it and `attach_evidence` leaves it without a `source` / `line_number`.
+
+static RE_MTD_PART: LazyLock<Regex> = LazyLock::new(|| {
+    // Character class spelled out rather than `\w` so it means the same
+    // set as the browser's `[\w/.-]` (ASCII) instead of Rust's
+    // Unicode-aware `\w`.
+    Regex::new(r#"(?i)0x0*([0-9a-f]+)-0x0*([0-9a-f]+)\s*:\s*"([A-Za-z0-9_/.\-]+)""#).unwrap()
+});
+
+fn run_flash_layout(log: &str) -> Option<Finding> {
+    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let mut named: Vec<String> = Vec::new();
+    for m in RE_MTD_PART.captures_iter(log) {
+        let (Some(start), Some(end), Some(name)) = (m.get(1), m.get(2), m.get(3)) else {
+            continue;
+        };
+        // A capture can print the partition table more than once (a
+        // reset loop, or two flash devices registering). Key on the
+        // exact offsets so the same region is listed once rather than
+        // inflating the count — bootintel-9.txt reports 14 partitions
+        // without this for a device that has 7.
+        if !seen.insert(format!(
+            "{}-{}-{}",
+            start.as_str(),
+            end.as_str(),
+            name.as_str()
+        )) {
+            continue;
+        }
+        let size = hex_to_f64(end.as_str()) - hex_to_f64(start.as_str());
+        named.push(format!("{} ({})", name.as_str(), human_size(size)));
+    }
+    if named.is_empty() {
+        return None;
+    }
+    let plural = if named.len() == 1 { "" } else { "s" };
+    Some(
+        Finding::new("Flash layout", format!("{} partition{plural}", named.len()))
+            .detail(named.join(", ")),
+    )
+}
+
+/// `parseInt(hex, 16)` in f64, so a hostile line with a 40-digit offset
+/// widens to infinity the way the browser does instead of overflowing.
+fn hex_to_f64(hex: &str) -> f64 {
+    hex.chars().fold(0.0, |acc, c| {
+        acc * 16.0 + f64::from(c.to_digit(16).unwrap_or(0))
+    })
+}
+
+/// Render a partition size the way the browser does: whole kibibytes,
+/// or mebibytes with one decimal place when it isn't a whole MiB.
+///
+/// The decimal is computed in integer tenths rather than with `{:.1}`
+/// because the two languages break ties differently: JavaScript's
+/// `toFixed` rounds a tie away from zero (1.25 → "1.3") while Rust's
+/// formatter rounds to even (1.25 → "1.2"). Partition tables hit exact
+/// ties routinely — any whole 1.25 MiB region does it, e.g. the 1280 KiB
+/// `kernel` partition in sample bootintel-12.txt — so the naive version
+/// diverges from the browser on real corpus logs.
+fn human_size(size: f64) -> String {
+    let kb = (size / 1024.0).round();
+    // `-0.0` would print as "-0"; the browser prints "0".
+    let kb = if kb == 0.0 { 0.0 } else { kb };
+    if kb < 1024.0 {
+        return format!("{kb}K");
+    }
+    let whole = kb as i128;
+    if whole % 1024 == 0 {
+        return format!("{}M", whole / 1024);
+    }
+    // round((kb / 1024) * 10) with ties away from zero, in integers.
+    // Falls back to the formatter only for absurd offsets (a hostile
+    // 40-hex-digit line) where the integer math would overflow.
+    match whole
+        .checked_mul(20)
+        .and_then(|v| v.checked_add(1024))
+        .map(|v| v / 2048)
+    {
+        Some(tenths) => format!("{}.{}M", tenths / 10, tenths % 10),
+        None => format!("{:.1}M", kb / 1024.0),
+    }
+}
+
+// ── 9. Init system ───────────────────────────────────────────────────
 
 static RE_PROCD_START: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?m)^procd:").unwrap());
 static RE_PROCD_INIT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"procd:\s+-\s+init").unwrap());
-static RE_SYSTEMD: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"(?m)systemd\[1\]:|Welcome to \w+ Linux").unwrap());
+static RE_SYSTEMD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?m)systemd\[1\]:").unwrap());
 static RE_SYSV: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(?i)INIT:\s+version\s+([\d.]+)").unwrap());
-static RE_BUSYBOX_INIT: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"BusyBox v[\d.]+\s+\([^)]+\)\s+built-in shell").unwrap());
 static RE_RUNIT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"runit:|runit-init").unwrap());
 
 fn run_init_system(log: &str) -> Option<Finding> {
@@ -433,16 +632,13 @@ fn run_init_system(log: &str) -> Option<Finding> {
         let ver = m.get(1)?.as_str();
         return Some(Finding::new("Init system", format!("SysV init {ver}")));
     }
-    if RE_BUSYBOX_INIT.is_match(log) {
-        return Some(Finding::new("Init system", "BusyBox init"));
-    }
     if RE_RUNIT.is_match(log) {
         return Some(Finding::new("Init system", "runit"));
     }
     None
 }
 
-// ── 5. Device family ─────────────────────────────────────────────────
+// ── 10. Device family ─────────────────────────────────────────────────
 
 static RE_OPENWRT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?i)openwrt").unwrap());
 static RE_OPENWRT_GCC: LazyLock<Regex> =
@@ -500,7 +696,7 @@ fn run_device_family(log: &str) -> Option<Finding> {
     None
 }
 
-// ── 6. Network ───────────────────────────────────────────────────────
+// ── 11. Network ───────────────────────────────────────────────────────
 
 static RE_DHCP: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(?i)DHCP\s+(?:client\s+)?bound to address\s+([\d.]+)").unwrap());
@@ -529,7 +725,7 @@ fn run_network(log: &str) -> Option<Finding> {
     None
 }
 
-// ── 7. Web admin ─────────────────────────────────────────────────────
+// ── 12. Web admin ─────────────────────────────────────────────────────
 
 static RE_UHTTPD: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"(?i)uhttpd\[\d+\]:\s+Listening on\s+([\d.:]+)").unwrap());
@@ -560,7 +756,7 @@ fn run_web_admin(log: &str) -> Option<Finding> {
     None
 }
 
-// ── 8. Telnet exposure ───────────────────────────────────────────────
+// ── 13. Telnet exposure ───────────────────────────────────────────────
 
 static RE_TELNET: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"(?i)telnetd?\[\d+\]?[^\n]*?(?:listening|started|on\s+\d)").unwrap()
@@ -577,7 +773,7 @@ fn run_telnet_exposure(log: &str) -> Option<Finding> {
     None
 }
 
-// ── 9. Autoboot interruptable ────────────────────────────────────────
+// ── 14. Autoboot interruptable ────────────────────────────────────────
 
 static RE_AUTOBOOT_ANY: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"Hit any key to stop autoboot:\s*[1-9]").unwrap());

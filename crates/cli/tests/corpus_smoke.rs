@@ -98,9 +98,11 @@ fn ti_am62a7_hits_uboot_and_arm64() {
 #[test]
 fn riscv_vf2_hits_opensbi_and_riscv() {
     expect_label("bootintel-6.txt", "Bootloader", "U-Boot");
-    // OpenSBI is the M-mode runtime; U-Boot proper is what shows up
-    // last as the "Bootloader" finding (highest-precedence bootloader
-    // regex hit). The RISC-V arch tag is what confirms the platform.
+    // OpenSBI is the M-mode runtime that hands off to U-Boot, so this
+    // log reports both, under separate labels. OpenSBI used to be
+    // reported as the "Bootloader" — and on this log it lost the
+    // precedence race against U-Boot and vanished entirely.
+    expect_label("bootintel-6.txt", "Runtime firmware", "OpenSBI 1.0");
     expect_label("bootintel-6.txt", "CPU / Arch", "RISC-V");
 }
 
@@ -142,4 +144,102 @@ fn empty_log_produces_no_findings() {
 fn nonsense_log_produces_no_findings() {
     let findings = analyze("random\ntext\nwith\nno\nboot\ncontent");
     assert!(findings.is_empty());
+}
+
+// ── Corpus coverage guards for the aggregate detectors ───────────────
+//
+// Mirrors the website repo's `cli/test-parity.mjs` coverage block. A
+// count is not the assertion — the assertion is that every log which
+// *prints* the evidence produces the finding, so a regex that quietly
+// stops matching one vendor's banner shape fails here instead of
+// silently shrinking the offline story.
+
+fn corpus_logs() -> Vec<(String, String)> {
+    let Some(dir) = samples_dir() else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    for entry in std::fs::read_dir(dir).expect("samples/ is readable") {
+        let path = entry.expect("readable dir entry").path();
+        if path.extension().is_some_and(|e| e == "txt") {
+            let name = path.file_name().unwrap().to_string_lossy().into_owned();
+            out.push((name, std::fs::read_to_string(&path).expect("readable log")));
+        }
+    }
+    out.sort();
+    out
+}
+
+#[test]
+fn busybox_fires_on_every_log_that_prints_its_banner() {
+    let logs = corpus_logs();
+    if logs.is_empty() {
+        eprintln!("[skip] samples/ not in this checkout — test is a no-op");
+        return;
+    }
+    let banner = regex::Regex::new(r"(?i)BusyBox\s+v?\d").unwrap();
+    let mut hits = 0;
+    for (name, log) in &logs {
+        if !banner.is_match(log) {
+            continue;
+        }
+        hits += 1;
+        assert!(
+            analyze(log).iter().any(|f| f.label == "Userland"),
+            "{name} prints a BusyBox banner but Userland did not fire"
+        );
+    }
+    assert_eq!(
+        hits, 7,
+        "7 of the 31 public corpus logs print a BusyBox banner"
+    );
+}
+
+#[test]
+fn flash_layout_fires_on_every_log_with_a_partition_map() {
+    let logs = corpus_logs();
+    if logs.is_empty() {
+        eprintln!("[skip] samples/ not in this checkout — test is a no-op");
+        return;
+    }
+    let table = regex::Regex::new(r#"(?i)0x[0-9a-f]+-0x[0-9a-f]+\s*:\s*""#).unwrap();
+    let mut hits = 0;
+    for (name, log) in &logs {
+        if !table.is_match(log) {
+            continue;
+        }
+        hits += 1;
+        assert!(
+            analyze(log).iter().any(|f| f.label == "Flash layout"),
+            "{name} has an MTD partition map but Flash layout did not fire"
+        );
+    }
+    assert_eq!(
+        hits, 15,
+        "15 of the 31 public corpus logs register an MTD partition map"
+    );
+}
+
+#[test]
+fn no_corpus_log_reports_a_duplicate_partition() {
+    let logs = corpus_logs();
+    if logs.is_empty() {
+        eprintln!("[skip] samples/ not in this checkout — test is a no-op");
+        return;
+    }
+    for (name, log) in &logs {
+        let Some(layout) = analyze(log).into_iter().find(|f| f.label == "Flash layout") else {
+            continue;
+        };
+        let detail = layout.detail.unwrap_or_default();
+        let parts: Vec<&str> = detail.split(", ").collect();
+        let unique: std::collections::HashSet<&&str> = parts.iter().collect();
+        assert_eq!(
+            unique.len(),
+            parts.len(),
+            "{name} lists a partition twice — a capture can print the table more than once \
+             (reset loop, or two flash devices registering) and offsets must be de-duplicated: \
+             {detail}"
+        );
+    }
 }

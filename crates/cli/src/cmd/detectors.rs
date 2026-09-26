@@ -23,10 +23,27 @@ pub struct Args {
 /// detector without a description here fails the build.
 const DESCRIPTIONS: &[(&str, &str)] = &[
     ("Bootloader", "U-Boot / Barebox / CFE + build timestamp"),
+    (
+        "Runtime firmware",
+        "OpenSBI — the RISC-V M-mode runtime below the bootloader",
+    ),
+    ("ROM identifier", "Mask-ROM build stamp (ESP-ROM)"),
+    (
+        "Firmware SDK",
+        "Vendor SDK the image was built against (ESP-IDF)",
+    ),
     ("Kernel", "Linux version + build metadata"),
     (
         "CPU / Arch",
         "ARMv7 / ARM64 / MIPS / RISC-V / x86_64 family",
+    ),
+    (
+        "Userland",
+        "BusyBox version — what the userland is built on",
+    ),
+    (
+        "Flash layout",
+        "MTD partition map — offsets, names, sizes for a flash read",
     ),
     (
         "Init system",
