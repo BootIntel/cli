@@ -46,6 +46,11 @@ on:
         required: false
         type: boolean
         default: false
+      publish_crates:
+        description: 'Also publish bootintel-detectors + bootintel-cli to crates.io (needs CARGO_REGISTRY_TOKEN)'
+        required: false
+        type: boolean
+        default: false
 
 # Provenance
 # ----------
@@ -308,3 +313,58 @@ jobs:
           subject-name: ghcr.io/bootintel/cli
           subject-digest: ${{ steps.docker_build.outputs.digest }}
           push-to-registry: true
+
+  publish-crates:
+    name: publish to crates.io
+    needs: release
+    if: inputs.publish_crates && !inputs.dry_run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install libudev
+        run: sudo apt-get update && sudo apt-get install -y libudev-dev
+
+      # Fail loudly rather than half-publishing. A missing token here would
+      # otherwise surface as an opaque cargo auth error after the library
+      # had already gone out, and a crates.io version can never be reused.
+      - name: Require the registry token
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          if [ -z "${CARGO_REGISTRY_TOKEN}" ]; then
+            echo "::error::CARGO_REGISTRY_TOKEN is not set. Add it at" \
+                 "Settings > Secrets and variables > Actions > New repository secret." \
+                 "Create the token at https://crates.io/settings/tokens with publish-new + publish-update scope."
+            exit 1
+          fi
+
+      # Order matters and cannot be parallelised: bootintel-cli declares
+      # bootintel-detectors with both a path and a version, so the library
+      # must exist on the index before the binary crate can be packaged.
+      - name: Publish bootintel-detectors
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish -p bootintel-detectors
+
+      # The index is eventually consistent. Without this, the next publish
+      # fails with "no matching package named bootintel-detectors".
+      - name: Wait for the index to carry the new library
+        run: |
+          for i in $(seq 1 30); do
+            if cargo info bootintel-detectors@${{ inputs.version }} >/dev/null 2>&1; then
+              echo "index has bootintel-detectors ${{ inputs.version }}"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::bootintel-detectors ${{ inputs.version }} never appeared on the index."
+          exit 1
+
+      - name: Publish bootintel-cli
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish -p bootintel-cli
