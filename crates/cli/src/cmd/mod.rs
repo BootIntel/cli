@@ -13,6 +13,7 @@ pub mod encode_share;
 pub mod export;
 pub mod history;
 pub mod init;
+pub mod login;
 pub mod manpage;
 pub mod ports;
 pub mod replay;
