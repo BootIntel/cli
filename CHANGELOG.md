@@ -8,6 +8,29 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+## [0.4.1] — 2026-09-26 — publishable to crates.io
+
+No user-visible behaviour change, so PATCH per the policy above.
+
+### Changed
+- **The crates can now be published.** `crates/cli` carried
+  `publish = false`, present only to satisfy cargo-deny's wildcard-dep
+  check because `bootintel-detectors` was declared as a bare path
+  dependency. That dependency now carries both a path and a version:
+  cargo uses the path for local builds and the version when packaging.
+  `cargo deny check` still reports advisories, bans, licenses and
+  sources all ok, so the workaround was no longer earning its keep.
+- The release workflow gained an opt-in `publish_crates` input and a
+  `publish-crates` job. It refuses to start without
+  `CARGO_REGISTRY_TOKEN`, because a crates.io version can be yanked but
+  never reused, so a half-publish would burn the version permanently.
+  The library is published before the binary crate and the job waits for
+  index consistency in between, which is not optional: `cargo package -p
+  bootintel-cli` fails with `no matching package named
+  bootintel-detectors` otherwise.
+- Added `docs/releasing.md`, and refreshed four stale `cli-v0.3.1`
+  references in the README.
+
 ## [0.4.0] — 2026-09-25 — correctness batch: capture loss, CI gates, detector robustness
 
 Numbered 0.4.0 rather than 1.0.0. The policy above calls an exit-code
@@ -306,7 +329,8 @@ Initial release. All six subcommands live; five branch-based milestones (M1-M5) 
 - PDF report download subcommand — server-side endpoint exists but no client-side wrapper yet.
 - Windows support — the Rust code compiles for Windows and the release workflow builds it, but install.sh doesn't handle Windows yet (`.ps1` installer is a follow-up).
 
-[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.4.0...HEAD
+[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.4.1...HEAD
+[0.4.1]: https://github.com/bootintel/cli/releases/tag/cli-v0.4.1
 [0.4.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.4.0
 [0.3.1]: https://github.com/bootintel/cli/releases/tag/cli-v0.3.1
 [0.3.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.3.0
