@@ -65,9 +65,9 @@ having no brew line at all.
 
 ## Publishing to crates.io
 
-Order is not optional. `bootintel-cli` declares `bootintel-detectors` with
+Order is not optional. `bootintel` declares `bootintel-detectors` with
 both a path and a version, so the library must be on the index before the
-binary crate can be packaged. `cargo package -p bootintel-cli` fails with
+binary crate can be packaged. `cargo package -p bootintel` fails with
 `no matching package named bootintel-detectors` otherwise.
 
 The `publish-crates` job does this in order, waits for the index to become
@@ -77,9 +77,15 @@ consistent, and then publishes the binary crate. Dispatch the workflow with
 ```sh
 cargo publish -p bootintel-detectors
 # wait for the index
-cargo publish -p bootintel-cli
+cargo publish -p bootintel
 ```
 
-After the first successful publish, update the Install section of `README.md`
-to offer `cargo install bootintel-cli` instead of the from-source line. Do not
-add it before then.
+The README's Install section offers `cargo install bootintel` as of 0.4.2,
+the first release published under that name. Keep the caveat that it builds
+from source: the install one-liner is faster for anyone who just wants the
+binary.
+
+The crate was `bootintel-cli` for exactly one release, 0.4.1, which has been
+yanked. crates.io cannot rename a crate, so the move was to publish under
+the new name and yank the old. The old name stays reserved under this
+account either way, so nobody else can claim it.

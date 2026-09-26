@@ -8,6 +8,22 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+## [0.4.2] — 2026-09-26 — published as `bootintel`
+
+### Changed
+- **The crate is now published as `bootintel`, not `bootintel-cli`.**
+  `cargo install bootintel` installs a command called `bootintel`, which
+  is what the binary has always been named. The `-cli` suffix made every
+  user type one name and get another. crates.io cannot rename a crate, so
+  this is a new crate; `bootintel-cli` 0.4.1 is yanked. It had 0 downloads,
+  so nothing breaks, and the old name stays reserved under the same account.
+  The package directory stays `crates/cli`, since renaming it would churn
+  paths for no user-visible gain.
+- Numbered 0.4.2 rather than republishing 0.4.1 under the new name: `main`
+  was exactly tag `cli-v0.4.1`, so reusing that version would have put a
+  crate on crates.io whose contents differed from the tag and the release
+  archives. A crates.io version can be yanked but never reused.
+
 ## [0.4.1] — 2026-09-26 — publishable to crates.io
 
 No user-visible behaviour change, so PATCH per the policy above.
@@ -329,7 +345,8 @@ Initial release. All six subcommands live; five branch-based milestones (M1-M5) 
 - PDF report download subcommand — server-side endpoint exists but no client-side wrapper yet.
 - Windows support — the Rust code compiles for Windows and the release workflow builds it, but install.sh doesn't handle Windows yet (`.ps1` installer is a follow-up).
 
-[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.4.1...HEAD
+[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.4.2...HEAD
+[0.4.2]: https://github.com/bootintel/cli/releases/tag/cli-v0.4.2
 [0.4.1]: https://github.com/bootintel/cli/releases/tag/cli-v0.4.1
 [0.4.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.4.0
 [0.3.1]: https://github.com/bootintel/cli/releases/tag/cli-v0.3.1
