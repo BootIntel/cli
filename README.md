@@ -92,7 +92,10 @@ docker run --rm -i ghcr.io/bootintel/cli:latest scan - < boot.log
 # Nix flake (in-repo):
 nix run github:bootintel/cli -- version
 
-# Cargo (from source):
+# Cargo (from crates.io):
+cargo install bootintel-cli
+
+# Cargo (from a source checkout):
 cargo install --path crates/cli --features tui
 ```
 
@@ -112,7 +115,7 @@ Pin to a release tag (`@cli-v0.4.0`) or a commit SHA — **never `@main`** (a co
 
 **Homebrew:** the formula template lives at `packaging/homebrew/bootintel.rb`. A public `bootintel/homebrew-tap` for `brew install bootintel` is planned.
 
-**crates.io:** `cargo install bootintel-cli` is not available yet. The crates are publishable and the release workflow has the job wired, pending a registry token. See [docs/releasing.md](docs/releasing.md).
+**crates.io:** `cargo install bootintel-cli` installs the latest published release. Note that this builds from source, so it needs a Rust toolchain and takes a few minutes; the one-liner above drops a prebuilt binary in seconds. See [docs/releasing.md](docs/releasing.md) for how releases are cut.
 
 **Windows:** the one-liner above downloads + SHA256-verifies the latest release, extracts `bootintel.exe` into `$env:USERPROFILE\.local\bin`, and prints a `setx PATH` line if that dir isn't already on your PATH. Override with `$env:BOOTINTEL_VERSION` / `$env:BOOTINTEL_INSTALL_DIR`, or use `$env:BOOTINTEL_TARBALL` for offline installs. Currently x86_64 only — ARM64 users need `cargo install --path crates/cli --features tui`.
 

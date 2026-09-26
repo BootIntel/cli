@@ -80,6 +80,7 @@ cargo publish -p bootintel-detectors
 cargo publish -p bootintel-cli
 ```
 
-After the first successful publish, update the Install section of `README.md`
-to offer `cargo install bootintel-cli` instead of the from-source line. Do not
-add it before then.
+The README's Install section offers `cargo install bootintel-cli` as of
+0.4.1, the first published version. Keep the caveat that it builds from
+source and therefore needs a toolchain: the install one-liner is faster
+for anyone who just wants the binary.
