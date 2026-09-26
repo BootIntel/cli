@@ -1,5 +1,10 @@
 [package]
-name = "bootintel-cli"
+# Published as "bootintel", matching the binary it installs. It was
+# "bootintel-cli" for exactly one release (0.4.1, 0 downloads, since
+# yanked): cargo install bootintel-cli producing a command called
+# bootintel is a papercut every user hits. The directory stays
+# crates/cli because renaming it would churn paths for no gain.
+name = "bootintel"
 description = "Interactive UART capture + streaming boot-log analysis. Free scan + share; server-side CVE matching + exploit paths via bootintel.com API."
 version.workspace = true
 edition.workspace = true
@@ -19,7 +24,7 @@ path = "src/main.rs"
 # version when packaging for crates.io, which rejects a bare path dep.
 # This is what publish = false was working around; publishing
 # bootintel-detectors first makes the workaround unnecessary.
-bootintel-detectors = { path = "../detectors", version = "0.4.1" }
+bootintel-detectors = { path = "../detectors", version = "0.4.2" }
 clap = { version = "4.5", features = ["derive", "wrap_help", "env"] }
 # Shell-completion emitters for `bootintel completions <shell>`. Version
 # tracks the clap major/minor (4.5). No default features — we only use

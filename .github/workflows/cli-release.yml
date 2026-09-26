@@ -364,7 +364,7 @@ jobs:
           echo "::error::bootintel-detectors ${{ inputs.version }} never appeared on the index."
           exit 1
 
-      - name: Publish bootintel-cli
+      - name: Publish bootintel
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-        run: cargo publish -p bootintel-cli
+        run: cargo publish -p bootintel
