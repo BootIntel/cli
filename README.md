@@ -99,18 +99,20 @@ cargo install --path crates/cli --features tui
 **GitHub Actions** (reusable composite action):
 
 ```yaml
-- uses: bootintel/cli/.github/actions/bootintel-scan@cli-v0.3.1
+- uses: bootintel/cli/.github/actions/bootintel-scan@cli-v0.4.0
   with:
     log-file: artifacts/boot.log
     format: sarif
     output-file: bootintel.sarif
     gate-critical: true
-    version: 0.3.1   # pin the binary too
+    version: 0.4.0   # pin the binary too
 ```
 
-Pin to a release tag (`@cli-v0.3.1`) or a commit SHA — **never `@main`** (a compromised `main` would execute arbitrary shell in every consumer's pipeline).
+Pin to a release tag (`@cli-v0.4.0`) or a commit SHA — **never `@main`** (a compromised `main` would execute arbitrary shell in every consumer's pipeline).
 
 **Homebrew:** the formula template lives at `packaging/homebrew/bootintel.rb`. A public `bootintel/homebrew-tap` for `brew install bootintel` is planned.
+
+**crates.io:** `cargo install bootintel-cli` is not available yet. The crates are publishable and the release workflow has the job wired, pending a registry token. See [docs/releasing.md](docs/releasing.md).
 
 **Windows:** the one-liner above downloads + SHA256-verifies the latest release, extracts `bootintel.exe` into `$env:USERPROFILE\.local\bin`, and prints a `setx PATH` line if that dir isn't already on your PATH. Override with `$env:BOOTINTEL_VERSION` / `$env:BOOTINTEL_INSTALL_DIR`, or use `$env:BOOTINTEL_TARBALL` for offline installs. Currently x86_64 only — ARM64 users need `cargo install --path crates/cli --features tui`.
 
@@ -125,7 +127,7 @@ sha256sum -c SHA256SUMS --ignore-missing
 Every archive also carries a signed [build-provenance attestation](https://docs.github.com/actions/security-for-github-actions/using-artifact-attestations). That binds the artifact to the workflow, repository and commit that built it — a stronger statement than a code-signing certificate, which only says an organisation paid a CA:
 
 ```sh
-gh attestation verify bootintel-v0.3.1-x86_64-linux.tar.gz --repo BootIntel/cli
+gh attestation verify bootintel-v0.4.0-x86_64-linux.tar.gz --repo BootIntel/cli
 ```
 
 Container images are attested the same way:

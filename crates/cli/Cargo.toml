@@ -9,19 +9,17 @@ authors.workspace = true
 repository.workspace = true
 homepage.workspace = true
 readme = "README.md"
-# Not published to crates.io — bootintel is distributed via binary
-# releases (install.sh / install.ps1 / Homebrew / Nix). Marked here
-# so cargo-deny's wildcard-dep check accepts the path dep on
-# bootintel-detectors (crates.io rejects wildcard path deps for
-# published crates; that's not our distribution path).
-publish = false
 
 [[bin]]
 name = "bootintel"
 path = "src/main.rs"
 
 [dependencies]
-bootintel-detectors = { path = "../detectors" }
+# Both path AND version. cargo uses the path for local builds and the
+# version when packaging for crates.io, which rejects a bare path dep.
+# This is what publish = false was working around; publishing
+# bootintel-detectors first makes the workaround unnecessary.
+bootintel-detectors = { path = "../detectors", version = "0.4.0" }
 clap = { version = "4.5", features = ["derive", "wrap_help", "env"] }
 # Shell-completion emitters for `bootintel completions <shell>`. Version
 # tracks the clap major/minor (4.5). No default features — we only use
