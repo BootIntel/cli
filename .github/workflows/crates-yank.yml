@@ -1,0 +1,81 @@
+# Yank or un-yank a published crate version.
+#
+# Exists because the crates.io token lives here as a repository secret and
+# nowhere else, which is correct: a publish credential should not sit on a
+# laptop. That also means a yank cannot be run locally by anyone who does not
+# separately hold a token, so it runs here, with the same secret the release
+# workflow uses.
+#
+# workflow_dispatch only, with no defaults, so it cannot fire by accident.
+# Yanking is reversible (`action: unyank`), unlike publishing: a version can
+# be yanked and restored, but never reused.
+name: crates-yank
+
+on:
+  workflow_dispatch:
+    inputs:
+      crate:
+        description: 'Crate name (e.g. bootintel-cli)'
+        required: true
+        type: string
+      version:
+        description: 'Exact version to act on (e.g. 0.4.1)'
+        required: true
+        type: string
+      action:
+        description: 'yank removes it from new resolution; unyank restores it'
+        required: true
+        type: choice
+        options: [yank, unyank]
+      reason:
+        description: 'Why, for the run log. Not sent to crates.io.'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  yank:
+    name: ${{ inputs.action }} ${{ inputs.crate }}@${{ inputs.version }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Require the registry token
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          if [ -z "${CARGO_REGISTRY_TOKEN}" ]; then
+            echo "::error::CARGO_REGISTRY_TOKEN is not set. See docs/releasing.md."
+            exit 1
+          fi
+
+      - name: Record what is being done and why
+        run: |
+          echo "action:  ${{ inputs.action }}"
+          echo "crate:   ${{ inputs.crate }}"
+          echo "version: ${{ inputs.version }}"
+          echo "reason:  ${{ inputs.reason }}"
+
+      # Refuse to touch a version that does not exist, so a typo fails here
+      # rather than producing a confusing registry error.
+      - name: Confirm the version exists on the registry
+        run: |
+          if ! cargo info "${{ inputs.crate }}@${{ inputs.version }}" >/dev/null 2>&1; then
+            echo "::error::${{ inputs.crate }} ${{ inputs.version }} is not on crates.io."
+            exit 1
+          fi
+
+      - name: ${{ inputs.action }}
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          if [ "${{ inputs.action }}" = "yank" ]; then
+            cargo yank --version "${{ inputs.version }}" "${{ inputs.crate }}"
+          else
+            cargo yank --undo --version "${{ inputs.version }}" "${{ inputs.crate }}"
+          fi

@@ -63,6 +63,19 @@ having no brew line at all.
 6. Publish the draft and mark it latest. That creates the tag on the released
    commit.
 
+## Yanking a published version
+
+A crates.io version can be yanked, which stops new dependency resolution and
+new installs reaching it, and can be restored with unyank. It can never be
+reused: the number is spent whatever happens.
+
+The registry token lives only as a repository secret, which is correct for a
+publish credential, so a yank cannot be run from a laptop that does not hold
+its own token. Dispatch the `crates-yank` workflow instead. It takes the crate,
+the exact version, yank or unyank, and a reason for the run log. It has no
+defaults, so it cannot fire by accident, and it refuses a version that is not
+on the registry so a typo fails before it reaches crates.io.
+
 ## Publishing to crates.io
 
 Order is not optional. `bootintel` declares `bootintel-detectors` with
