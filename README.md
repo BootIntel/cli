@@ -86,6 +86,9 @@ curl -sSfL https://raw.githubusercontent.com/bootintel/cli/main/packaging/script
 # Windows (PowerShell, x86_64):
 iwr -useb https://raw.githubusercontent.com/bootintel/cli/main/packaging/scripts/install.ps1 | iex
 
+# Homebrew (Linux + macOS):
+brew tap bootintel/tap && brew install bootintel
+
 # Docker:
 docker run --rm -i ghcr.io/bootintel/cli:latest scan - < boot.log
 
@@ -113,7 +116,7 @@ cargo install --path crates/cli --features tui
 
 Pin to a release tag (`@cli-v0.4.0`) or a commit SHA — **never `@main`** (a compromised `main` would execute arbitrary shell in every consumer's pipeline).
 
-**Homebrew:** the formula template lives at `packaging/homebrew/bootintel.rb`. A public `bootintel/homebrew-tap` for `brew install bootintel` is planned.
+**Homebrew:** `brew tap bootintel/tap && brew install bootintel`. The tap lives at [BootIntel/homebrew-tap](https://github.com/BootIntel/homebrew-tap) and installs the published release binary, verified against the SHA-256 the release workflow publishes. `packaging/homebrew/bootintel.rb` in this repo is the template the tap's formula is generated from; the tap is the one that ships.
 
 **crates.io:** `cargo install bootintel` installs the latest published release. It builds from source, so it needs a Rust toolchain and takes a few minutes; the one-liner above drops a prebuilt binary in seconds. See [docs/releasing.md](docs/releasing.md) for how releases are cut.
 
