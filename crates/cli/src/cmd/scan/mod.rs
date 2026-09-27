@@ -219,16 +219,42 @@ pub fn run(args: Args) -> Result<()> {
     let stdout = io::stdout();
     let color = output::resolve_color_mode(args.no_color, &stdout);
     let mut out = stdout.lock();
-    output::write(
+    // A closed pipe must not decide the gate.
+    //
+    // `bootintel scan --gate-critical | head` previously reported success on a
+    // capture with telnet exposed: output::write hit EPIPE, `?` propagated it,
+    // and the broken-pipe handler in main.rs turned that into exit 0 before
+    // any gate check ran. The reader having seen enough is not an error, which
+    // is why that handler exists, but it must not become a verdict.
+    //
+    // So a broken pipe is swallowed HERE, and only here. Every gate below
+    // decides on `findings` alone, which do not depend on whether anyone was
+    // still reading. Any other write error is still fatal.
+    let mut stdout_closed = false;
+    if let Err(e) = output::write(
         &mut out,
         &findings,
         args.format,
         &raw,
         color,
         &log.source_label,
-    )?;
-    if args.context > 0 && matches!(args.format, Format::Text) {
-        context::write_context_blocks(&mut out, &findings, &raw, args.context, color)?;
+    ) {
+        if crate::is_broken_pipe(&e) {
+            stdout_closed = true;
+        } else {
+            return Err(e);
+        }
+    }
+    if !stdout_closed && args.context > 0 && matches!(args.format, Format::Text) {
+        if let Err(e) =
+            context::write_context_blocks(&mut out, &findings, &raw, args.context, color)
+        {
+            // Nothing reads stdout_closed past this point, so there is
+            // nothing to record: stop writing and let the gates decide.
+            if !crate::is_broken_pipe(&e) {
+                return Err(e);
+            }
+        }
     }
 
     // Pre-compute the values we'll write to history, so the per-exit

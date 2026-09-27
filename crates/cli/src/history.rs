@@ -115,7 +115,7 @@ pub fn is_disabled() -> bool {
 
 fn try_append(entry: &Entry) -> Result<()> {
     if is_disabled() {
-        crate::vdebug!("history: writes disabled (BOOTINTEL_NO_HISTORY / no_history=true)");
+        crate::vdebug!("history: off (default). Enable with `bootintel config set history true` or BOOTINTEL_HISTORY=1");
         return Ok(());
     }
     let path = history_path().context("no platform state dir resolvable")?;
@@ -161,25 +161,24 @@ fn try_append(entry: &Entry) -> Result<()> {
     Ok(())
 }
 
-/// Tell the user, once, that we are keeping a local scan history.
+/// Confirm, once, that the history the user asked for has started.
 ///
-/// Called only when the history file is about to be created for the
-/// first time. stderr, so it never lands in a redirected report.
+/// This used to disclose a history that was on by default and offer a way
+/// out. It is now opt-in, so the notice confirms a choice instead of
+/// announcing a surprise, and no longer needs to explain how to escape.
+/// Called only when the file is about to be created. stderr, so it never
+/// lands in a redirected report.
 fn announce_first_write(path: &std::path::Path) {
     if crate::verbose::is_quiet() {
         return;
     }
     eprintln!(
-        "[bootintel] note: recording a local scan history at {}",
+        "[bootintel] scan history enabled; recording to {}",
         path.display()
     );
     eprintln!("[bootintel]   One line per scan: timestamp, log path, finding counts, exit code.");
-    eprintln!("[bootintel]   It stays on this machine — bootintel uploads nothing without --api.");
-    eprintln!("[bootintel]   Turn it off with `bootintel config set no_history true`, or");
-    eprintln!(
-        "[bootintel]   per-run with BOOTINTEL_NO_HISTORY=1. Inspect it with `bootintel history`."
-    );
-    eprintln!("[bootintel]   This notice prints once.");
+    eprintln!("[bootintel]   It stays on this machine. Inspect it with `bootintel history`.");
+    eprintln!("[bootintel]   Stop with `bootintel config set history false`. Prints once.");
 }
 
 /// Open the history file for append. On Unix we use `.mode(0o600)`
@@ -402,6 +401,8 @@ mod tests {
         std::env::set_var("XDG_STATE_HOME", &td);
         // Make sure no_history isn't set anywhere in the env.
         std::env::remove_var("BOOTINTEL_NO_HISTORY");
+        // History is opt-in now, so clearing the opt-out is no longer enough.
+        std::env::set_var("BOOTINTEL_HISTORY", "1");
 
         for i in 0..5 {
             append_entry(&Entry {
@@ -480,6 +481,8 @@ mod tests {
         let saved = std::env::var("XDG_STATE_HOME").ok();
         std::env::set_var("XDG_STATE_HOME", &td);
         std::env::remove_var("BOOTINTEL_NO_HISTORY");
+        // History is opt-in now, so clearing the opt-out is no longer enough.
+        std::env::set_var("BOOTINTEL_HISTORY", "1");
 
         append_entry(&Entry {
             ts: "2026-08-29T00:00:00Z".into(),
@@ -520,6 +523,8 @@ mod tests {
         let saved = std::env::var("XDG_STATE_HOME").ok();
         std::env::set_var("XDG_STATE_HOME", &td);
         std::env::remove_var("BOOTINTEL_NO_HISTORY");
+        // History is opt-in now, so clearing the opt-out is no longer enough.
+        std::env::set_var("BOOTINTEL_HISTORY", "1");
 
         let path = history_path().unwrap();
         std::fs::create_dir_all(path.parent().unwrap()).unwrap();
