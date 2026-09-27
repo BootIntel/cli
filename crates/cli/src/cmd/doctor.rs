@@ -233,7 +233,7 @@ fn check_api_key() -> Check {
         _ => Check {
             name: "$BOOTINTEL_API_KEY",
             status: Status::Warn,
-            detail: "unset — --api will need --preview (anonymous, 3/day per IP).\nGet a key at https://bootintel.com/settings/api-keys".into(),
+            detail: "unset. Run `bootintel login` to sign in from this terminal.\nOr `--api --preview` for the anonymous quota, no account needed.\nAn API key (Pro and above, for CI and scripting) comes from https://bootintel.com/dashboard/developer".into(),
         },
     }
 }

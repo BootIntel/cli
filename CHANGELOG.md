@@ -8,6 +8,18 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+### Fixed
+- **Every "get an API key" message pointed at a URL that 404s.**
+  `https://bootintel.com/settings/api-keys` does not exist and never has;
+  there is no `/settings` route at all. Keys live at `/dashboard/developer`.
+  Six places said otherwise: `doctor`, `whoami` twice, `scan --api` twice, and
+  `analyze --api`. Surfaced by running `bootintel doctor` on a Mac, which is
+  the first time anyone read that line back.
+- The same messages are now correct about what to do, not just where to go.
+  `bootintel login` is the path for a person at a terminal and the only one
+  that works below Pro, since API-key auth is Pro-gated. They recommend it
+  first and mention keys as the CI and scripting option.
+
 ## [0.6.0] — 2026-09-27 — applicability without sending the log
 
 New flag, no breaking change, so MINOR per the policy above.

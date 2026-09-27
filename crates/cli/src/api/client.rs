@@ -291,7 +291,7 @@ impl ScanError {
                 "quota exhausted — see https://bootintel.com/pricing, or fall back to client-side `bootintel scan` (no --api)",
             ),
             ScanError::Unauthorized { .. } => Some(
-                "check $BOOTINTEL_API_KEY, or regenerate at https://bootintel.com/settings/api-keys",
+                "run `bootintel login` again, or regenerate a key at https://bootintel.com/dashboard/developer",
             ),
             ScanError::BadRequest { .. } => Some(
                 "common causes: log > 256KB (server limit), or the file isn't a boot log",
