@@ -95,7 +95,7 @@ pub fn run(args: Args) -> Result<()> {
         Some(k) => k,
         None => {
             eprintln!(
-                "no API key found — set $BOOTINTEL_API_KEY, or `bootintel config set api_key bik_...`\n  Get a key at https://bootintel.com/settings/api-keys"
+                "not signed in. Run `bootintel login` to sign in from this terminal.\n  For CI and scripting, an API key (Pro and above) comes from https://bootintel.com/dashboard/developer"
             );
             std::process::exit(EX_NOPERM);
         }
@@ -114,7 +114,7 @@ pub fn run(args: Args) -> Result<()> {
         Err(ProbeError::Unauthorized) => {
             eprintln!("unauthorized — API key rejected by {base}");
             eprintln!(
-                "  regenerate at https://bootintel.com/settings/api-keys or check $BOOTINTEL_API_KEY"
+                "  run `bootintel login` again, or regenerate a key at https://bootintel.com/dashboard/developer"
             );
             std::process::exit(EX_NOPERM);
         }

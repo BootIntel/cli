@@ -25,7 +25,7 @@ pub(super) fn run_api(args: &Args, raw: &str) -> Result<()> {
 
     if !args.preview && api_key.is_none() {
         bail!(
-            "--api requires ${API_KEY_ENV} to be set (or use --api --preview for the free anonymous quota — 3/day per IP).\n  Get a key at https://bootintel.com/settings/api-keys"
+            "--api needs credentials. Run `bootintel login` to sign in from this terminal,\n  or `--api --preview` for the free anonymous quota (3/day per IP).\n  For CI and scripting, an API key (Pro and above) comes from https://bootintel.com/dashboard/developer"
         );
     }
     if args.preview && api_key.is_some() {
@@ -177,7 +177,10 @@ pub(super) fn render_api_error(err: ScanError, preview: bool) -> Result<()> {
             }
             writeln!(e)?;
             writeln!(e, "  Check that {API_KEY_ENV} is set to a valid key.")?;
-            writeln!(e, "  Manage keys: https://bootintel.com/settings/api-keys")?;
+            writeln!(
+                e,
+                "  Manage keys: https://bootintel.com/dashboard/developer"
+            )?;
         }
         ScanError::BadRequest { detail } => {
             writeln!(e, "bootintel: server rejected the request.")?;

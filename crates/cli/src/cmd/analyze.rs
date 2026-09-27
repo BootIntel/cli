@@ -267,7 +267,7 @@ fn build_api_config(args: &Args) -> Result<Option<ApiConfig>> {
     let api_key = crate::config::resolve_api_key();
     if !args.preview && api_key.is_none() {
         bail!(
-            "--api requires ${API_KEY_ENV} to be set (or use --api --preview for the free anonymous quota — 3/day per IP).\n  Get a key at https://bootintel.com/settings/api-keys"
+            "--api needs credentials. Run `bootintel login` to sign in from this terminal,\n  or `--api --preview` for the free anonymous quota (3/day per IP).\n  For CI and scripting, set ${API_KEY_ENV} to a key from https://bootintel.com/dashboard/developer (Pro and above)"
         );
     }
     // Same plaintext-transport policy as `scan` — shared helper in
