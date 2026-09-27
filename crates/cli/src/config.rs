@@ -46,6 +46,9 @@ pub struct Config {
     /// API key. Overridden by `$BOOTINTEL_API_KEY`. No CLI flag —
     /// keys aren't accepted on argv for shell-history reasons.
     pub api_key: Option<String>,
+    /// Opt IN to the local scan history. Default false.
+    #[serde(default)]
+    pub history: bool,
     /// Default output format for `scan` / `batch` / `view`. Any
     /// `--format` flag on the command line takes precedence.
     pub default_format: Option<String>,
@@ -210,21 +213,49 @@ pub fn effective_default_format(cfg: &Config) -> Effective {
 /// Resolve the `no_history` boolean. Env var `BOOTINTEL_NO_HISTORY=1`
 /// wins; config `no_history = true` is the fallback. Any other env
 /// value ("0", "false", empty, unset) means "consult the file".
+/// Whether scan history is DISABLED. Now true unless explicitly opted in.
+///
+/// It used to be on by default with an opt-out, disclosed in a one-time notice.
+/// That was the wrong default for a tool whose pitch is that it uploads
+/// nothing: a record of every log path a consultant analysed is exactly the
+/// kind of thing that should not appear on disk because nobody said no.
+///
+/// `no_history` / BOOTINTEL_NO_HISTORY still work and still mean off, so
+/// anyone who had opted out stays opted out. Enabling now takes
+/// `history = true` or BOOTINTEL_HISTORY=1.
 pub fn effective_no_history(cfg: &Config) -> (bool, Source) {
+    // An explicit off wins over an explicit on, so a machine-wide opt-out
+    // cannot be silently re-enabled by a config file.
     match std::env::var("BOOTINTEL_NO_HISTORY").ok().as_deref() {
         Some("1") | Some("true") | Some("yes") => return (true, Source::Env),
         _ => {}
     }
-    // With `no_history: bool` (post-P2-9 unification), we can't tell
-    // "explicitly set to false" from "unset" — both are false. Report
-    // Source::File when true, Source::Default when false. In practice
-    // the callsites don't care about that distinction: `config list`
-    // shows a value + source, and false-from-file vs false-from-default
-    // behave identically at runtime.
     if cfg.no_history {
-        (true, Source::File)
-    } else {
-        (false, Source::Default)
+        return (true, Source::File);
+    }
+    match std::env::var("BOOTINTEL_HISTORY").ok().as_deref() {
+        Some("1") | Some("true") | Some("yes") => return (false, Source::Env),
+        Some("0") | Some("false") | Some("no") => return (true, Source::Env),
+        _ => {}
+    }
+    if cfg.history {
+        return (false, Source::File);
+    }
+    // Default: no history.
+    return (true, Source::Default);
+    #[allow(unreachable_code)]
+    {
+        // With `no_history: bool` (post-P2-9 unification), we can't tell
+        // "explicitly set to false" from "unset" — both are false. Report
+        // Source::File when true, Source::Default when false. In practice
+        // the callsites don't care about that distinction: `config list`
+        // shows a value + source, and false-from-file vs false-from-default
+        // behave identically at runtime.
+        if cfg.no_history {
+            (true, Source::File)
+        } else {
+            (false, Source::Default)
+        }
     }
 }
 
@@ -309,6 +340,15 @@ pub fn get_effective(cfg: &Config, key: ConfigKey) -> Effective {
         ConfigKey::ApiBase => effective_api_base(cfg),
         ConfigKey::ApiKey => effective_api_key(cfg),
         ConfigKey::DefaultFormat => effective_default_format(cfg),
+        ConfigKey::History => {
+            // Reported as the positive, which is what the user sets, while
+            // effective_no_history stays the single source of truth.
+            let (disabled, src) = effective_no_history(cfg);
+            Effective {
+                value: Some((!disabled).to_string()),
+                source: src,
+            }
+        }
         ConfigKey::NoHistory => {
             let (v, src) = effective_no_history(cfg);
             Effective {
@@ -325,7 +365,7 @@ pub fn get_effective(cfg: &Config, key: ConfigKey) -> Effective {
 pub fn get_key(cfg: &Config, key: &str) -> Result<Effective> {
     let k = ConfigKey::from_str(key).ok_or_else(|| {
         anyhow::anyhow!(
-            "unknown config key '{}' — valid: api_base, api_key, default_format, no_history",
+            "unknown config key '{}' — valid: api_base, api_key, default_format, history, no_history",
             key
         )
     })?;
@@ -343,6 +383,7 @@ pub enum ConfigKey {
     ApiBase,
     ApiKey,
     DefaultFormat,
+    History,
     NoHistory,
 }
 
@@ -354,6 +395,7 @@ impl ConfigKey {
             ConfigKey::ApiBase => "api_base",
             ConfigKey::ApiKey => "api_key",
             ConfigKey::DefaultFormat => "default_format",
+            ConfigKey::History => "history",
             ConfigKey::NoHistory => "no_history",
         }
     }
@@ -366,6 +408,7 @@ impl ConfigKey {
             "api_base" => Some(ConfigKey::ApiBase),
             "api_key" => Some(ConfigKey::ApiKey),
             "default_format" => Some(ConfigKey::DefaultFormat),
+            "history" => Some(ConfigKey::History),
             "no_history" => Some(ConfigKey::NoHistory),
             _ => None,
         }
@@ -379,6 +422,7 @@ pub const ALL_KEYS: &[ConfigKey] = &[
     ConfigKey::ApiBase,
     ConfigKey::ApiKey,
     ConfigKey::DefaultFormat,
+    ConfigKey::History,
     ConfigKey::NoHistory,
 ];
 
@@ -413,7 +457,7 @@ pub fn resolve_api_key() -> Option<String> {
 fn apply_key(cfg: &mut Config, key: &str, value: &str) -> Result<()> {
     let k = ConfigKey::from_str(key).ok_or_else(|| {
         anyhow::anyhow!(
-            "unknown config key '{}' — valid: api_base, api_key, default_format, no_history",
+            "unknown config key '{}' — valid: api_base, api_key, default_format, history, no_history",
             key
         )
     })?;
@@ -428,6 +472,15 @@ fn apply(cfg: &mut Config, key: ConfigKey, value: &str) -> Result<()> {
         ConfigKey::ApiBase => cfg.api_base = Some(value.to_string()),
         ConfigKey::ApiKey => cfg.api_key = Some(value.to_string()),
         ConfigKey::DefaultFormat => cfg.default_format = Some(value.to_string()),
+        ConfigKey::History => {
+            cfg.history = parse_bool(value)
+                .with_context(|| format!("history must be a boolean (true/false), got: {value}"))?;
+            // Setting history=true clears a stale opt-out, otherwise the
+            // explicit-off precedence would silently ignore the request.
+            if cfg.history {
+                cfg.no_history = false;
+            }
+        }
         ConfigKey::NoHistory => {
             cfg.no_history = parse_bool(value).with_context(|| {
                 format!("no_history must be a boolean (true/false), got: {value}")
@@ -475,6 +528,7 @@ mod tests {
         std::env::remove_var("BOOTINTEL_API_KEY");
         std::env::remove_var("BOOTINTEL_API_BASE");
         std::env::remove_var("BOOTINTEL_NO_HISTORY");
+        std::env::remove_var("BOOTINTEL_HISTORY");
     }
 
     #[test]
@@ -568,14 +622,63 @@ mod tests {
         assert_eq!(src, Source::File);
     }
 
+    /// The default INVERTED: history is off unless asked for. It used to be on
+    /// with an opt-out, which is the wrong default for a tool whose pitch is
+    /// that it uploads nothing. A record of every log path a consultant
+    /// analysed should not appear on disk because nobody said no.
     #[test]
-    fn no_history_default_false() {
+    fn history_is_off_by_default() {
         let _g = env_lock();
         clear_env();
         let cfg = Config::default();
-        let (v, src) = effective_no_history(&cfg);
-        assert!(!v);
+        let (disabled, src) = effective_no_history(&cfg);
+        assert!(disabled, "history must be off unless opted in");
         assert_eq!(src, Source::Default);
+    }
+
+    #[test]
+    fn history_can_be_opted_into_by_file_or_env() {
+        let _g = env_lock();
+        clear_env();
+        let cfg = Config {
+            history: true,
+            ..Default::default()
+        };
+        assert!(
+            !effective_no_history(&cfg).0,
+            "history=true should enable it"
+        );
+
+        clear_env();
+        std::env::set_var("BOOTINTEL_HISTORY", "1");
+        assert!(
+            !effective_no_history(&Config::default()).0,
+            "env should enable it"
+        );
+        clear_env();
+    }
+
+    /// An explicit off beats an explicit on, so a machine-wide opt-out cannot
+    /// be silently re-enabled by a config file that happens to say history.
+    #[test]
+    fn an_explicit_opt_out_wins_over_an_opt_in() {
+        let _g = env_lock();
+        clear_env();
+        let cfg = Config {
+            history: true,
+            no_history: true,
+            ..Default::default()
+        };
+        assert!(effective_no_history(&cfg).0);
+
+        clear_env();
+        std::env::set_var("BOOTINTEL_NO_HISTORY", "1");
+        let cfg2 = Config {
+            history: true,
+            ..Default::default()
+        };
+        assert!(effective_no_history(&cfg2).0);
+        clear_env();
     }
 
     #[test]

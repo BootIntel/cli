@@ -8,6 +8,49 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+## [0.6.1] — 2026-09-27 — the gate survives a pipe, and history is opt-in
+
+**Read the second item before upgrading.** It changes a default, which the
+policy above does not really call PATCH. It is numbered 0.6.1 by request; the
+warning is here rather than in the version digit.
+
+### Fixed
+- **`scan --gate-critical` could report success on a capture that trips the
+  gate.** Measured on the 0.6.0 release binary, piping into `head` with output
+  over the 64 KB pipe buffer: three runs gave exit 1, then 0, then 0, on a log
+  with telnet exposed. A CI job piping through `head` or `tee` would go green
+  on a device with a critical exposure, non-deterministically, which is the
+  worst direction for a gate to fail.
+
+  Cause was ordering. The output write ran before the gate check, so a broken
+  pipe propagated up and the handler in main.rs turned it into exit 0 before
+  any verdict was evaluated. That handler is right that a reader closing the
+  pipe is not an error, but it must not become a verdict. The pipe error is now
+  swallowed at the write site only, and the gates decide on findings alone,
+  which do not depend on whether anyone was still reading. Any other write
+  error is still fatal, and `manpage | head` still exits 0 silently.
+
+### Changed
+- **Scan history is now OPT IN. If you relied on it, it has stopped.** Enable
+  with `bootintel config set history true` or `BOOTINTEL_HISTORY=1`.
+
+  It was on by default with an opt-out and a one-time notice. That is the wrong
+  default for a tool whose pitch is that it uploads nothing: a record of every
+  log path a consultant analysed should not appear on disk because nobody said
+  no. `bootintel doctor` disclosing it on a fresh machine is what prompted the
+  change.
+
+  `no_history` and `BOOTINTEL_NO_HISTORY` still work and still mean off, so
+  anyone who had opted out stays opted out. An explicit off beats an explicit
+  on, so a machine-wide opt-out cannot be re-enabled by a config file.
+
+- Every "get an API key" message pointed at `bootintel.com/settings/api-keys`,
+  a route that has never existed; there is no `/settings` on the site. Keys
+  live at `/dashboard/developer`. Six places said otherwise: `doctor`,
+  `whoami` twice, `scan --api` twice, `analyze --api`. They now recommend
+  `bootintel login` first, which is the path for a person at a terminal and the
+  only one that works below Pro.
+
 ### Fixed
 - **Every "get an API key" message pointed at a URL that 404s.**
   `https://bootintel.com/settings/api-keys` does not exist and never has;
@@ -528,7 +571,8 @@ Initial release. All six subcommands live; five branch-based milestones (M1-M5) 
 - PDF report download subcommand — server-side endpoint exists but no client-side wrapper yet.
 - Windows support — the Rust code compiles for Windows and the release workflow builds it, but install.sh doesn't handle Windows yet (`.ps1` installer is a follow-up).
 
-[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.6.0...HEAD
+[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.6.1...HEAD
+[0.6.1]: https://github.com/bootintel/cli/releases/tag/cli-v0.6.1
 [0.6.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.6.0
 [0.5.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.5.0
 [0.4.2]: https://github.com/bootintel/cli/releases/tag/cli-v0.4.2
