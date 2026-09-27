@@ -8,11 +8,19 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
-## [0.6.1] — 2026-09-27 — the gate survives a pipe, and history is opt-in
+## [0.7.0] — 2026-09-27 — the gate survives a pipe, and history is opt-in
 
-**Read the second item before upgrading.** It changes a default, which the
-policy above does not really call PATCH. It is numbered 0.6.1 by request; the
-warning is here rather than in the version digit.
+Renumbered from 0.6.1. Making scan history opt in changes a default, and a
+user upgrading on a patch would have found `bootintel history` silently
+stopped recording. The policy above reserves PATCH for changes with no
+user-visible behaviour change, which this is not.
+
+**0.6.1 is withdrawn.** It is the same code as 0.7.0 under a number that
+understated it. The GitHub release is retained but no longer marked latest,
+and the crates.io version is yanked: a crates.io version can never be reused,
+so withdrawing one means publishing a new number, not replacing it.
+
+**Read the second item before upgrading.** It changes a default.
 
 ### Fixed
 - **`scan --gate-critical` could report success on a capture that trips the
@@ -571,7 +579,8 @@ Initial release. All six subcommands live; five branch-based milestones (M1-M5) 
 - PDF report download subcommand — server-side endpoint exists but no client-side wrapper yet.
 - Windows support — the Rust code compiles for Windows and the release workflow builds it, but install.sh doesn't handle Windows yet (`.ps1` installer is a follow-up).
 
-[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.6.1...HEAD
+[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.7.0...HEAD
+[0.7.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.7.0
 [0.6.1]: https://github.com/bootintel/cli/releases/tag/cli-v0.6.1
 [0.6.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.6.0
 [0.5.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.5.0
