@@ -158,6 +158,7 @@ cargo build --release
 | Subcommand | What it does |
 | --- | --- |
 | `bootintel scan <file>` | Analyze a saved boot log. Supports `--format json\|text\|sarif\|junit` and `--gate-critical` for CI gating on autoboot / telnet exposure. `-` reads from stdin. `--api` POSTs to bootintel.com for full CVE + exploit paths (needs `BOOTINTEL_API_KEY`); `--api --preview` uses the anonymous free quota (3/day per IP, no key). `--api-base` overrides the endpoint. |
+| `bootintel scan <file> --applicability` | Ask which advisories **apply**, sending only the component inventory (names + versions), never the log. Usable on a client device under an NDA where `--api` is not. `--dry-run` prints the exact payload first. Needs `bootintel login`. |
 | `bootintel share <file>` | Print a bootintel.com share URL with the log embedded via lz-string compression. Nothing is uploaded — the log lives in the URL itself. |
 | `bootintel ports` | List serial ports on this machine with USB VID/PID + product info when known. |
 | `bootintel version` | Version, detector count, build metadata. |

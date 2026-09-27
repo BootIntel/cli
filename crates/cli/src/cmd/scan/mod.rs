@@ -40,6 +40,7 @@ use bootintel_detectors::{analyze, CRITICAL_LABELS};
 use crate::output::{self, Format};
 
 mod api;
+mod applicability;
 mod baseline;
 mod context;
 
@@ -81,6 +82,20 @@ pub struct Args {
     /// 3 scans per IP per day. No API key needed.
     #[arg(long)]
     pub(super) preview: bool,
+
+    /// Ask bootintel.com which advisories APPLY, without sending the
+    /// boot log. The detectors run locally and only the component
+    /// inventory (product names + version strings) is transmitted, so
+    /// this is usable on a client device under an NDA where --api is
+    /// not. Needs `bootintel login`.
+    #[arg(long, conflicts_with = "api")]
+    pub(super) applicability: bool,
+
+    /// With --applicability: print the exact JSON that would be sent
+    /// and exit without sending it. Not a debug switch — this is how
+    /// you show a client what leaves the machine.
+    #[arg(long, requires = "applicability")]
+    pub(super) dry_run: bool,
 
     /// Override the API base URL. Defaults to <https://bootintel.com>
     /// (or $BOOTINTEL_API_BASE). Useful for self-hosted deployments
@@ -193,6 +208,14 @@ pub fn run(args: Args) -> Result<()> {
     }
 
     let findings = crate::detector_filter::filter(analyze(&raw), &args.only, &args.skip);
+
+    // After the local analysis, deliberately: the inventory is derived from
+    // the same findings a plain `scan` prints, so what is sent is exactly
+    // what the user can already see.
+    if args.applicability {
+        return applicability::run(&args, &findings);
+    }
+
     let stdout = io::stdout();
     let color = output::resolve_color_mode(args.no_color, &stdout);
     let mut out = stdout.lock();
