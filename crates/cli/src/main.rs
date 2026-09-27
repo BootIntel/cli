@@ -87,6 +87,9 @@ pub struct Cli {
 enum Cmd {
     /// Analyze a saved boot log file (or stdin with `-`).
     Scan(cmd::scan::Args),
+    /// Assess a U-Boot `printenv` capture: what the boot chain permits.
+    /// Offline; reads a session taken at the prompt, not a plain boot log.
+    Verdict(cmd::verdict::Args),
     /// Interactive UART terminal (picocom-shaped). Ctrl-A ? for help.
     Term(cmd::term::Args),
     /// Interactive UART terminal + live client-side detector analysis.
@@ -187,6 +190,7 @@ fn main() -> Result<()> {
     verbose::set_quiet(cli.quiet);
     let result = match cli.command {
         Cmd::Scan(args) => cmd::scan::run(args),
+        Cmd::Verdict(args) => cmd::verdict::run(args),
         Cmd::Term(args) => cmd::term::run(args),
         Cmd::Analyze(args) => cmd::analyze::run(args),
         Cmd::Share(args) => cmd::share::run(args),
