@@ -8,6 +8,35 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+### Added
+- **`scan --applicability`** — ask which advisories APPLY without sending the
+  boot log. The detectors run locally, exactly as for a plain `scan`, and only
+  the component inventory goes up: product names and version strings.
+
+  A consultant cannot upload a client's boot log. That is a contract matter,
+  not a preference, and it is the objection that keeps this tool out of the
+  segment it fits best. Shipping the curated ruleset down to the client
+  instead would hand over the one asset that compounds. So neither travels.
+
+  Hostnames, internal addressing, MACs, serials, keys, kernel command lines
+  and partition labels cannot be transmitted by this path structurally, not by
+  policy: the payload is built from a fixed map of three detector labels to
+  three product names, and every value is re-validated before it leaves.
+  Verified against the Android corpus capture, which carries
+  `androidboot.serialno=`, `vbmeta.device_state=unlocked` and
+  `androidboot.selinux=permissive`, and yields two version strings and nothing
+  else.
+
+- **`--dry-run`** alongside it, printing the exact JSON that would be sent and
+  exiting without sending. This is how a consultant shows a client what leaves
+  the machine, so it is a headline capability rather than a debug switch.
+
+  Needs `bootintel login`; local identification stays free and needs no
+  account. Only U-Boot, Linux and BusyBox currently yield a component the
+  catalog can match, so those are the only three sent. The other eleven
+  detectors are not CVE-tracked products, and inventing entries for them would
+  only produce noise.
+
 ## [0.5.0] — 2026-09-26 — detector parity, and terminal login
 
 Detector-set parity with the browser detector library at

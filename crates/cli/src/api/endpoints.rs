@@ -278,3 +278,12 @@ pub fn device_token_url(base: &str) -> String {
         path_prefix()
     )
 }
+
+/// Applicability lookup: takes a component inventory, never a log.
+pub fn applicability_url(base: &str) -> String {
+    format!(
+        "{}{}/analysis/applicability",
+        base.trim_end_matches('/'),
+        path_prefix()
+    )
+}
