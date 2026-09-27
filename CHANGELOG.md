@@ -8,6 +8,10 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-09-27 — applicability without sending the log
+
+New flag, no breaking change, so MINOR per the policy above.
+
 ### Added
 - **`scan --applicability`** — ask which advisories APPLY without sending the
   boot log. The detectors run locally, exactly as for a plain `scan`, and only
@@ -512,7 +516,8 @@ Initial release. All six subcommands live; five branch-based milestones (M1-M5) 
 - PDF report download subcommand — server-side endpoint exists but no client-side wrapper yet.
 - Windows support — the Rust code compiles for Windows and the release workflow builds it, but install.sh doesn't handle Windows yet (`.ps1` installer is a follow-up).
 
-[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.5.0...HEAD
+[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.6.0...HEAD
+[0.6.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.6.0
 [0.5.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.5.0
 [0.4.2]: https://github.com/bootintel/cli/releases/tag/cli-v0.4.2
 [0.4.1]: https://github.com/bootintel/cli/releases/tag/cli-v0.4.1
