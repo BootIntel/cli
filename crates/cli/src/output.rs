@@ -432,12 +432,12 @@ fn write_json<W: Write>(out: &mut W, findings: &[Finding]) -> Result<()> {
 /// ANSI SGR codes. Bare consts (vs a colour crate dep) keep binary
 /// size flat — this is the third place we've drawn a line at not
 /// pulling a crate in for something a few escape strings can do.
-const ANSI_RESET: &str = "\x1b[0m";
-const ANSI_BOLD_RED: &str = "\x1b[1;31m";
-const ANSI_BOLD_CYAN: &str = "\x1b[1;36m";
-const ANSI_DIM: &str = "\x1b[2m";
+pub(crate) const ANSI_RESET: &str = "\x1b[0m";
+pub(crate) const ANSI_BOLD_RED: &str = "\x1b[1;31m";
+pub(crate) const ANSI_BOLD_CYAN: &str = "\x1b[1;36m";
+pub(crate) const ANSI_DIM: &str = "\x1b[2m";
 
-fn wrap(s: &str, code: &str, on: bool) -> String {
+pub(crate) fn wrap(s: &str, code: &str, on: bool) -> String {
     if on {
         format!("{code}{s}{ANSI_RESET}")
     } else {

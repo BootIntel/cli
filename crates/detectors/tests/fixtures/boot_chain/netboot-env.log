@@ -1,0 +1,54 @@
+
+U-Boot 2012.10 (Sep 29 2006 - 00:20:41) for GK7102 rb jxh42 v1.00 (GOKE)
+
+HAL:  20151223 
+DRAM:  64 MiB
+Flash: 16 MiB
+16 MiB
+NAND:  SPINAND MID = 0xff, DID = 0xffff, Data = 0x1ffffff !spinand_board_init[1581]: No support this SPI nand!
+SF: Detected GD25Q128C with page size 256 B, sector size 64 KiB, total size 16 MiB
+In:    serial
+Out:   serial
+Err:   serial
+Net:   arm_freq(600MHz)..............0x112032
+use int MII..............
+gk7101
+Hit any key to stop autoboot:  1  0 
+Gwell7102 # printenv
+[PROCESS_SEPARATORS] printenv
+arm_freq=0x00112032
+baudrate=115200
+bootargs=console=ttySGK0,115200 noinitrd mem=38M root=/dev/mtdblock3 rootfstype=squashfs mtdparts=gk7101_flash:256K(boot),64K(bootenv),2560K(kernel),7168K(rootfs),1024K(rom),5312K(APP) phytype=0
+bootcmd=run sfboot
+bootdelay=1
+bootfile=zImage
+bsbsize=2M
+consoledev=ttySGK0
+ethact=gk7101
+ethaddr=3C:97:0E:22:E1:14
+fileaddr=C1000000
+filesize=3AC000
+gatewayip=192.168.1.1
+hostname="gk7101"
+ipaddr=192.168.1.229
+loadaddr=0xC1000000
+mem=35M
+mtdparts=gk7101_flash:256K(boot),64K(bootenv),2M(kernel),7M(rootfs),1M(rom),5824K(APP)
+netdev=eth0
+netmask=255.255.255.0
+nfsserver=11.1.4.19
+phytype=0
+rootfstype=mtdparts=gk7101_flash:256K(boot),64K(bootenv),2560K(kernel),7168K(rootfs),1024K(rom),5312K(APP) rootfstype=squashfs root=/dev/mtdblock3
+rootpath=/home/star/nfs/gk/rootfs_uClibc_v112/
+serverip=192.168.1.225
+sfboot=setenv bootargs console=${consoledev},${baudrate} noinitrd mem=${mem} rw ${rootfstype} init=linuxrc ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}:${netdev} mac=${ethaddr} phytype=${phytype};sf probe 0 0;sf read ${loadaddr} ${sfkernel} ${filesize}; bootm
+sfkernel=0x50000
+soctype=1
+stderr=serial
+stdin=serial
+stdout=serial
+tftpboot=setenv bootargs root=/dev/nfs nfsroot=${nfsserver}:${rootpath},proto=tcp,nfsvers=3,nolock ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}:${netdev} mac=${ethaddr} phytype=${phytype} console=${consoledev},${baudrate} mem=${mem};tftpboot ${bootfile};bootm
+
+Environment size: 1524/65532 bytes
+Gwell7102 # help
+[PROCESS_SEPARATORS] help

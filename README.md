@@ -60,6 +60,7 @@ Use `bootintel term` when you want a clean terminal and `bootintel analyze` when
 | Inspect a newly connected adapter | `bootintel ports` | Lists candidate ports with USB VID/PID and product metadata when available. |
 | Capture and analyze a boot | `bootintel analyze /dev/ttyUSB0 -b 115200 --log-file boot.log` | Preserves raw bytes and prints local findings as the device boots. |
 | Analyze a log without hardware | `bootintel scan boot.log --format text` | Runs the local detector set without an account or network connection. |
+| Assess what the boot chain permits | `bootintel verdict session.log` | Reads a `printenv` dump taken at the U-Boot prompt and says what it permits. Entirely offline. |
 | Compare firmware boots | `bootintel diff before.log after.log` | Shows meaningful boot-log changes between two captures. |
 | Gate a build artifact | `bootintel scan boot.log --format sarif --gate-critical` | Emits CI-friendly output and exits non-zero for critical findings. |
 | Request richer analysis | `bootintel scan --api --preview boot.log` | Explicitly sends the log to BootIntel's API using the anonymous preview quota. |
@@ -159,6 +160,7 @@ cargo build --release
 | --- | --- |
 | `bootintel scan <file>` | Analyze a saved boot log. Supports `--format json\|text\|sarif\|junit` and `--gate-critical` for CI gating on autoboot / telnet exposure. `-` reads from stdin. `--api` POSTs to bootintel.com for full CVE + exploit paths (needs `BOOTINTEL_API_KEY`); `--api --preview` uses the anonymous free quota (3/day per IP, no key). `--api-base` overrides the endpoint. |
 | `bootintel scan <file> --applicability` | Ask which advisories **apply**, sending only the component inventory (names + versions), never the log. Usable on a client device under an NDA where `--api` is not. `--dry-run` prints the exact payload first. Needs `bootintel login`. |
+| `bootintel verdict <file>` | Assess a U-Boot session, not a boot log. Reads a `printenv` dump taken at the prompt and reports what the boot chain permits: whether autoboot is interruptible, whether images are verified, whether a netboot path is pre-configured, whether `bootargs` can be rewritten, and whether `saveenv` makes any of it stick. Every entry names the variable it was read from. `--json` mirrors the server's `uboot_shell` / `uboot_env` / `boot_chain_verdict` keys; `--gate-exposed` exits 1 on any exposed verdict. Runs entirely offline: a U-Boot environment holds a client's internal addressing, so nothing is uploaded. Exits 3 when the capture contains no session, because "could not assess" must not look like "nothing wrong". |
 | `bootintel share <file>` | Print a bootintel.com share URL with the log embedded via lz-string compression. Nothing is uploaded — the log lives in the URL itself. |
 | `bootintel ports` | List serial ports on this machine with USB VID/PID + product info when known. |
 | `bootintel version` | Version, detector count, build metadata. |

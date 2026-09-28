@@ -1,0 +1,15 @@
+U-Boot 2020.10 (Sep 17 2023 - 11:38:21 +0000)
+
+DRAM:  128 MiB
+Hit any key to stop autoboot:  2
+=> printenv
+baudrate=115200
+bootargs=console=ttyS0,115200 root=/dev/mtdblock2 rootfstype=squashfs
+bootcmd=bootm 0x9f020000
+bootdelay=2
+ethaddr=00:11:22:33:44:55
+ipaddr=192.168.1.1
+serverip=192.168.1.100
+verify=no
+Environment size: 412/65532 bytes
+=>

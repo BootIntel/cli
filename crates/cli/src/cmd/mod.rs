@@ -21,6 +21,7 @@ pub mod scan;
 pub mod schema;
 pub mod share;
 pub mod term;
+pub mod verdict;
 pub mod version;
 pub mod view;
 pub mod watch;

@@ -1,0 +1,216 @@
+# Boot-chain verdict expectation. This file is BYTE-IDENTICAL in two repos:
+#   bootintel.com  api/tests/fixtures/boot_chain/expect.txt
+#   BootIntel/cli  crates/detectors/tests/fixtures/boot_chain/expect.txt
+# Each repo asserts its own implementation reproduces it, so the Python engine
+# and the Rust CLI cannot disagree about a device without a test going red.
+# Regenerate BOTH copies with: python3 scripts/gen-boot-chain-expect.py
+# Do not hand-edit. fnv1a64 pins the fixture log the block was produced from.
+## fixture session.log fnv1a64=0dc3e8116533707d
+  reached true
+  evidence => printenv
+  env_bytes 412/65532
+  env baudrate=115200
+  env bootargs=console=ttyS0,115200 root=/dev/mtdblock2 rootfstype=squashfs
+  env bootcmd=bootm 0x9f020000
+  env bootdelay=2
+  env ethaddr=00:11:22:33:44:55
+  env ipaddr=192.168.1.1
+  env serverip=192.168.1.100
+  env verify=no
+  verdict
+    title U-Boot shell reached
+    state confirmed
+    severity high
+    evidence => printenv
+    detail An operator interrupted autoboot and got a command prompt. Everything below was read from the device, not inferred from its boot output.
+    remediation Set bootdelay=-1 and build with CONFIG_AUTOBOOT_KEYED so the prompt needs a password.
+  verdict
+    title Autoboot delay
+    state exposed
+    severity high
+    evidence bootdelay=2
+    detail bootdelay is 2s, so anyone with console access gets 2s to take the prompt on every boot.
+    remediation Set bootdelay=-1 and require a password (CONFIG_AUTOBOOT_KEYED).
+  verdict
+    title Boot command
+    state exposed
+    severity high
+    evidence bootcmd=bootm 0x9f020000
+    detail bootcmd is readable and, with the prompt reachable, settable. Whoever holds the console decides what the device boots.
+    remediation Lock the environment (CONFIG_ENV_IS_NOWHERE or a signed env) and require a password at the prompt.
+  verdict
+    title Image verification
+    state exposed
+    severity high
+    evidence verify=no
+    detail verify is disabled, so U-Boot will not check image checksums before booting.
+    remediation Set verify=yes, and prefer signed FIT images over checksums.
+  verdict
+    title Network boot path
+    state exposed
+    severity medium
+    evidence ethaddr=00:11:22:33:44:55, ipaddr=192.168.1.1, serverip=192.168.1.100
+    detail ipaddr and serverip are both set, so the bootloader is pre-configured to fetch over the network. That is a route in as much as a recovery route out.
+    remediation Clear ipaddr/serverip on production images unless netboot is required.
+  verdict
+    title Boot arguments
+    state confirmed
+    severity medium
+    evidence bootargs=console=ttyS0,115200 root=/dev/mtdblock2 rootfstype=squashfs
+    detail bootargs is readable and settable from the prompt, which is how a root shell is usually obtained on a board like this.
+    remediation Lock the environment so bootargs cannot be rewritten at the console.
+  verdict
+    title Environment storage
+    state confirmed
+    severity medium
+    evidence Environment size: 412/65532 bytes
+    detail The environment occupies 412 of 65532 bytes of writable storage, so `saveenv` can persist a change across reboots.
+    remediation Build with a read-only or signed environment for production.
+## fixture wrapped-env.log fnv1a64=ef1ee16cc0231e53
+  reached true
+  evidence Environment size: 843/65532 bytes
+  env_bytes 843/65532
+  env addmisc=setenv bootargs 'console=ttyS0,115200 mem=32M root=/dev/sda1 rootdelay=10'
+  env addmtd=setenv bootargs 'console=ttyS0,115200 mem=32M root=31:3'
+  env baudrate=115200
+  env bootargs=console=ttyS0,115200 mem=32M root=/dev/sda1 rootdelay=10
+  env bootcmd=run addmisc; bootm 0xBD040000
+  env bootdelay=6
+  env bootfile=/tftpboot/vmlinux
+  env bootmtd=run addmtd; bootm 0xBD040000
+  env ethaddr=00:C0:01:00:00:01
+  env ipaddr=2.2.2.1
+  env load=tftp 80500000 ${u-boot}
+  env serverip=2.2.2.4
+  env stderr=serial
+  env stdin=serial
+  env stdout=serial
+  env upbootldr=sf probe 0xbd000000; mw 0x81000000 0 0x20000; tftpboot 0x81000000 2.2.2.4:boot.owrt.bin; sf erase 0xbd000000 ${filesize}; sf write 0x81000000 0xbd000000 ${filesize};
+  env upfw=sf probe 0xbd000000; mw 0x81000000 0 0x100000;tftpboot 0x81000000 2.2.2.4:z.img;sf erase 0xBD040000 ${filesize};sf write 0x81000000 0xBD040000 ${filesize};
+  verdict
+    title U-Boot shell reached
+    state confirmed
+    severity high
+    evidence Environment size: 843/65532 bytes
+    detail An operator interrupted autoboot and got a command prompt. Everything below was read from the device, not inferred from its boot output.
+    remediation Set bootdelay=-1 and build with CONFIG_AUTOBOOT_KEYED so the prompt needs a password.
+  verdict
+    title Autoboot delay
+    state exposed
+    severity high
+    evidence bootdelay=6
+    detail bootdelay is 6s, so anyone with console access gets 6s to take the prompt on every boot.
+    remediation Set bootdelay=-1 and require a password (CONFIG_AUTOBOOT_KEYED).
+  verdict
+    title Boot command
+    state exposed
+    severity high
+    evidence bootcmd=run addmisc; bootm 0xBD040000
+    detail bootcmd is readable and, with the prompt reachable, settable. Whoever holds the console decides what the device boots.
+    remediation Lock the environment (CONFIG_ENV_IS_NOWHERE or a signed env) and require a password at the prompt.
+  verdict
+    title Image verification
+    state unknown
+    severity info
+    evidence bootcmd=run addmisc; bootm 0xBD040000
+    detail bootcmd boots an image without a visible verification step. That is not proof verification is absent: a FIT signature check can be implicit in the image. Confirm with the boot output of an actual `bootm`.
+    remediation
+  verdict
+    title Network boot path
+    state exposed
+    severity medium
+    evidence ethaddr=00:C0:01:00:00:01, ipaddr=2.2.2.1, serverip=2.2.2.4
+    detail ipaddr and serverip are both set, so the bootloader is pre-configured to fetch over the network. That is a route in as much as a recovery route out.
+    remediation Clear ipaddr/serverip on production images unless netboot is required.
+  verdict
+    title Boot arguments
+    state confirmed
+    severity medium
+    evidence bootargs=console=ttyS0,115200 mem=32M root=/dev/sda1 rootdelay=10
+    detail bootargs is readable and settable from the prompt, which is how a root shell is usually obtained on a board like this.
+    remediation Lock the environment so bootargs cannot be rewritten at the console.
+  verdict
+    title Environment storage
+    state confirmed
+    severity medium
+    evidence Environment size: 843/65532 bytes
+    detail The environment occupies 843 of 65532 bytes of writable storage, so `saveenv` can persist a change across reboots.
+    remediation Build with a read-only or signed environment for production.
+## fixture netboot-env.log fnv1a64=d29e04c430dc7db4
+  reached true
+  evidence Environment size: 1524/65532 bytes
+  env_bytes 1524/65532
+  env arm_freq=0x00112032
+  env baudrate=115200
+  env bootargs=console=ttySGK0,115200 noinitrd mem=38M root=/dev/mtdblock3 rootfstype=squashfs mtdparts=gk7101_flash:256K(boot),64K(bootenv),2560K(kernel),7168K(rootfs),1024K(rom),5312K(APP) phytype=0
+  env bootcmd=run sfboot
+  env bootdelay=1
+  env bootfile=zImage
+  env bsbsize=2M
+  env consoledev=ttySGK0
+  env ethact=gk7101
+  env ethaddr=3C:97:0E:22:E1:14
+  env fileaddr=C1000000
+  env filesize=3AC000
+  env gatewayip=192.168.1.1
+  env hostname="gk7101"
+  env ipaddr=192.168.1.229
+  env loadaddr=0xC1000000
+  env mem=35M
+  env mtdparts=gk7101_flash:256K(boot),64K(bootenv),2M(kernel),7M(rootfs),1M(rom),5824K(APP)
+  env netdev=eth0
+  env netmask=255.255.255.0
+  env nfsserver=11.1.4.19
+  env phytype=0
+  env rootfstype=mtdparts=gk7101_flash:256K(boot),64K(bootenv),2560K(kernel),7168K(rootfs),1024K(rom),5312K(APP) rootfstype=squashfs root=/dev/mtdblock3
+  env rootpath=/home/star/nfs/gk/rootfs_uClibc_v112/
+  env serverip=192.168.1.225
+  env sfboot=setenv bootargs console=${consoledev},${baudrate} noinitrd mem=${mem} rw ${rootfstype} init=linuxrc ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}:${netdev} mac=${ethaddr} phytype=${phytype};sf probe 0 0;sf read ${loadaddr} ${sfkernel} ${filesize}; bootm
+  env sfkernel=0x50000
+  env soctype=1
+  env stderr=serial
+  env stdin=serial
+  env stdout=serial
+  env tftpboot=setenv bootargs root=/dev/nfs nfsroot=${nfsserver}:${rootpath},proto=tcp,nfsvers=3,nolock ip=${ipaddr}:${serverip}:${gatewayip}:${netmask}:${hostname}:${netdev} mac=${ethaddr} phytype=${phytype} console=${consoledev},${baudrate} mem=${mem};tftpboot ${bootfile};bootm
+  verdict
+    title U-Boot shell reached
+    state confirmed
+    severity high
+    evidence Environment size: 1524/65532 bytes
+    detail An operator interrupted autoboot and got a command prompt. Everything below was read from the device, not inferred from its boot output.
+    remediation Set bootdelay=-1 and build with CONFIG_AUTOBOOT_KEYED so the prompt needs a password.
+  verdict
+    title Autoboot delay
+    state exposed
+    severity high
+    evidence bootdelay=1
+    detail bootdelay is 1s, so anyone with console access gets 1s to take the prompt on every boot.
+    remediation Set bootdelay=-1 and require a password (CONFIG_AUTOBOOT_KEYED).
+  verdict
+    title Boot command
+    state exposed
+    severity high
+    evidence bootcmd=run sfboot
+    detail bootcmd is readable and, with the prompt reachable, settable. Whoever holds the console decides what the device boots.
+    remediation Lock the environment (CONFIG_ENV_IS_NOWHERE or a signed env) and require a password at the prompt.
+  verdict
+    title Network boot path
+    state exposed
+    severity medium
+    evidence ethaddr=3C:97:0E:22:E1:14, gatewayip=192.168.1.1, ipaddr=192.168.1.229, netmask=255.255.255.0, serverip=192.168.1.225
+    detail ipaddr and serverip are both set, so the bootloader is pre-configured to fetch over the network. That is a route in as much as a recovery route out.
+    remediation Clear ipaddr/serverip on production images unless netboot is required.
+  verdict
+    title Boot arguments
+    state confirmed
+    severity medium
+    evidence bootargs=console=ttySGK0,115200 noinitrd mem=38M root=/dev/mtdblock3 rootfstype=squashfs mtdparts=gk7101_flash:256K(boot),64K(bootenv),2560K(kernel),7168K(rootfs),1024K(
+    detail bootargs is readable and settable from the prompt, which is how a root shell is usually obtained on a board like this.
+    remediation Lock the environment so bootargs cannot be rewritten at the console.
+  verdict
+    title Environment storage
+    state confirmed
+    severity medium
+    evidence Environment size: 1524/65532 bytes
+    detail The environment occupies 1524 of 65532 bytes of writable storage, so `saveenv` can persist a change across reboots.
+    remediation Build with a read-only or signed environment for production.

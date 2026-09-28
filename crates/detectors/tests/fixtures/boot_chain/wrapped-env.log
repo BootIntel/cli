@@ -1,0 +1,33 @@
+RTL8672 #
+RTL8672 #
+RTL8672 #
+RTL8672 # à€þü<ÿü?ÿÀ€ÿþÿàüøþøÿÿ?ÿþÿþÿü
+RTL8672 #
+RTL8672 #
+RTL8672 #
+RTL8672 #
+RTL8672 #
+RTL8672 # printenv
+addmisc=setenv bootargs 'console=ttyS0,115200 mem=32M root=/dev/sda1 rootdelay=10'
+addmtd=setenv bootargs 'console=ttyS0,115200 mem=32M root=31:3'
+baudrate=115200
+bootargs=console=ttyS0,115200 mem=32M root=/dev/sda1 rootdelay=10
+bootcmd=run addmisc; bootm 0xBD040000
+bootdelay=6
+bootfile=/tftpboot/vmlinux
+bootmtd=run addmtd; bootm 0xBD040000
+ethaddr=00:C0:01:00:00:01
+ipaddr=2.2.2.1
+load=tftp 80500000 ${u-boot}
+serverip=2.2.2.4
+stderr=serial
+stdin=serial
+stdout=serial
+upbootldr=sf probe 0xbd000000; mw 0x81000000 0 0x20000; tftpboot 0x81000000 2.2.2.4:boot.owrt.bin; s
+f erase 0xbd000000 ${filesize}; sf write 0x81000000 0xbd000000 ${filesize};
+upfw=sf probe 0xbd000000; mw 0x81000000 0 0x100000;tftpboot 0x81000000 2.2.2.4:z.img;sf erase 0xBD04
+0000 ${filesize};sf write 0x81000000 0xBD040000 ${filesize};
+
+Environment size: 843/65532 bytes
+RTL8672 # run upfw
+TFTP from server 2.2.2.4; our IP address is 2.2.2.1
