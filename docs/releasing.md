@@ -37,8 +37,13 @@ having no brew line at all.
 
 ## Cutting a release
 
-1. Bump `version` in the workspace `Cargo.toml`, run `cargo update -w` so the
-   lockfile follows, and promote the `[Unreleased]` changelog section.
+1. Bump `version` in the workspace `Cargo.toml` **and the `bootintel-detectors`
+   version in `crates/cli/Cargo.toml`**, which is pinned exactly because the
+   published binary crate has to name a version that exists on the index. Then
+   run `cargo update -w` so the lockfile follows, and promote the
+   `[Unreleased]` changelog section. Forgetting the second bump fails
+   `cargo update -w` immediately with "required by package bootintel", so it
+   cannot reach a release, but it is the step that gets missed.
    Versioning policy is documented at the top of `CHANGELOG.md`. The crate is
    pre-1.0, so the leading zero is the major component: a breaking change
    moves the minor, not the major.

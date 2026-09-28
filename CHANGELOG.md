@@ -8,6 +8,77 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+## [0.8.0] — 2026-09-28 — read the boot chain on the bench, offline
+
+Two halves of one workflow: take the U-Boot prompt on a board in front of you,
+and turn the environment you pull off it into a verdict. Both run entirely on
+your machine. A consultancy under an NDA cannot upload a client's capture, and
+a U-Boot environment is the most sensitive thing in one, so needing a server to
+interpret it would have put this out of reach of the people it is for.
+
+### Added
+- **`bootintel verdict <capture>`** reads a `printenv` dump taken at the prompt
+  and reports what the boot chain permits: whether autoboot is interruptible,
+  whether images are verified, whether a netboot path is pre-configured,
+  whether `bootargs` can be rewritten, and whether `saveenv` makes any of it
+  stick. Text, `--json`, and `--gate-exposed` for CI.
+
+  Every entry names the variable it was read from, because a consultant has to
+  defend the answer in a client report rather than quote a tool. Absence is
+  reported as `unknown`, never as `hardened`: U-Boot prints only what is set, so
+  a missing `bootdelay` means the compiled-in default applies and cannot be read
+  from a capture.
+
+  Exit codes carry the same discipline: `2` for an empty capture, `3` for
+  content with no session in it. "Could not assess" must never look like
+  "nothing is wrong", which is the failure mode that makes a CI gate worse than
+  no gate.
+
+  `--json` uses the server's key names (`uboot_shell`, `uboot_env`,
+  `boot_chain_verdict`) so a consumer can move between this and `scan --api`
+  without remapping anything.
+
+- **`bootintel analyze <port> --interrupt-autoboot`** interrupts autoboot on
+  connect, takes the prompt, runs the read-only set `printenv`, `bdinfo`,
+  `mtdparts`, prints the verdict, and hands the terminal back.
+
+  It hammers the interrupt key from the moment the port opens rather than
+  waiting to see a countdown. U-Boot's autoboot delay is a loop around
+  `tstc()`, and `bootdelay=0` means that check happens exactly once; by the time
+  "Hit any key to stop autoboot" has crossed the wire and been recognised, the
+  board has already looked. What catches a one-shot check is the byte already
+  sitting in the UART's receive register, so **power-cycle the board after the
+  tool says it is hammering**. `--reset-line dtr|rts` pulses a modem line so
+  the reset instant is the tool's rather than a human's, on the adapters wired
+  for it.
+
+  The hammer never sends CR or LF, and a key containing either is refused:
+  hammered bytes accumulate in U-Boot's line buffer, and a newline would
+  execute whatever they spell on hardware that is not yours. The default key is
+  a space, a bare CR flushes the accumulated bytes before anything is typed,
+  and every byte the tool sends is announced so a client transcript shows which
+  bytes were the tool's. `--at-prompt` replaces the command set entirely.
+
+  A `#` prompt after the kernel handoff is treated as a Linux shell and
+  ignored, because typing `printenv` into a root shell would have produced a
+  confident, wrong verdict. A prompt that does not answer re-arms rather than
+  abandoning the attempt. A window that is never caught is reported, with the
+  four things worth checking, rather than exiting quietly.
+
+  Not wired into `--tui`; that combination is refused rather than silently
+  ignored.
+
+### Changed
+- The verdict rules now exist in two places, here and in the bootintel.com
+  engine, which is the drift problem the cross-implementation detector parity
+  work fixed. Neither side is the reference:
+  `crates/detectors/tests/fixtures/boot_chain/expect.txt` is, and the engine
+  repo holds a byte-identical copy that its own test asserts against. Two of
+  the three fixtures are real boards whose vendor prompt (`RTL8672 #`) the
+  engine's stricter pattern skips, so the environment is only provable
+  retroactively from the `Environment size:` line: the path a tokeniser rewrite
+  breaks silently.
+
 ## [0.7.0] — 2026-09-27 — the gate survives a pipe, and history is opt-in
 
 Renumbered from 0.6.1. Making scan history opt in changes a default, and a
@@ -579,7 +650,8 @@ Initial release. All six subcommands live; five branch-based milestones (M1-M5) 
 - PDF report download subcommand — server-side endpoint exists but no client-side wrapper yet.
 - Windows support — the Rust code compiles for Windows and the release workflow builds it, but install.sh doesn't handle Windows yet (`.ps1` installer is a follow-up).
 
-[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.7.0...HEAD
+[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.8.0...HEAD
+[0.8.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.8.0
 [0.7.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.7.0
 [0.6.1]: https://github.com/bootintel/cli/releases/tag/cli-v0.6.1
 [0.6.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.6.0
