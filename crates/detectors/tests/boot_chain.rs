@@ -149,6 +149,23 @@ fn render(name: &str, log: &str) -> Vec<String> {
         "ignored_kernel_parameters",
         h.ignored_kernel_parameters.as_deref(),
     );
+    for (key, value) in &session.bdinfo {
+        field(&mut out, "  ", "bdinfo", &format!("{key}={value}"));
+    }
+    if let Some(dev) = &session.mtd_device {
+        field(&mut out, "  ", "mtd_device", dev);
+    }
+    for part in &session.mtd_partitions {
+        field(
+            &mut out,
+            "  ",
+            "mtd_part",
+            &format!(
+                "{} size=0x{:x} offset=0x{:x} ro={}",
+                part.name, part.size, part.offset, part.read_only
+            ),
+        );
+    }
     for (key, value) in &session.env {
         field(&mut out, "  ", "env", &format!("{key}={value}"));
     }
@@ -460,4 +477,83 @@ fn a_check_with_no_captured_result_is_unknown_rather_than_passing() {
         .find(|v| v.title == "Image verification")
         .expect("a verdict");
     assert_eq!(v.state, "unknown");
+}
+
+/// bdinfo is recognised by its own shape, because the command that produced it
+/// cannot be relied on: bootintel-20 prints a full dump after `Boot-> bdinfo`,
+/// and `Boot->` is not U-Boot's default prompt. A command-gated parser read that
+/// entire dump as nothing.
+#[test]
+fn a_bdinfo_dump_behind_a_vendor_prompt_is_still_read() {
+    let log = "Boot-> bdinfo\n\
+               boot_params = 0x87D2EFB0\n\
+               memstart    = 0x80000000\n\
+               flashsize   = 0x01000000\n\
+               ethaddr     = 00:1F:45:F2:B7:3B\n";
+    let s = boot_chain::parse_session(log);
+    assert_eq!(
+        s.bdinfo.get("boot_params").map(String::as_str),
+        Some("0x87D2EFB0")
+    );
+    assert_eq!(
+        s.bdinfo.get("memstart").map(String::as_str),
+        Some("0x80000000")
+    );
+    assert_eq!(s.bdinfo.len(), 4);
+    assert!(s.reached, "a bdinfo dump proves someone was at the prompt");
+}
+
+/// The discriminator between board info and an environment variable is the
+/// whitespace around the `=`. Without it, every environment dump containing
+/// baudrate or ethaddr would also be recorded as board info.
+#[test]
+fn an_environment_line_is_not_board_info() {
+    let log = "=> printenv\nbaudrate=115200\nethaddr=00:11:22:33:44:55\n\
+               Environment size: 40/65532 bytes\n";
+    let s = boot_chain::parse_session(log);
+    assert!(
+        s.bdinfo.is_empty(),
+        "read the environment as board info: {:?}",
+        s.bdinfo
+    );
+    assert_eq!(s.env.len(), 2);
+}
+
+/// `size` and `start` are too generic to be board-info keys on their own.
+/// bootintel-5 prints an MTD table in a vendor format whose rows are exactly
+/// `size = 0x180000`, and treating that as bdinfo was a live false positive.
+#[test]
+fn a_vendor_mtd_table_is_not_board_info() {
+    let log = "mtd_part[0]:\nname = KERNEL\nsize = 0x180000\noffset = 0x37000\n";
+    let s = boot_chain::parse_session(log);
+    assert!(s.bdinfo.is_empty(), "{:?}", s.bdinfo);
+}
+
+/// U-Boot prints `device nor0 <spi0.0>, # parts = 4`: the bracketed chip id is
+/// optional and the space in `# parts` is real. The engine's first pattern
+/// required neither and so never matched, recording the partitions but not the
+/// device they belong to.
+#[test]
+fn an_mtdparts_dump_is_parsed_including_its_device() {
+    let log = "=> mtdparts\n\n\
+               device nor0 <spi0.0>, # parts = 4\n \
+               #: name                size            offset          mask_flags\n \
+               0: u-boot              0x00020000      0x00000000      1\n \
+               1: kernel              0x00100000      0x00020000      0\n";
+    let s = boot_chain::parse_session(log);
+    assert_eq!(s.mtd_device.as_deref(), Some("nor0"));
+    assert_eq!(s.mtd_partitions.len(), 2);
+    assert_eq!(s.mtd_partitions[0].name, "u-boot");
+    assert_eq!(s.mtd_partitions[0].size, 0x20000);
+    assert!(
+        s.mtd_partitions[0].read_only,
+        "mask_flags 1 means read-only"
+    );
+    assert!(!s.mtd_partitions[1].read_only);
+}
+
+#[test]
+fn a_device_line_without_the_bracketed_chip_id_also_parses() {
+    let s = boot_chain::parse_session("device nand0, #parts = 2\n");
+    assert_eq!(s.mtd_device.as_deref(), Some("nand0"));
 }

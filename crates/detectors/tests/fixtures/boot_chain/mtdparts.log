@@ -1,0 +1,13 @@
+=> mtdparts
+
+device nor0 <spi0.0>, # parts = 4
+ #: name                size            offset          mask_flags
+ 0: u-boot              0x00020000      0x00000000      1
+ 1: kernel              0x00100000      0x00020000      0
+ 2: rootfs              0x006c0000      0x00120000      0
+ 3: art                 0x00010000      0x007f0000      1
+
+=> printenv
+bootcmd=bootm 0x9f020000
+Environment size: 30/65532 bytes
+=>

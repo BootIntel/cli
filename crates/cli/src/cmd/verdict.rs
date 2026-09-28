@@ -180,6 +180,22 @@ fn json(
         shell.insert("env_used_bytes".into(), used.into());
         shell.insert("env_total_bytes".into(), total.into());
     }
+    // Same placement as the engine: board info and the flash device hang off the
+    // shell, partitions are top level and tagged with the parser that found them.
+    if !session.bdinfo.is_empty() {
+        shell.insert(
+            "bdinfo".into(),
+            session
+                .bdinfo
+                .iter()
+                .map(|(k, v)| (k.clone(), serde_json::Value::from(v.clone())))
+                .collect::<serde_json::Map<String, serde_json::Value>>()
+                .into(),
+        );
+    }
+    if let Some(dev) = &session.mtd_device {
+        shell.insert("mtd_device".into(), dev.clone().into());
+    }
     // Mirrors the engine's `boot_integrity` key names, and omits what was not
     // observed rather than emitting nulls: absence of a field means the capture
     // said nothing, which is different from a field saying "no".
@@ -259,6 +275,13 @@ fn json(
         "uboot_env": session.env.iter()
             .map(|(k, v)| (k.clone(), serde_json::Value::from(v.clone())))
             .collect::<serde_json::Map<String, serde_json::Value>>(),
+        "mtd_partitions": session.mtd_partitions.iter().map(|p| serde_json::json!({
+            "name": p.name,
+            "size": p.size,
+            "offset": p.offset,
+            "read_only": p.read_only,
+            "source": "uboot_mtdparts",
+        })).collect::<Vec<_>>(),
         "boot_chain_verdict": verdicts.iter().map(|v| serde_json::json!({
             "title": v.title,
             "state": v.state,
@@ -320,6 +343,35 @@ pub(crate) fn write_text<W: Write>(
         session.env.len(),
         if session.env.len() == 1 { "" } else { "s" }
     )?;
+    if !session.bdinfo.is_empty() {
+        writeln!(
+            out,
+            "    board info   {} field{}",
+            session.bdinfo.len(),
+            if session.bdinfo.len() == 1 { "" } else { "s" }
+        )?;
+    }
+    if !session.mtd_partitions.is_empty() {
+        let dev = session.mtd_device.as_deref().unwrap_or("flash");
+        writeln!(
+            out,
+            "    {} partitions on {}",
+            session.mtd_partitions.len(),
+            sanitize_for_term(dev)
+        )?;
+        for p in &session.mtd_partitions {
+            // The read-only flag is the operationally interesting column: it is
+            // what says which partitions an operator at this prompt can rewrite.
+            writeln!(
+                out,
+                "      {:<16} 0x{:08x} @ 0x{:08x}{}",
+                sanitize_for_term(&p.name),
+                p.size,
+                p.offset,
+                if p.read_only { "  read-only" } else { "" }
+            )?;
+        }
+    }
     if let Some(check) = &integrity.image_check {
         let mechanism = if check == "fit_hash" {
             let algos = if integrity.image_hash_algorithms.is_empty() {
