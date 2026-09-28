@@ -851,3 +851,93 @@ mod tests {
         assert!(s.contains("**1 finding total**"), "singular: {s}");
     }
 }
+
+/// Wraps a writer so bare LF becomes CRLF.
+///
+/// Exists so one renderer can serve both a normal stdout and a terminal in raw
+/// mode. Raw mode turns off ONLCR, so a `\n` moves down without returning the
+/// carriage and every line starts further right than the last. Rather than keep
+/// a second copy of each renderer with `\r\n` baked in (two copies of the same
+/// output drift, and the boot-chain verdict is the last place that should
+/// happen), the renderer keeps writing `\n` and this fixes it up in transit.
+pub(crate) struct CrlfWriter<W: std::io::Write> {
+    inner: W,
+    /// So an LF that already follows a CR is left alone rather than becoming
+    /// CRCRLF.
+    last_was_cr: bool,
+}
+
+impl<W: std::io::Write> CrlfWriter<W> {
+    pub(crate) fn new(inner: W) -> Self {
+        Self {
+            inner,
+            last_was_cr: false,
+        }
+    }
+}
+
+impl<W: std::io::Write> std::io::Write for CrlfWriter<W> {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        let mut out = Vec::with_capacity(buf.len() + 8);
+        for b in buf {
+            if *b == b'\n' && !self.last_was_cr {
+                out.push(b'\r');
+            }
+            self.last_was_cr = *b == b'\r';
+            out.push(*b);
+        }
+        self.inner.write_all(&out)?;
+        // Report the caller's byte count, not ours: a short write here would
+        // make the caller re-send bytes we already expanded and wrote.
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        self.inner.flush()
+    }
+}
+
+#[cfg(test)]
+mod crlf_tests {
+    use super::CrlfWriter;
+    use std::io::Write;
+
+    fn through(input: &str) -> String {
+        let mut sink = Vec::new();
+        {
+            let mut w = CrlfWriter::new(&mut sink);
+            w.write_all(input.as_bytes()).unwrap();
+        }
+        String::from_utf8(sink).unwrap()
+    }
+
+    #[test]
+    fn bare_lf_becomes_crlf() {
+        assert_eq!(through("a\nb\n"), "a\r\nb\r\n");
+    }
+
+    #[test]
+    fn an_existing_crlf_is_left_alone() {
+        assert_eq!(through("a\r\nb"), "a\r\nb");
+    }
+
+    #[test]
+    fn the_split_across_writes_is_handled() {
+        // The CR and the LF can arrive in separate write calls, which is
+        // exactly what a formatter doing many small writes produces.
+        let mut sink = Vec::new();
+        {
+            let mut w = CrlfWriter::new(&mut sink);
+            w.write_all(b"a\r").unwrap();
+            w.write_all(b"\nb").unwrap();
+        }
+        assert_eq!(String::from_utf8(sink).unwrap(), "a\r\nb");
+    }
+
+    #[test]
+    fn the_caller_sees_its_own_byte_count() {
+        let mut sink = Vec::new();
+        let mut w = CrlfWriter::new(&mut sink);
+        assert_eq!(w.write(b"x\ny").unwrap(), 3);
+    }
+}

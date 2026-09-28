@@ -183,7 +183,7 @@ fn state_code(state: &str) -> &'static str {
     }
 }
 
-fn write_text<W: Write>(
+pub(crate) fn write_text<W: Write>(
     out: &mut W,
     source: &str,
     session: &UbootSession,

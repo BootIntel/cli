@@ -174,6 +174,10 @@ pub fn run(args: Args) -> Result<()> {
         // Term mode never runs the analyzer. Users who want live
         // analysis should use `bootintel analyze` instead.
         analyzer: None,
+        // `term` is the plain terminal. The interrupter reports a verdict from
+        // the captured session, which needs the analyzer, so it lives on
+        // `analyze` alone rather than half-working here.
+        interrupt: None,
         // Nor does it wire the api. Ctrl-A f prints a hint pointing
         // at `bootintel analyze --api` if the user tries anyway.
         api: None,

@@ -10,8 +10,10 @@ use anyhow::{bail, Result};
 use clap::Args as ClapArgs;
 use serialport::{DataBits, FlowControl, Parity, StopBits};
 use std::path::PathBuf;
+use std::time::Duration;
 
 use crate::analyze::state::AnalyzeState;
+use crate::term::autoboot;
 use crate::term::hotkey::EscapePrefix;
 use crate::term::logfile::LogFileMode;
 use crate::term::run::{run_session, validate_port_hint, ApiConfig, TermOptions};
@@ -105,6 +107,53 @@ pub struct Args {
     #[arg(long)]
     no_live_display: bool,
 
+    /// Interrupt autoboot on connect, take the U-Boot prompt, pull the
+    /// environment, and print what the boot chain permits.
+    ///
+    /// Hammers the interrupt key from the moment the port opens rather than
+    /// waiting to see a countdown: with `bootdelay=0` U-Boot checks for a
+    /// keypress exactly once, so the key has to be in the UART before it
+    /// looks. POWER-CYCLE THE BOARD after this starts. Runs the read-only
+    /// commands (`printenv`, `bdinfo`, `mtdparts`), prints the verdict, then
+    /// hands the terminal back to you. Entirely offline.
+    #[arg(long)]
+    interrupt_autoboot: bool,
+
+    /// Key hammered during the window: `space` (default), `esc`, `ctrl-c`,
+    /// `tab`, a literal string for builds with CONFIG_AUTOBOOT_KEYED (e.g.
+    /// `--interrupt-key stop`), or hex (`0x1b`). CR and LF are refused: the
+    /// bytes accumulate in U-Boot's line buffer and a newline would execute
+    /// whatever they spell.
+    #[arg(long, value_name = "SPEC")]
+    interrupt_key: Option<String>,
+
+    /// Milliseconds between hammer writes. Default 5. The aim is a byte
+    /// waiting in the receiver, not saturating the line.
+    #[arg(long, value_name = "MS")]
+    interrupt_interval: Option<u64>,
+
+    /// Seconds to keep trying before reporting the window missed. Default 45,
+    /// which spans a hand power-cycle and several boot-loop cycles.
+    #[arg(long, value_name = "SECS")]
+    interrupt_timeout: Option<u64>,
+
+    /// Command to run once the prompt is held. Repeatable; replaces the
+    /// read-only default set (`printenv`, `bdinfo`, `mtdparts`) entirely, so
+    /// you decide exactly what is typed at a client's board.
+    #[arg(long = "at-prompt", value_name = "CMD", action = clap::ArgAction::Append)]
+    at_prompt: Vec<String>,
+
+    /// Pulse a modem control line to reset the board, so the reset instant is
+    /// this tool's rather than a human's. Only works where the adapter's DTR
+    /// or RTS is actually wired to the board's reset, which many are not; on
+    /// the rest it does nothing and you should power-cycle by hand.
+    #[arg(long, value_name = "LINE", value_parser = ["none", "dtr", "rts"])]
+    reset_line: Option<String>,
+
+    /// Milliseconds to hold the reset line low. Default 250.
+    #[arg(long, value_name = "MS")]
+    reset_hold_ms: Option<u64>,
+
     /// Arm Ctrl-A f for full server-side analysis (CVE matching +
     /// exploit paths + optional AI summary). Requires BOOTINTEL_API_KEY
     /// unless combined with --preview.
@@ -177,6 +226,7 @@ pub fn run(args: Args) -> Result<()> {
         analyzer.live_display = false;
     }
 
+    let interrupt = build_interrupt_config(&args)?;
     let api = build_api_config(&args)?;
     let escape_prefix =
         EscapePrefix::parse(&args.escape).map_err(|e| anyhow::anyhow!("--escape: {e}"))?;
@@ -215,6 +265,7 @@ pub fn run(args: Args) -> Result<()> {
         macros: super::term::build_macros(&args.macros_file, &args.macro_)?,
         analyzer: Some(analyzer),
         api,
+        interrupt,
         escape_prefix,
     };
 
@@ -251,6 +302,84 @@ pub fn run(args: Args) -> Result<()> {
         });
     }
     result
+}
+
+/// Build the autoboot interrupter config, or None when the feature was not
+/// asked for.
+///
+/// Tuning flags are refused without `--interrupt-autoboot` rather than
+/// silently ignored: someone who typed `--interrupt-key stop` and got a plain
+/// terminal would reasonably conclude the tool had tried and failed.
+fn build_interrupt_config(args: &Args) -> Result<Option<autoboot::Config>> {
+    let tuning_used = args.interrupt_key.is_some()
+        || args.interrupt_interval.is_some()
+        || args.interrupt_timeout.is_some()
+        || !args.at_prompt.is_empty()
+        || args.reset_line.is_some()
+        || args.reset_hold_ms.is_some();
+    if !args.interrupt_autoboot {
+        if tuning_used {
+            bail!(
+                "the --interrupt-* / --at-prompt / --reset-* flags only apply with --interrupt-autoboot.\n                   example: bootintel analyze /dev/ttyUSB0 --interrupt-autoboot --interrupt-key esc"
+            );
+        }
+        return Ok(None);
+    }
+    if args.tui {
+        bail!(
+            "--interrupt-autoboot is not wired into the --tui dashboard yet, and silently \n               ignoring it would look like a board that refused to stop. Drop --tui for now."
+        );
+    }
+    let defaults = autoboot::Config::default();
+    let key = match &args.interrupt_key {
+        None => defaults.key.clone(),
+        Some(spec) => {
+            autoboot::parse_key(spec).map_err(|e| anyhow::anyhow!("--interrupt-key: {e}"))?
+        }
+    };
+    let interval = match args.interrupt_interval {
+        None => defaults.interval,
+        // A zero interval is a busy loop on a shared serial port, which starves
+        // the reader thread and can only make the window harder to catch.
+        Some(0) => bail!("--interrupt-interval must be at least 1ms"),
+        Some(ms) => Duration::from_millis(ms),
+    };
+    let timeout = match args.interrupt_timeout {
+        None => defaults.timeout,
+        Some(0) => bail!("--interrupt-timeout must be at least 1s"),
+        Some(secs) => Duration::from_secs(secs),
+    };
+    let commands = if args.at_prompt.is_empty() {
+        defaults.commands.clone()
+    } else {
+        for cmd in &args.at_prompt {
+            if cmd.contains('\r') || cmd.contains('\n') {
+                bail!("--at-prompt {cmd:?} contains a newline; pass one command per flag");
+            }
+            if cmd.trim().is_empty() {
+                bail!("--at-prompt cannot be empty");
+            }
+        }
+        args.at_prompt.clone()
+    };
+    let reset_line = match args.reset_line.as_deref() {
+        None | Some("none") => autoboot::ResetLine::None,
+        Some("dtr") => autoboot::ResetLine::Dtr,
+        Some("rts") => autoboot::ResetLine::Rts,
+        Some(other) => bail!("--reset-line {other:?}: expected none, dtr, or rts"),
+    };
+    Ok(Some(autoboot::Config {
+        key,
+        interval,
+        timeout,
+        commands,
+        reset_line,
+        reset_hold: args
+            .reset_hold_ms
+            .map(Duration::from_millis)
+            .unwrap_or(defaults.reset_hold),
+        ..defaults
+    }))
 }
 
 /// Build the ApiConfig from CLI flags + env. None when --api wasn't

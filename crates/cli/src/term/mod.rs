@@ -22,6 +22,7 @@
 //!     channel that the main thread drains. Fully synchronous — no
 //!     async runtime.
 
+pub mod autoboot;
 pub mod hotkey;
 pub mod logfile;
 pub mod macros;
