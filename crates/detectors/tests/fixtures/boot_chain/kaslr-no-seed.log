@@ -1,0 +1,87 @@
+[    0.000000] Dentry cache hash table entries: 524288 (order: 10, 4194304 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 262144 (order: 9, 2097152 bytes, linear)
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] software IO TLB: area num 4.
+[    0.000000] software IO TLB: mapped [mem 0x00000000fbfff000-0x00000000fffff000] (64MB)
+[    0.000000] Memory: 2807964K/4194300K available (12288K kernel code, 1266K rwdata, 4020K rodata, 2112K init, 438K bss, 796512K reserved, 589824K cma-reserved)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] rcu: Preemptible hierarchical RCU implementation.
+[    0.000000] rcu: 	RCU event tracing is enabled.
+[    0.000000] rcu: 	RCU restricting CPUs from NR_CPUS=256 to nr_cpu_ids=4.
+[    0.000000] 	Trampoline variant of Tasks RCU enabled.
+[    0.000000] 	Tracing variant of Tasks RCU enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+[    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=4
+[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+[    0.000000] GICv3: GIC: Using split EOI/Deactivate mode
+[    0.000000] GICv3: 256 SPIs implemented
+[    0.000000] GICv3: 0 Extended SPIs implemented
+[    0.000000] Root IRQ handler: gic_handle_irq
+[    0.000000] GICv3: GICv3 features: 16 PPIs
+[    0.000000] GICv3: CPU0: found redistributor 0 region 0:0x0000000001880000
+[    0.000000] ITS [mem 0x01820000-0x0182ffff]
+[    0.000000] GIC: enabling workaround for ITS: Socionext Synquacer pre-ITS
+[    0.000000] ITS@0x0000000001820000: Devices Table too large, reduce ids 20->19
+[    0.000000] ITS@0x0000000001820000: allocated 524288 Devices @880800000 (flat, esz 8, psz 64K, shr 0)
+[    0.000000] ITS: using cache flushing for cmd queue
+[    0.000000] GICv3: using LPI property table @0x0000000880040000
+[    0.000000] GIC: using cache flushing for LPI property table
+[    0.000000] GICv3: CPU0: using allocated LPI pending table @0x0000000880050000
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000000] arch_timer: cp15 timer(s) running at 200.00MHz (phys).
+[    0.000000] clocksource: arch_sys_counter: mask: 0x3ffffffffffffff max_cycles: 0x2e2049d3e8, max_idle_ns: 440795210634 ns
+[    0.000000] sched_clock: 58 bits at 200MHz, resolution 5ns, wraps every 4398046511102ns
+[    0.008494] Console: colour dummy device 80x25
+[    0.013081] Calibrating delay loop (skipped), value calculated using timer frequency.. 400.00 BogoMIPS (lpj=800000)
+[    0.023762] pid_max: default: 32768 minimum: 301
+[    0.028526] LSM: Security Framework initializing
+[    0.033350] Mount-cache hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.040928] Mountpoint-cache hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.050380] cblist_init_generic: Setting adjustable number of callback queues.
+[    0.057817] cblist_init_generic: Setting shift to 2 and lim to 1.
+[    0.064103] cblist_init_generic: Setting adjustable number of callback queues.
+[    0.071497] cblist_init_generic: Setting shift to 2 and lim to 1.
+[    0.077863] rcu: Hierarchical SRCU implementation.
+[    0.082768] rcu: 	Max phase no-delay instances is 1000.
+[    0.088326] Platform MSI: msi-controller@1820000 domain created
+[    0.094583] PCI/MSI: /bus@f0000/interrupt-controller@1800000/msi-controller@1820000 domain created
+[    0.103978] EFI services will not be available.
+[    0.108834] smp: Bringing up secondary CPUs ...
+[    0.114069] Detected VIPT I-cache on CPU1
+[    0.114153] GICv3: CPU1: found redistributor 1 region 0:0x00000000018a0000
+[    0.114169] GICv3: CPU1: using allocated LPI pending table @0x0000000880060000
+[    0.114213] CPU1: Booted secondary processor 0x0000000001 [0x410fd034]
+[    0.114855] Detected VIPT I-cache on CPU2
+[    0.114920] GICv3: CPU2: found redistributor 2 region 0:0x00000000018c0000
+[    0.114933] GICv3: CPU2: using allocated LPI pending table @0x0000000880070000
+[    0.114963] CPU2: Booted secondary processor 0x0000000002 [0x410fd034]
+[    0.115541] Detected VIPT I-cache on CPU3
+[    0.115611] GICv3: CPU3: found redistributor 3 region 0:0x00000000018e0000
+[    0.115623] GICv3: CPU3: using allocated LPI pending table @0x0000000880080000
+[    0.115651] CPU3: Booted secondary processor 0x0000000003 [0x410fd034]
+[    0.115708] smp: Brought up 1 node, 4 CPUs
+[    0.195426] SMP: Total of 4 processors activated.
+[    0.200238] CPU features: detected: 32-bit EL0 Support
+[    0.205506] CPU features: detected: CRC32 instructions
+[    0.210811] CPU: All CPU(s) started at EL2
+[    0.215008] alternatives: applying system-wide alternatives
+[    0.222134] devtmpfs: initialized
+[    0.233395] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+[    0.243402] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.263871] pinctrl core: initialized pinctrl subsystem
+[    0.269740] DMI not present or invalid.
+[    0.274204] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.281137] DMA: preallocated 512 KiB GFP_KERNEL pool for atomic allocations
+[    0.288577] DMA: preallocated 512 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.296653] DMA: preallocated 512 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.304811] audit: initializing netlink subsys (disabled)
+[    0.310460] audit: type=2000 audit(0.200:1): state=initialized audit_enabled=0 res=1
+[    0.310840] thermal_sys: Registered thermal governor 'step_wise'
+[    0.318388] thermal_sys: Registered thermal governor 'power_allocator'
+[    0.324566] cpuidle: using governor menu
+[    0.335392] hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
+[    0.342407] ASID allocator initialised with 65536 entries
+[    0.358562] platform 30200000.dss: Fixed dependency cycle(s) with /bus@f0000/i2c@20010000/sii9022@3b
+[    0.369809] platform connector: Fixed dependency cycle(s) with /bus@f0000/i2c@20010000/sii9022@3b
+[    0.379265] KASLR disabled due to lack of seed
+[    0.390081] HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages

@@ -1,0 +1,11 @@
+[    0.000000] percpu: Embedded 17 pages/cpu s31528 r8192 d29912 u69632         
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 1033735   
+[    0.000000] Kernel command line: root=/dev/mmcblk1p3 rw console=tty0 console0
+[    0.000000] Unknown command line parameters: stmmaceth=chain_mode:1 selinux=0
+[    0.000000] Dentry cache hash table entries: 524288 (order: 10, 4194304 byte)
+[    0.000000] Inode-cache hash table entries: 262144 (order: 9, 2097152 bytes,)
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off          
+[    0.000000] software IO TLB: mapped [mem 0x00000000fbfff000-0x00000000fffff0)
+[    0.000000] Memory: 3451376K/4192256K available (9735K kernel code, 4976K rw)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1       
+[    0.000000] rcu: Hierarchical RCU implementation.                            

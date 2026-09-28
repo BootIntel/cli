@@ -167,3 +167,52 @@ fn a_crafted_environment_value_cannot_inject_escapes() {
         "the value itself should still be shown: {text}"
     );
 }
+
+/// A capture with no U-Boot session can still have told us what the kernel
+/// enforces. Exiting 3 with "nothing was assessed" would be false, and a CI job
+/// keyed on that exit code would treat a real answer as a failure to answer.
+#[test]
+fn a_kernel_posture_without_a_session_is_not_nothing() {
+    let path = fixture(
+        "kernel-only.log",
+        "[    0.000000] Linux version 6.1.46\n\
+         [    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off\n\
+         [    0.379265] KASLR disabled due to lack of seed\n",
+    );
+    let out = run(&["verdict", path.to_str().unwrap()]);
+    assert_eq!(code(&out), 0, "stderr: {}", stderr(&out));
+    let text = stdout(&out);
+    assert!(text.contains("kernel hardening"), "{text}");
+    assert!(text.contains("lack of seed"), "{text}");
+    assert!(
+        text.contains("no U-Boot session"),
+        "the unassessed half must still be stated: {text}"
+    );
+}
+
+/// A capture with neither a session nor a posture still reports that nothing
+/// was assessed, which is the case exit 3 exists for.
+#[test]
+fn a_capture_with_neither_still_exits_three() {
+    let path = fixture("nothing.log", "U-Boot 2020.10\nBooting from flash...\n");
+    let out = run(&["verdict", path.to_str().unwrap()]);
+    assert_eq!(code(&out), 3, "stdout: {}", stdout(&out));
+    assert!(stderr(&out).contains("nothing was assessed"));
+}
+
+/// The hardening keys match the engine's, so a consumer can move between this
+/// and the server response without remapping.
+#[test]
+fn hardening_json_keys_match_the_server_response() {
+    let path = fixture(
+        "trap.log",
+        "[    0.000000] Unknown command line parameters: stmmaceth=chain_mode:1 selinux=0\n\
+         [    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off\n",
+    );
+    let out = run(&["verdict", path.to_str().unwrap(), "--json"]);
+    let v: serde_json::Value = serde_json::from_str(&stdout(&out)).expect("valid JSON");
+    let h = &v["os_hardening"];
+    assert_eq!(h["selinux"], "not_supported");
+    assert_eq!(h["mem_auto_init"]["stack"], "off");
+    assert!(h["ignored_kernel_parameters"].is_string());
+}
