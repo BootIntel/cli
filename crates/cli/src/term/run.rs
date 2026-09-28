@@ -15,7 +15,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc;
 use std::sync::Arc;
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use super::hotkey::{Action, BackspaceMode, EscapePrefix, State as HotkeyState};
 use super::logfile::{LogFile, LogFileMode};
@@ -84,6 +84,12 @@ pub struct TermOptions {
     /// When Some (analyze mode only), Ctrl-A f is armed for full
     /// server-side analysis. None disables the hotkey with a hint.
     pub api: Option<ApiConfig>,
+    /// When Some, interrupt autoboot on connect and pull the environment:
+    /// hammer the interrupt key from the moment the port opens, take the
+    /// prompt, run the read-only commands, then print the boot-chain verdict
+    /// and hand the terminal back. See `super::autoboot` for why this cannot
+    /// be done by watching for the countdown.
+    pub interrupt: Option<super::autoboot::Config>,
     /// Escape prefix for the hotkey state machine. Defaults to Ctrl-A.
     /// Users nested inside a tmux/screen session that also binds
     /// Ctrl-A can pass --escape ctrl-t (or whatever) to avoid the
@@ -186,6 +192,54 @@ pub fn run_session(mut opts: TermOptions) -> Result<()> {
         .context("cloning serial port for reader thread")?;
     let mut serial_thread = spawn_reader_thread(read_port, tx.clone(), reader_shutdown.clone());
 
+    // Autoboot interrupter. Armed here, as early as the port allows, because
+    // the whole technique depends on the key being in the board's receiver
+    // before U-Boot looks at it -- see `super::autoboot`. The notes print
+    // before raw mode is entered, so "power-cycle the board" is on screen
+    // while the operator still has a normal terminal.
+    let hammer_on = Arc::new(AtomicBool::new(false));
+    // Collected here and applied once the main loop's writers are in scope.
+    let mut pending_autoboot: Vec<super::autoboot::Action> = Vec::new();
+    let mut interrupter = match &opts.interrupt {
+        None => None,
+        Some(cfg) => {
+            let mut hammer_port = port
+                .try_clone()
+                .context("cloning serial port for the autoboot hammer")?;
+            let key = cfg.key.clone();
+            let interval = cfg.interval;
+            let flag = hammer_on.clone();
+            let hammer_shutdown = shutdown.clone();
+            // Deliberately the dumbest thread in the program: no parsing, no
+            // decisions, nothing that can block. Every judgement lives in the
+            // state machine on the main thread, so the only thing that has to
+            // be fast is the only thing that is here.
+            thread::spawn(move || {
+                let mut was_armed = false;
+                while !hammer_shutdown.load(Ordering::Relaxed) {
+                    let armed = flag.load(Ordering::Relaxed);
+                    if armed {
+                        // On the arming edge, a short burst. A board whose
+                        // autoboot check runs once needs a byte already
+                        // waiting, and the cost of eight spaces is nothing.
+                        let reps = if was_armed { 1 } else { 8 };
+                        for _ in 0..reps {
+                            if hammer_port.write_all(&key).is_err() {
+                                return;
+                            }
+                        }
+                        let _ = hammer_port.flush();
+                    }
+                    was_armed = armed;
+                    thread::sleep(interval);
+                }
+            });
+            let mut it = super::autoboot::Interrupter::new(cfg.clone(), Instant::now());
+            pending_autoboot = it.begin();
+            Some(it)
+        }
+    };
+
     // Keyboard-read thread. crossterm::event::poll lets us check the
     // shutdown flag periodically without blocking forever on stdin.
     let kb_tx = tx.clone();
@@ -262,6 +316,28 @@ pub fn run_session(mut opts: TermOptions) -> Result<()> {
         let _ = out.flush();
     }
 
+    // The opening moves (start hammering, maybe pulse reset, tell the operator
+    // to power-cycle) go out before the first read, for the reason in
+    // `super::autoboot`: reacting to the countdown is already too late.
+    if !pending_autoboot.is_empty() {
+        let actions = std::mem::take(&mut pending_autoboot);
+        let keep = apply_autoboot(
+            actions,
+            &mut port,
+            &mut out,
+            &hammer_on,
+            opts.interrupt.as_ref(),
+            opts.analyzer.as_ref(),
+            &opts.port_name,
+            use_color,
+            &mut dtr_state,
+            &mut rts_state,
+        );
+        if !keep || interrupter.as_ref().is_some_and(|it| it.is_finished()) {
+            interrupter = None;
+        }
+    }
+
     let exit_reason = loop {
         // A signal handler may have asked us to stop. Break out so the
         // teardown below runs: threads joined, raw mode restored, log
@@ -290,6 +366,32 @@ pub fn run_session(mut opts: TermOptions) -> Result<()> {
                         for f in &new {
                             let _ = print_finding_inline(&mut out, f, use_color);
                         }
+                    }
+                }
+            }
+            // A quiet line is what the interrupter is usually waiting for: the
+            // settle window before typing, and the deadline on a board that
+            // never stopped, both expire with no bytes arriving.
+            let actions = interrupter
+                .as_mut()
+                .map(|it| it.poll(Instant::now(), &[]))
+                .unwrap_or_default();
+            {
+                if !actions.is_empty() {
+                    let keep = apply_autoboot(
+                        actions,
+                        &mut port,
+                        &mut out,
+                        &hammer_on,
+                        opts.interrupt.as_ref(),
+                        opts.analyzer.as_ref(),
+                        &opts.port_name,
+                        use_color,
+                        &mut dtr_state,
+                        &mut rts_state,
+                    );
+                    if !keep || interrupter.as_ref().is_some_and(|it| it.is_finished()) {
+                        interrupter = None;
                     }
                 }
             }
@@ -330,6 +432,35 @@ pub fn run_session(mut opts: TermOptions) -> Result<()> {
                             for f in &new {
                                 let _ = print_finding_inline(&mut out, f, use_color);
                             }
+                        }
+                    }
+                }
+                // Autoboot interrupter, fed the same bytes. After the analyzer
+                // so a finding about a line is on screen before a note about
+                // what we typed in response to it.
+                let actions = interrupter
+                    .as_mut()
+                    .map(|it| it.poll(Instant::now(), &bytes))
+                    .unwrap_or_default();
+                {
+                    if !actions.is_empty() {
+                        let keep = apply_autoboot(
+                            actions,
+                            &mut port,
+                            &mut out,
+                            &hammer_on,
+                            opts.interrupt.as_ref(),
+                            opts.analyzer.as_ref(),
+                            &opts.port_name,
+                            use_color,
+                            &mut dtr_state,
+                            &mut rts_state,
+                        );
+                        // The machine itself knows when it is done; the
+                        // return value only reports an I/O failure the machine
+                        // cannot see.
+                        if !keep || interrupter.as_ref().is_some_and(|it| it.is_finished()) {
+                            interrupter = None;
                         }
                     }
                 }
@@ -1322,4 +1453,141 @@ pub fn validate_port_hint(name: &str) -> Result<()> {
         }
     }
     Ok(())
+}
+
+/// Carry out what the interrupter decided. Returns false once the sequence is
+/// over, so the caller stops polling it.
+///
+/// Every side effect of the feature is here and nowhere else, which is what
+/// lets the decisions be a pure state machine with unit tests instead of a
+/// board on a bench.
+#[allow(clippy::too_many_arguments)]
+fn apply_autoboot<W: Write>(
+    actions: Vec<super::autoboot::Action>,
+    port: &mut Box<dyn SerialPort>,
+    out: &mut W,
+    hammer_on: &AtomicBool,
+    cfg: Option<&super::autoboot::Config>,
+    analyzer: Option<&AnalyzeState>,
+    source: &str,
+    use_color: bool,
+    dtr_state: &mut bool,
+    rts_state: &mut bool,
+) -> bool {
+    use super::autoboot::{Action, ResetLine};
+    let mut keep = true;
+    for action in actions {
+        match action {
+            Action::StartHammer => hammer_on.store(true, Ordering::Relaxed),
+            Action::StopHammer => hammer_on.store(false, Ordering::Relaxed),
+            Action::PulseReset => {
+                let (line, hold) = match cfg {
+                    Some(c) => (c.reset_line, c.reset_hold),
+                    None => (ResetLine::None, Duration::from_millis(0)),
+                };
+                // Blocking, on purpose: this happens once, at connect, before
+                // there is anything to interleave with, and a reset that
+                // overlaps the next action is not a reset.
+                let applied = match line {
+                    ResetLine::Dtr => {
+                        let r = port.write_data_terminal_ready(false);
+                        thread::sleep(hold);
+                        let _ = port.write_data_terminal_ready(true);
+                        *dtr_state = true;
+                        r
+                    }
+                    ResetLine::Rts => {
+                        let r = port.write_request_to_send(false);
+                        thread::sleep(hold);
+                        let _ = port.write_request_to_send(true);
+                        *rts_state = true;
+                        r
+                    }
+                    ResetLine::None => Ok(()),
+                };
+                if let Err(e) = applied {
+                    let _ = autoboot_note(
+                        out,
+                        &format!(
+                            "could not drive the reset line: {e}. Power-cycle the board by hand; \
+                             the hammer is already running."
+                        ),
+                        use_color,
+                    );
+                }
+            }
+            Action::Send(bytes) => {
+                // Written raw, bypassing the TX newline transform: these bytes
+                // are the tool's own, and the CR at the end of a command is
+                // meant literally rather than as something to rewrite.
+                if let Err(e) = port.write_all(&bytes).and_then(|()| port.flush()) {
+                    let _ = autoboot_note(
+                        out,
+                        &format!("could not write to the port: {e}; giving up on the prompt"),
+                        use_color,
+                    );
+                    hammer_on.store(false, Ordering::Relaxed);
+                    keep = false;
+                }
+            }
+            Action::Note(text) => {
+                let _ = autoboot_note(out, &text, use_color);
+            }
+            Action::GaveUp(reason) => {
+                let _ = autoboot_note(out, &reason, use_color);
+                keep = false;
+            }
+            Action::Done => {
+                keep = false;
+                // The verdict, from the session we just pulled. Rendered by the
+                // same function `bootintel verdict` uses, through a writer that
+                // turns its LFs into CRLFs, because raw mode has ONLCR off and
+                // a second copy of this renderer would be one more thing to
+                // drift.
+                let Some(analyzer) = analyzer else {
+                    let _ = autoboot_note(
+                        out,
+                        "environment captured into the log; run `bootintel verdict` on it.",
+                        use_color,
+                    );
+                    continue;
+                };
+                let (session, verdicts) =
+                    bootintel_detectors::boot_chain::assess(analyzer.log_so_far());
+                let _ = write!(out, "\r\n");
+                let color = if use_color {
+                    crate::output::ColorMode::On
+                } else {
+                    crate::output::ColorMode::Off
+                };
+                let mut crlf = crate::output::CrlfWriter::new(&mut *out);
+                let _ =
+                    crate::cmd::verdict::write_text(&mut crlf, source, &session, &verdicts, color);
+                let _ = out.flush();
+            }
+        }
+    }
+    keep
+}
+
+/// One operator-facing line from the interrupter, distinguishable at a glance
+/// from what the board said. A client-facing transcript has to show which
+/// bytes were the tool's.
+fn autoboot_note<W: Write>(out: &mut W, text: &str, use_color: bool) -> std::io::Result<()> {
+    let clean = crate::analyze::render::sanitize_for_term(text);
+    write!(out, "\r\n")?;
+    if use_color {
+        let _ = crossterm::queue!(
+            out,
+            crossterm::style::SetForegroundColor(crossterm::style::Color::Magenta),
+            crossterm::style::Print("[bootintel] ▸  "),
+            crossterm::style::ResetColor,
+        );
+    } else {
+        write!(out, "[bootintel] \u{25b8}  ")?;
+    }
+    // The note may be multi-line; raw mode needs every break to return the
+    // carriage.
+    write!(out, "{}\r\n", clean.replace('\n', "\r\n"))?;
+    out.flush()
 }
