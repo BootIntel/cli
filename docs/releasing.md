@@ -67,6 +67,17 @@ having no brew line at all.
    both.
 6. Publish the draft and mark it latest. That creates the tag on the released
    commit.
+7. **Move the Homebrew tap.** Update `Formula/bootintel.rb` in
+   `BootIntel/homebrew-tap` with the new `version` and all four sha256 values,
+   read out of that release's `SHA256SUMS` rather than transcribed: a wrong
+   digest makes `brew install` fail with a checksum mismatch, which reads to a
+   user like a compromised download. Then sync
+   `packaging/homebrew/bootintel.rb` in this repo so the reference copy is not
+   claiming checksums that no longer exist.
+
+   This step was missing from the list until 0.8.0, and the in-repo copy sat at
+   0.5.0 while 0.6.0, 0.6.1 and 0.7.0 shipped as a result. The tap itself was
+   kept current each time, but only because someone remembered.
 
 ## Yanking a published version
 
