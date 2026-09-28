@@ -8,6 +8,34 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+### Added
+- **`bootintel verdict` now reports what the bootloader actually verified**, not
+  only what the environment says it is configured to do. A capture containing
+  `Verifying Checksum ... OK` or `Verifying Hash Integrity ... sha256+ OK` no
+  longer gets "I cannot tell whether images are checked" while the answer sits in
+  the same log. Also reads the i.MX HAB fuse and UBIFS unauthenticated mounts.
+
+  The distinction is kept deliberately: a passing checksum is reported as
+  `confirmed`, never `hardened`, and the detail says why. A CRC proves the image
+  was not corrupt; anyone who can write the image can recompute it. Only a
+  signature (`sha256,rsa2048:dev+ OK`) reports as `hardened`.
+
+  New verdict entry **Secure boot anchor** when the SoC reports `hab fuse not
+  enabled`, because while that fuse is unblown the boot ROM runs unsigned images
+  whatever the bootloader prints afterwards. It is emitted without needing a
+  `printenv`, since the fact does not depend on one.
+
+### Changed
+- **Breaking, library only: `boot_chain::assess` returns an `Assessment` struct**
+  (`session`, `integrity`, `verdicts`) instead of a `(UbootSession, Vec<Verdict>)`
+  tuple, and `boot_chain::verdict` takes the integrity alongside the session. The
+  alternative was a second entry point for the same operation, and two functions
+  differing only in how much they tell you is worse for whoever reads it next. No
+  CLI flag, output or exit code changed.
+- `verdict --json` gained a `boot_integrity` object, mirroring the engine's key
+  names. Fields are omitted when the capture said nothing about them rather than
+  emitted as null.
+
 ## [0.8.0] — 2026-09-28 — read the boot chain on the bench, offline
 
 Two halves of one workflow: take the U-Boot prompt on a board in front of you,

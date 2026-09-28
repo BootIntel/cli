@@ -48,7 +48,8 @@ fn field(out: &mut Vec<String>, indent: &str, key: &str, value: &str) {
 /// rather than JSON so it diffs cleanly in review, and so this crate needs no
 /// serde: it stays serde-free on purpose to keep the CLI binary small.
 fn render(name: &str, log: &str) -> Vec<String> {
-    let (session, verdicts) = boot_chain::assess(log);
+    let a = boot_chain::assess(log);
+    let (session, integrity, verdicts) = (&a.session, &a.integrity, &a.verdicts);
     let mut out = vec![format!(
         "## fixture {name} fnv1a64={}",
         fnv1a64(log.as_bytes())
@@ -65,10 +66,59 @@ fn render(name: &str, log: &str) -> Vec<String> {
         _ => String::new(),
     };
     field(&mut out, "  ", "env_bytes", &bytes);
+    // Same field order as `analysis_engine/parity_render.py`, and absent fields
+    // are omitted rather than rendered empty: "the capture said nothing about
+    // this" is a different claim from "this is off".
+    let mut integ = |k: &str, val: Option<&str>| {
+        if let Some(x) = val {
+            field(&mut out, "  ", "integrity", &format!("{k}={x}"));
+        }
+    };
+    integ("image_check", integrity.image_check.as_deref());
+    integ(
+        "image_check_result",
+        integrity.image_check_result.as_deref(),
+    );
+    integ(
+        "image_check_evidence",
+        integrity.image_check_evidence.as_deref(),
+    );
+    let algos = integrity.image_hash_algorithms.join(", ");
+    integ(
+        "image_hash_algorithms",
+        if algos.is_empty() {
+            None
+        } else {
+            Some(algos.as_str())
+        },
+    );
+    integ(
+        "image_signature_checked",
+        if integrity.image_signature_checked {
+            Some("true")
+        } else {
+            None
+        },
+    );
+    integ(
+        "image_signature_evidence",
+        integrity.image_signature_evidence.as_deref(),
+    );
+    integ(
+        "image_check_failed",
+        integrity.image_check_failed.as_deref(),
+    );
+    integ("hab_fuse", integrity.hab_fuse.as_deref());
+    integ("hab_evidence", integrity.hab_evidence.as_deref());
+    integ(
+        "ubifs_unauthenticated",
+        integrity.ubifs_unauthenticated.as_deref(),
+    );
+    integ("env_crc_failed", integrity.env_crc_failed.as_deref());
     for (key, value) in &session.env {
         field(&mut out, "  ", "env", &format!("{key}={value}"));
     }
-    for verdict in &verdicts {
+    for verdict in verdicts {
         out.push("  verdict".to_string());
         field(&mut out, "    ", "title", &verdict.title);
         field(&mut out, "    ", "state", &verdict.state);
@@ -171,14 +221,17 @@ fn a_plain_boot_log_yields_no_session_and_no_verdict() {
                  PATH=/usr/bin:/bin\n\
                  bootcmd=this is not really an environment\n\
                  [    1.000000] procd: - init -\n";
-    let (session, verdicts) = boot_chain::assess(plain);
-    assert!(!session.reached, "claimed a shell on a log with no session");
+    let a = boot_chain::assess(plain);
     assert!(
-        session.env.is_empty(),
-        "invented an environment: {:?}",
-        session.env
+        !a.session.reached,
+        "claimed a shell on a log with no session"
     );
-    assert!(verdicts.is_empty(), "produced verdicts with no session");
+    assert!(
+        a.session.env.is_empty(),
+        "invented an environment: {:?}",
+        a.session.env
+    );
+    assert!(a.verdicts.is_empty(), "produced verdicts with no session");
 }
 
 #[test]
@@ -186,9 +239,9 @@ fn an_unterminated_run_of_key_values_is_discarded() {
     // Same shape as a real dump but with no `Environment size:` line, so
     // nothing proves it was one. Absence of proof is not a verdict.
     let log = "bootdelay=3\nbootcmd=bootm 0x82000000\nverify=no\n";
-    let (session, verdicts) = boot_chain::assess(log);
-    assert!(session.env.is_empty());
-    assert!(verdicts.is_empty());
+    let a = boot_chain::assess(log);
+    assert!(a.session.env.is_empty());
+    assert!(a.verdicts.is_empty());
 }
 
 /// Absence is reported as unknown, never as good news: U-Boot prints only what
@@ -197,7 +250,7 @@ fn an_unterminated_run_of_key_values_is_discarded() {
 #[test]
 fn a_missing_variable_is_unknown_rather_than_hardened() {
     let log = "=> printenv\nbootcmd=run sfboot\nEnvironment size: 20/65532 bytes\n";
-    let (_, verdicts) = boot_chain::assess(log);
+    let verdicts = boot_chain::assess(log).verdicts;
     let delay = verdicts
         .iter()
         .find(|v| v.title == "Autoboot delay")
@@ -210,7 +263,7 @@ fn a_missing_variable_is_unknown_rather_than_hardened() {
 #[test]
 fn a_wrapped_value_is_rejoined_rather_than_ending_the_dump() {
     let log = fs::read_to_string(fixtures().join("wrapped-env.log")).expect("fixture");
-    let (session, _) = boot_chain::assess(&log);
+    let session = boot_chain::assess(&log).session;
     let upfw = session
         .env
         .get("upfw")
@@ -230,7 +283,7 @@ fn every_verdict_names_the_variable_it_read() {
     // quote a tool, so an unevidenced verdict is a broken one.
     for name in declared_fixtures(&expectation()) {
         let log = fs::read_to_string(fixtures().join(&name)).expect("fixture");
-        for verdict in boot_chain::verdict(&boot_chain::parse_session(&log)) {
+        for verdict in boot_chain::assess(&log).verdicts {
             assert!(
                 !verdict.evidence.trim().is_empty(),
                 "{name}: {:?} has no evidence",
@@ -244,4 +297,133 @@ fn every_verdict_names_the_variable_it_read() {
             );
         }
     }
+}
+
+/// A checksum is not a signature, and the difference is the whole reason this
+/// module reads the boot output rather than trusting `verify=`.
+#[test]
+fn a_passing_checksum_is_reported_as_integrity_not_authenticity() {
+    let log = "## Booting kernel from Legacy Image at 82000000 ...\n\
+                  Verifying Checksum ... OK\n\
+               => printenv\nbootcmd=bootm 0x82000000\n\
+               Environment size: 20/65532 bytes\n";
+    let a = boot_chain::assess(log);
+    assert_eq!(a.integrity.image_check.as_deref(), Some("uimage_crc"));
+    assert_eq!(a.integrity.image_check_result.as_deref(), Some("passed"));
+    let v = a
+        .verdicts
+        .iter()
+        .find(|v| v.title == "Image verification")
+        .expect("a verdict about verification");
+    // `confirmed`, not `hardened`: the check happened, and it does not protect
+    // against someone who can rewrite the image and its checksum.
+    assert_eq!(v.state, "confirmed");
+    assert!(v.detail.contains("not a signature"), "{}", v.detail);
+    assert!(!a.integrity.image_signature_checked);
+}
+
+/// U-Boot prints `sha256,rsa2048:dev+ OK` when a signature node was verified,
+/// and `sha256+ OK` when only a digest was. Reporting the second as a signature
+/// would tell a client authenticity was established when it was not. No corpus
+/// log exercises either, so these are the documented formats.
+#[test]
+fn only_a_signature_algorithm_establishes_authenticity() {
+    let unsigned = boot_chain::parse_integrity("   Verifying Hash Integrity ... sha256+ OK\n");
+    assert_eq!(unsigned.image_hash_algorithms, ["sha256"]);
+    assert!(
+        !unsigned.image_signature_checked,
+        "an unsigned FIT hash was reported as a verified signature"
+    );
+
+    let signed =
+        boot_chain::parse_integrity("   Verifying Hash Integrity ... sha256,rsa2048:dev+ OK\n");
+    assert_eq!(signed.image_hash_algorithms, ["sha256", "rsa2048:dev"]);
+    assert!(signed.image_signature_checked);
+}
+
+/// The false positive that reached production on the engine side: a substring
+/// match on "Bad Magic Number" catches a filesystem complaint and reports a
+/// failed image verification on a device whose bootloader said no such thing.
+#[test]
+fn a_filesystem_complaint_is_not_an_image_check_failure() {
+    let fsck = boot_chain::parse_integrity(
+        "fsck.ext2: Bad magic number in super-block while trying to open /dev/pramdisk0\n",
+    );
+    assert_eq!(fsck.image_check_failed, None);
+
+    // And a test harness quoting U-Boot's error strings in a list, which is what
+    // bootintel-7 actually contains.
+    let harness = boot_chain::parse_integrity(
+        "bootloader-commands: Wait for prompt ['=>', 'Bad Linux ARM64 Image magic!', 'TIMEOUT']\n",
+    );
+    assert_eq!(harness.image_check_failed, None);
+
+    // U-Boot's own standalone line still registers.
+    for line in ["   Bad Magic Number\n", "Bad Header Checksum.\n"] {
+        assert!(
+            boot_chain::parse_integrity(line)
+                .image_check_failed
+                .is_some(),
+            "{line:?} was not recognised"
+        );
+    }
+}
+
+/// The HAB fuse is the anchor: while it is unblown the boot ROM runs unsigned
+/// images whatever the bootloader prints afterwards. It must not depend on
+/// having captured a printenv, because bootintel-7 does not have one.
+#[test]
+fn the_secure_boot_anchor_does_not_need_an_environment() {
+    let log = "Normal Boot\nhab fuse not enabled\nu-boot=> boot\n";
+    let a = boot_chain::assess(log);
+    assert!(a.session.env.is_empty(), "this capture has no environment");
+    let anchor = a
+        .verdicts
+        .iter()
+        .find(|v| v.title == "Secure boot anchor")
+        .expect("the anchor verdict survives a missing environment");
+    assert_eq!(anchor.state, "exposed");
+    assert_eq!(anchor.severity, "high");
+}
+
+/// A capture can carry both `verify=no` and an observed passing check. Emitting
+/// one verdict for each produced two contradictory answers to one question,
+/// which is a bug this codebase has already fixed once in another form.
+#[test]
+fn a_config_and_observation_conflict_is_one_verdict_that_names_it() {
+    let log = "   Verifying Checksum ... OK\n=> printenv\nverify=no\n\
+               Environment size: 20/65532 bytes\n";
+    let entries: Vec<_> = boot_chain::assess(log)
+        .verdicts
+        .into_iter()
+        .filter(|v| v.title == "Image verification")
+        .collect();
+    assert_eq!(
+        entries.len(),
+        1,
+        "two verdicts for one question: {entries:?}"
+    );
+    assert!(
+        entries[0].detail.contains("verify=no"),
+        "the conflict is not explained: {}",
+        entries[0].detail
+    );
+}
+
+/// "The check ran" is a different claim from "the check passed".
+#[test]
+fn a_check_with_no_captured_result_is_unknown_rather_than_passing() {
+    let log = "   Verifying Checksum ...\n=> printenv\nbootcmd=bootm 0x82000000\n\
+               Environment size: 20/65532 bytes\n";
+    let a = boot_chain::assess(log);
+    assert_eq!(
+        a.integrity.image_check_result.as_deref(),
+        Some("not_captured")
+    );
+    let v = a
+        .verdicts
+        .iter()
+        .find(|v| v.title == "Image verification")
+        .expect("a verdict");
+    assert_eq!(v.state, "unknown");
 }

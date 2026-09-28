@@ -3,7 +3,7 @@
 #   BootIntel/cli  crates/detectors/tests/fixtures/boot_chain/expect.txt
 # Each repo asserts its own implementation reproduces it, so the Python engine
 # and the Rust CLI cannot disagree about a device without a test going red.
-# Regenerate BOTH copies with: python3 scripts/gen-boot-chain-expect.py
+# Regenerate BOTH copies with: scripts/gen-boot-chain-expect.sh
 # Do not hand-edit. fnv1a64 pins the fixture log the block was produced from.
 ## fixture session.log fnv1a64=0dc3e8116533707d
   reached true
@@ -25,6 +25,13 @@
     detail An operator interrupted autoboot and got a command prompt. Everything below was read from the device, not inferred from its boot output.
     remediation Set bootdelay=-1 and build with CONFIG_AUTOBOOT_KEYED so the prompt needs a password.
   verdict
+    title Image verification
+    state exposed
+    severity high
+    evidence verify=no
+    detail verify is disabled, so U-Boot will not check image checksums before booting.
+    remediation Set verify=yes, and prefer signed FIT images over checksums.
+  verdict
     title Autoboot delay
     state exposed
     severity high
@@ -38,13 +45,6 @@
     evidence bootcmd=bootm 0x9f020000
     detail bootcmd is readable and, with the prompt reachable, settable. Whoever holds the console decides what the device boots.
     remediation Lock the environment (CONFIG_ENV_IS_NOWHERE or a signed env) and require a password at the prompt.
-  verdict
-    title Image verification
-    state exposed
-    severity high
-    evidence verify=no
-    detail verify is disabled, so U-Boot will not check image checksums before booting.
-    remediation Set verify=yes, and prefer signed FIT images over checksums.
   verdict
     title Network boot path
     state exposed
@@ -213,4 +213,77 @@
     severity medium
     evidence Environment size: 1524/65532 bytes
     detail The environment occupies 1524 of 65532 bytes of writable storage, so `saveenv` can persist a change across reboots.
+    remediation Build with a read-only or signed environment for production.
+## fixture hab-unblown.log fnv1a64=5dc74812dbd1cb3f
+  reached true
+  evidence u-boot=> setenv factorymode 1
+  env_bytes
+  integrity hab_fuse=not_enabled
+  integrity hab_evidence=hab fuse not enabled
+  verdict
+    title U-Boot shell reached
+    state confirmed
+    severity high
+    evidence u-boot=> setenv factorymode 1
+    detail An operator interrupted autoboot and got a command prompt. Everything below was read from the device, not inferred from its boot output.
+    remediation Set bootdelay=-1 and build with CONFIG_AUTOBOOT_KEYED so the prompt needs a password.
+  verdict
+    title Secure boot anchor
+    state exposed
+    severity high
+    evidence hab fuse not enabled
+    detail The SoC reports the HAB fuse is not enabled, so the boot ROM will run an unsigned image. Whatever the bootloader does about checksums afterwards is advisory: the chain has no anchor.
+    remediation Blow the HAB fuse and close the device only after a signed image is confirmed to boot, since the operation is irreversible.
+  verdict
+    title Environment not captured
+    state unknown
+    severity info
+    evidence u-boot=> setenv factorymode 1
+    detail The shell was reached but no printenv output was captured, so the boot chain below could not be assessed. Run `printenv` at the prompt.
+    remediation
+## fixture verified-image.log fnv1a64=2b755c9900cf45ff
+  reached true
+  evidence Environment size: 1650/4091 bytes
+  env_bytes 1650/4091
+  integrity image_check=uimage_crc
+  integrity image_check_result=passed
+  integrity image_check_evidence=Verifying Checksum ... OK
+  integrity image_check_failed=Bad Magic Number
+  env AP_FLAG=0
+  env LOAD_SENSOR_IMG=0
+  env MOSTRECENTKERNEL=1
+  env WATCHDOG_COUNT=0
+  env filesize=ba3
+  env mem=130560k
+  env stderr=serial
+  env stdin=serial
+  env stdout=serial
+  env ver=U-Boot 1.2.0.07-dirty (Apr 20 2017 - 18:13:34)
+  verdict
+    title U-Boot shell reached
+    state confirmed
+    severity high
+    evidence Environment size: 1650/4091 bytes
+    detail An operator interrupted autoboot and got a command prompt. Everything below was read from the device, not inferred from its boot output.
+    remediation Set bootdelay=-1 and build with CONFIG_AUTOBOOT_KEYED so the prompt needs a password.
+  verdict
+    title Image verification
+    state confirmed
+    severity medium
+    evidence Verifying Checksum ... OK
+    detail The bootloader checked the image before booting it, using a legacy uImage CRC, and the check passed. That proves the image was not corrupt. It is not a signature: anyone who can write the image can recompute the checksum, so this stops bit-rot rather than an attacker.
+    remediation Move to signed FIT images (CONFIG_FIT_SIGNATURE) so a deliberate modification is detected and not just a corrupt one.
+  verdict
+    title Autoboot delay
+    state unknown
+    severity info
+    evidence bootdelay absent
+    detail bootdelay is not set in the environment, so the built-in default applies and cannot be read from here.
+    remediation
+  verdict
+    title Environment storage
+    state confirmed
+    severity medium
+    evidence Environment size: 1650/4091 bytes
+    detail The environment occupies 1650 of 4091 bytes of writable storage, so `saveenv` can persist a change across reboots.
     remediation Build with a read-only or signed environment for production.

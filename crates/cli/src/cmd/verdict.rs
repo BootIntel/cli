@@ -22,7 +22,7 @@ use anyhow::Result;
 use clap::Args as ClapArgs;
 use std::io::Write;
 
-use bootintel_detectors::boot_chain::{self, UbootSession, Verdict};
+use bootintel_detectors::boot_chain::{self, BootIntegrity, UbootSession, Verdict};
 
 use crate::analyze::render::sanitize_for_term;
 use crate::output::{self, ColorMode};
@@ -89,14 +89,19 @@ pub fn run(args: Args) -> Result<()> {
         std::process::exit(EXIT_EMPTY_INPUT);
     }
 
-    let (session, verdicts) = boot_chain::assess(&log.text);
+    let assessment = boot_chain::assess(&log.text);
+    let (session, integrity, verdicts) = (
+        &assessment.session,
+        &assessment.integrity,
+        &assessment.verdicts,
+    );
 
     let stdout = std::io::stdout();
     let color = output::resolve_color_mode(args.no_color, &stdout);
     let mut out = stdout.lock();
 
     if args.json {
-        let payload = json(&log.source_label, &session, &verdicts);
+        let payload = json(&log.source_label, session, integrity, verdicts);
         if let Err(e) = serde_json::to_writer_pretty(&mut out, &payload)
             .map_err(anyhow::Error::from)
             .and_then(|()| writeln!(out).map_err(anyhow::Error::from))
@@ -107,7 +112,14 @@ pub fn run(args: Args) -> Result<()> {
                 return Err(e);
             }
         }
-    } else if let Err(e) = write_text(&mut out, &log.source_label, &session, &verdicts, color) {
+    } else if let Err(e) = write_text(
+        &mut out,
+        &log.source_label,
+        session,
+        integrity,
+        verdicts,
+        color,
+    ) {
         if !crate::is_broken_pipe(&e) {
             return Err(e);
         }
@@ -149,7 +161,12 @@ pub fn run(args: Args) -> Result<()> {
     Ok(())
 }
 
-fn json(source: &str, session: &UbootSession, verdicts: &[Verdict]) -> serde_json::Value {
+fn json(
+    source: &str,
+    session: &UbootSession,
+    integrity: &BootIntegrity,
+    verdicts: &[Verdict],
+) -> serde_json::Value {
     let mut shell = serde_json::Map::new();
     shell.insert("reached".into(), session.reached.into());
     shell.insert("evidence".into(), session.evidence.clone().into());
@@ -157,9 +174,53 @@ fn json(source: &str, session: &UbootSession, verdicts: &[Verdict]) -> serde_jso
         shell.insert("env_used_bytes".into(), used.into());
         shell.insert("env_total_bytes".into(), total.into());
     }
+    // Mirrors the engine's `boot_integrity` key names, and omits what was not
+    // observed rather than emitting nulls: absence of a field means the capture
+    // said nothing, which is different from a field saying "no".
+    let mut bi = serde_json::Map::new();
+    let mut put = |k: &str, val: Option<&str>| {
+        if let Some(x) = val {
+            bi.insert(k.into(), x.into());
+        }
+    };
+    put("image_check", integrity.image_check.as_deref());
+    put(
+        "image_check_result",
+        integrity.image_check_result.as_deref(),
+    );
+    put(
+        "image_check_evidence",
+        integrity.image_check_evidence.as_deref(),
+    );
+    put(
+        "image_check_failed",
+        integrity.image_check_failed.as_deref(),
+    );
+    put("hab_fuse", integrity.hab_fuse.as_deref());
+    put("hab_evidence", integrity.hab_evidence.as_deref());
+    put(
+        "ubifs_unauthenticated",
+        integrity.ubifs_unauthenticated.as_deref(),
+    );
+    put("env_crc_failed", integrity.env_crc_failed.as_deref());
+    put(
+        "image_signature_evidence",
+        integrity.image_signature_evidence.as_deref(),
+    );
+    if !integrity.image_hash_algorithms.is_empty() {
+        bi.insert(
+            "image_hash_algorithms".into(),
+            integrity.image_hash_algorithms.clone().into(),
+        );
+    }
+    if integrity.image_signature_checked {
+        bi.insert("image_signature_checked".into(), true.into());
+    }
+
     serde_json::json!({
         "source": source,
         "uboot_shell": shell,
+        "boot_integrity": bi,
         "uboot_env": session.env.iter()
             .map(|(k, v)| (k.clone(), serde_json::Value::from(v.clone())))
             .collect::<serde_json::Map<String, serde_json::Value>>(),
@@ -187,6 +248,7 @@ pub(crate) fn write_text<W: Write>(
     out: &mut W,
     source: &str,
     session: &UbootSession,
+    integrity: &BootIntegrity,
     verdicts: &[Verdict],
     color: ColorMode,
 ) -> Result<()> {
@@ -218,6 +280,24 @@ pub(crate) fn write_text<W: Write>(
         session.env.len(),
         if session.env.len() == 1 { "" } else { "s" }
     )?;
+    if let Some(check) = &integrity.image_check {
+        let mechanism = if check == "fit_hash" {
+            let algos = if integrity.image_hash_algorithms.is_empty() {
+                "unspecified".to_string()
+            } else {
+                integrity.image_hash_algorithms.join(", ")
+            };
+            format!("FIT hash ({algos})")
+        } else {
+            "uImage CRC".to_string()
+        };
+        writeln!(
+            out,
+            "    image check  {} ({})",
+            sanitize_for_term(&mechanism),
+            integrity.image_check_result.as_deref().unwrap_or("unknown")
+        )?;
+    }
     writeln!(out)?;
 
     for v in verdicts {
