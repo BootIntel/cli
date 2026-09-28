@@ -8,6 +8,12 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+## [0.10.0] — 2026-09-28 — the kernel's own hardening report
+
+`bootintel verdict` now answers for captures that never reach a U-Boot prompt.
+A plain boot log states which protections the kernel enforces, and reporting
+"nothing was assessed" about one of those was false.
+
 ### Added
 - **`bootintel verdict` now reports the kernel hardening posture** alongside the
   boot chain: mandatory access control, memory initialisation, and kernel address
@@ -710,7 +716,8 @@ Initial release. All six subcommands live; five branch-based milestones (M1-M5) 
 - PDF report download subcommand — server-side endpoint exists but no client-side wrapper yet.
 - Windows support — the Rust code compiles for Windows and the release workflow builds it, but install.sh doesn't handle Windows yet (`.ps1` installer is a follow-up).
 
-[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.9.0...HEAD
+[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.10.0...HEAD
+[0.10.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.10.0
 [0.9.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.9.0
 [0.8.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.8.0
 [0.7.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.7.0
