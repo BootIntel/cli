@@ -46,6 +46,12 @@ pub struct UbootSession {
     pub env: BTreeMap<String, String>,
     pub env_used_bytes: Option<u64>,
     pub env_total_bytes: Option<u64>,
+    /// `bdinfo` output: what the board reports about itself.
+    pub bdinfo: BTreeMap<String, String>,
+    /// The flash device named by an `mtdparts` dump.
+    pub mtd_device: Option<String>,
+    /// Partitions from an `mtdparts` dump, in the order printed.
+    pub mtd_partitions: Vec<MtdPartition>,
 }
 
 use std::sync::LazyLock;
@@ -239,6 +245,72 @@ pub fn parse_integrity(log: &str) -> BootIntegrity {
     bi
 }
 
+// bdinfo prints aligned `name = value`. WHITESPACE BOTH SIDES OF THE `=` IS
+// REQUIRED, and it is what separates a bdinfo line from an environment line:
+// `printenv` emits `ethaddr=00:1F:...` with no spaces, bdinfo pads to a column
+// and emits `ethaddr     = 00:1F:...`. Without that, every environment dump
+// containing baudrate or ethaddr would also be read as board info.
+static RE_BDINFO: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^\s*([A-Za-z][\w /()\-]{0,31}?)\s+=\s+(\S.*?)\s*$").unwrap());
+
+/// The allowlist is what makes bdinfo self-evidencing, which matters because the
+/// command that produced it cannot be relied on: bootintel-20 prints a full dump
+/// after `Boot-> bdinfo`, and `Boot->` is not U-Boot's default prompt, so a
+/// command-gated parser read that dump as nothing at all.
+///
+/// `start` and `size` are deliberately absent: too generic to stand alone.
+/// bootintel-5 prints an MTD table as `mtd_part[0]:` / `name = KERNEL` /
+/// `size = 0x180000`, and `size` in this list recorded that as board info.
+const BDINFO_KEYS: &[&str] = &[
+    "arch_number",
+    "boot_params",
+    "dram bank",
+    "flashstart",
+    "flashsize",
+    "flashoffset",
+    "baudrate",
+    "relocaddr",
+    "reloc off",
+    "ethaddr",
+    "ip_addr",
+    "fdt_blob",
+    "irq_sp",
+    "sp start",
+    "eth0name",
+    "memstart",
+    "memsize",
+    "eth1name",
+    "ethaddr1",
+    "current eth",
+    "fdt_addr",
+    "sp_start",
+    "reloc_off",
+    "dram_bank",
+];
+
+// `device nor0 <spi0.0>, # parts = 4`. The bracketed chip identifier is optional
+// and the space in `# parts` is real. The engine's first version of this pattern
+// required `#parts` with no space and no brackets, so it never matched U-Boot's
+// actual output: the partition lines parsed and the device name did not. No
+// public corpus log contains an mtdparts dump, so nothing caught it until a
+// fixture was written for the documented format.
+static RE_MTD_DEV: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)^\s*device\s+(\S+)(?:\s+<[^>]*>)?\s*,\s*#\s*parts\s*=\s*(\d+)").unwrap()
+});
+static RE_MTD_PART: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)^\s*\d+:\s*(\S+)\s+0x([0-9a-f]+)\s+0x([0-9a-f]+)\s+(\d)").unwrap()
+});
+
+/// One partition as `mtdparts` printed it at the prompt.
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
+pub struct MtdPartition {
+    pub name: String,
+    pub size: u64,
+    pub offset: u64,
+    /// The `mask_flags` column: 1 means the partition is marked read-only.
+    pub read_only: bool,
+}
+
 /// Truncate to `max` CHARACTERS, mirroring Python's `s[:max]`.
 ///
 /// `String::truncate` counts bytes and panics mid-codepoint, and a capture is
@@ -324,6 +396,49 @@ pub fn parse_session(log: &str) -> UbootSession {
 
         if line.trim().is_empty() {
             continue;
+        }
+
+        // bdinfo and mtdparts, recognised by their own shape rather than by
+        // having seen the command that produced them, for the reason in
+        // BDINFO_KEYS. Checked before the continuation logic so a bdinfo line
+        // is never appended to a buffered environment value.
+        if let Some(caps) = RE_BDINFO.captures(line) {
+            let key = caps[1].trim();
+            if BDINFO_KEYS.contains(&key.to_ascii_lowercase().as_str()) {
+                s.bdinfo
+                    .entry(key.to_string())
+                    .or_insert_with(|| caps[2].trim().to_string());
+                note(&mut s, line);
+                continue;
+            }
+        }
+        if let Some(caps) = RE_MTD_DEV.captures(line) {
+            if s.mtd_device.is_none() {
+                s.mtd_device = Some(caps[1].to_string());
+            }
+            note(&mut s, line);
+            continue;
+        }
+        if let Some(caps) = RE_MTD_PART.captures(line) {
+            // Hex without a `0x`, as U-Boot prints it. A width beyond u64 is not
+            // a partition table, so a failed parse drops the row rather than
+            // inventing a zero.
+            if let (Ok(size), Ok(offset)) = (
+                u64::from_str_radix(&caps[2], 16),
+                u64::from_str_radix(&caps[3], 16),
+            ) {
+                let part = MtdPartition {
+                    name: caps[1].to_string(),
+                    size,
+                    offset,
+                    read_only: &caps[4] == "1",
+                };
+                if !s.mtd_partitions.contains(&part) {
+                    s.mtd_partitions.push(part);
+                }
+                note(&mut s, line);
+                continue;
+            }
         }
 
         // A long U-Boot value wraps in a terminal capture, so the continuation

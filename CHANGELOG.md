@@ -8,6 +8,26 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+### Added
+- **`bootintel verdict` now reports board info and the flash partition table**
+  when a capture contains a `bdinfo` or `mtdparts` dump. The partition rows carry
+  the `mask_flags` read-only marker, which is the operationally interesting
+  column: it says which partitions an operator at that prompt can rewrite.
+
+  Both were dead code on the engine side and the port started by measuring that,
+  not by assuming it. Across all 31 public corpus logs they produced nothing,
+  while two of those logs contain a full bdinfo dump. The cause was a command
+  gate: the blocks were only parsed once the prompt regex had matched the line
+  where the command was typed, and `Boot-> bdinfo` is not U-Boot's default
+  prompt. They are now recognised by their own shape.
+
+  The discriminator between board info and an environment variable is the
+  whitespace around the `=`: `printenv` emits `baudrate=115200`, `bdinfo` pads to
+  a column and emits `baudrate    = 115200 bps`.
+
+  `verdict --json` gained `bdinfo` and `mtd_device` under `uboot_shell`, and a
+  top-level `mtd_partitions` array, matching the engine's placement.
+
 ## [0.10.0] — 2026-09-28 — the kernel's own hardening report
 
 `bootintel verdict` now answers for captures that never reach a U-Boot prompt.

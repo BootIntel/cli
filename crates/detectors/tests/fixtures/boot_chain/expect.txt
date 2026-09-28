@@ -66,6 +66,51 @@
     evidence Environment size: 412/65532 bytes
     detail The environment occupies 412 of 65532 bytes of writable storage, so `saveenv` can persist a change across reboots.
     remediation Build with a read-only or signed environment for production.
+## fixture mtdparts.log fnv1a64=0d8c70196d235993
+  reached true
+  evidence => mtdparts
+  env_bytes 30/65532
+  mtd_device nor0
+  mtd_part u-boot size=0x20000 offset=0x0 ro=true
+  mtd_part kernel size=0x100000 offset=0x20000 ro=false
+  mtd_part rootfs size=0x6c0000 offset=0x120000 ro=false
+  mtd_part art size=0x10000 offset=0x7f0000 ro=true
+  env bootcmd=bootm 0x9f020000
+  verdict
+    title U-Boot shell reached
+    state confirmed
+    severity high
+    evidence => mtdparts
+    detail An operator interrupted autoboot and got a command prompt. Everything below was read from the device, not inferred from its boot output.
+    remediation Set bootdelay=-1 and build with CONFIG_AUTOBOOT_KEYED so the prompt needs a password.
+  verdict
+    title Autoboot delay
+    state unknown
+    severity info
+    evidence bootdelay absent
+    detail bootdelay is not set in the environment, so the built-in default applies and cannot be read from here.
+    remediation
+  verdict
+    title Boot command
+    state exposed
+    severity high
+    evidence bootcmd=bootm 0x9f020000
+    detail bootcmd is readable and, with the prompt reachable, settable. Whoever holds the console decides what the device boots.
+    remediation Lock the environment (CONFIG_ENV_IS_NOWHERE or a signed env) and require a password at the prompt.
+  verdict
+    title Image verification
+    state unknown
+    severity info
+    evidence bootcmd=bootm 0x9f020000
+    detail bootcmd boots an image without a visible verification step. That is not proof verification is absent: a FIT signature check can be implicit in the image. Confirm with the boot output of an actual `bootm`.
+    remediation
+  verdict
+    title Environment storage
+    state confirmed
+    severity medium
+    evidence Environment size: 30/65532 bytes
+    detail The environment occupies 30 of 65532 bytes of writable storage, so `saveenv` can persist a change across reboots.
+    remediation Build with a read-only or signed environment for production.
 ## fixture wrapped-env.log fnv1a64=ef1ee16cc0231e53
   reached true
   evidence Environment size: 843/65532 bytes
@@ -249,6 +294,15 @@
   integrity image_check_result=passed
   integrity image_check_evidence=Verifying Checksum ... OK
   integrity image_check_failed=Bad Magic Number
+  bdinfo baudrate=115200 bps
+  bdinfo boot_params=0x87D2EFB0
+  bdinfo ethaddr=00:1F:45:F2:B7:3B
+  bdinfo flashoffset=0x00000000
+  bdinfo flashsize=0x01000000
+  bdinfo flashstart=0xBF000000
+  bdinfo ip_addr=192.168.1.20
+  bdinfo memsize=0x08000000
+  bdinfo memstart=0x80000000
   env AP_FLAG=0
   env LOAD_SENSOR_IMG=0
   env MOSTRECENTKERNEL=1
