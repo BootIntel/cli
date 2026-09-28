@@ -1552,8 +1552,7 @@ fn apply_autoboot<W: Write>(
                     );
                     continue;
                 };
-                let (session, verdicts) =
-                    bootintel_detectors::boot_chain::assess(analyzer.log_so_far());
+                let assessment = bootintel_detectors::boot_chain::assess(analyzer.log_so_far());
                 let _ = write!(out, "\r\n");
                 let color = if use_color {
                     crate::output::ColorMode::On
@@ -1561,8 +1560,14 @@ fn apply_autoboot<W: Write>(
                     crate::output::ColorMode::Off
                 };
                 let mut crlf = crate::output::CrlfWriter::new(&mut *out);
-                let _ =
-                    crate::cmd::verdict::write_text(&mut crlf, source, &session, &verdicts, color);
+                let _ = crate::cmd::verdict::write_text(
+                    &mut crlf,
+                    source,
+                    &assessment.session,
+                    &assessment.integrity,
+                    &assessment.verdicts,
+                    color,
+                );
                 let _ = out.flush();
             }
         }

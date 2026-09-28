@@ -71,6 +71,174 @@ static RE_ENV_SIZE: LazyLock<Regex> =
 static RE_ENV_LINE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^([A-Za-z_][A-Za-z0-9_.]{0,63})=(.*)$").unwrap());
 
+// The integrity patterns, character-for-character from
+// `api/analysis_engine/detectors/boot_integrity.py`, for the same reason as the
+// session patterns above.
+static RE_CHECKSUM: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?i)^\s*Verifying Checksum\s*\.\.\.\s*(.*)$").unwrap());
+static RE_FIT_HASH: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?i)^\s*Verifying Hash Integrity\s*\.\.\.\s*(.*)$").unwrap());
+// Deliberately NOT `## Checking (hash|sign)`. U-Boot's ordinary FIT output is
+// `## Checking hash(es) for FIT Image at ...`, so that pattern reported a
+// verified SIGNATURE on every device using unsigned FIT hashes, which is the
+// common case. No corpus log prints the line, which is why the bug survived
+// review on the engine side.
+static RE_FIT_SIG: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?i)Verifying Signature\b").unwrap());
+// An algorithm entry that means a signature rather than a digest. U-Boot prints
+// `sha256,rsa2048:dev+ OK` when a signature node was checked.
+static RE_SIG_ALGO: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?i)^(?:rsa\d*|ecdsa\d*|pkcs1)").unwrap());
+// Anchored to the whole line: a substring match on "Bad Magic Number" also
+// catches `fsck.ext2: Bad magic number in super-block`, which is a filesystem
+// complaint and produced a false high-severity finding on the engine side.
+static RE_BAD: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)^\s*(Bad Data Hash|Bad Header Checksum|Bad Magic Number|Bad Data CRC)\.?\s*$")
+        .unwrap()
+});
+static RE_BAD_SIG: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)signature check failed|Verifying Hash Integrity\s*\.\.\.\s*error").unwrap()
+});
+static RE_HAB_OFF: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?i)hab fuse not enabled").unwrap());
+static RE_HAB_ON: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?i)hab fuse (?:is )?enabled").unwrap());
+static RE_UBIFS_UNAUTH: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)UBIFS\s*\(([^)]*)\):\s*Mounting in unauthenticated mode").unwrap()
+});
+static RE_ENV_CRC: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?i)bad CRC, using default environment").unwrap());
+static RE_OK: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?i)\bOK\b").unwrap());
+static RE_ALGO_SPLIT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[+,\s]+").unwrap());
+
+/// What the bootloader actually DID about verifying the image it booted, as
+/// opposed to what the environment says it is configured to do.
+///
+/// The distinction this type exists to preserve: a checksum is not a signature.
+/// `Verifying Checksum ... OK` proves the image was not corrupt. Anyone who can
+/// write the image can recompute the CRC, so it stops bit-rot, not an attacker.
+/// Only a signature establishes that the image came from the signer, and on
+/// i.MX none of it is enforced while the HAB fuse is unblown.
+///
+/// Unlike the engine, this does not raise findings for any of it: the Rust and
+/// browser detector sets are pinned to the same 14 labels, and a fifteenth would
+/// break that parity. The facts and the verdicts are what the two
+/// implementations share.
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
+pub struct BootIntegrity {
+    /// `uimage_crc` or `fit_hash`.
+    pub image_check: Option<String>,
+    pub image_check_evidence: Option<String>,
+    /// `passed`, `failed`, or `not_captured` when the check began but the
+    /// capture lost its result. "The check ran" is a different claim from "the
+    /// check passed".
+    pub image_check_result: Option<String>,
+    pub image_hash_algorithms: Vec<String>,
+    pub image_signature_checked: bool,
+    pub image_signature_evidence: Option<String>,
+    pub image_check_failed: Option<String>,
+    /// `not_enabled` or `enabled`.
+    pub hab_fuse: Option<String>,
+    pub hab_evidence: Option<String>,
+    pub ubifs_unauthenticated: Option<String>,
+    pub env_crc_failed: Option<String>,
+}
+
+/// First observation wins, so a later repeat cannot overwrite the evidence line
+/// that justified the original claim. Mirrors the engine's `setdefault`.
+fn keep_first(slot: &mut Option<String>, value: &str) {
+    if slot.is_none() {
+        *slot = Some(value.to_string());
+    }
+}
+
+/// Read the verification a bootloader reported performing.
+pub fn parse_integrity(log: &str) -> BootIntegrity {
+    let mut bi = BootIntegrity::default();
+    for raw in log.lines() {
+        let line = raw.trim_end_matches(['\r', '\n']);
+        let s = clip(line.trim(), 200);
+
+        if let Some(caps) = RE_CHECKSUM.captures(line) {
+            let result = caps[1].trim();
+            keep_first(&mut bi.image_check, "uimage_crc");
+            keep_first(&mut bi.image_check_evidence, &s);
+            keep_first(
+                &mut bi.image_check_result,
+                if RE_OK.is_match(result) {
+                    "passed"
+                } else if result.is_empty() {
+                    "not_captured"
+                } else {
+                    "failed"
+                },
+            );
+            continue;
+        }
+
+        if let Some(caps) = RE_FIT_HASH.captures(line) {
+            let tail = caps[1].trim();
+            let algos: Vec<String> = RE_ALGO_SPLIT
+                .split(tail)
+                .filter(|a| !a.is_empty() && !RE_OK.is_match(a))
+                .map(str::to_string)
+                .collect();
+            keep_first(&mut bi.image_check, "fit_hash");
+            keep_first(&mut bi.image_check_evidence, &s);
+            keep_first(
+                &mut bi.image_check_result,
+                if RE_OK.is_match(tail) {
+                    "passed"
+                } else {
+                    "failed"
+                },
+            );
+            if !algos.is_empty() {
+                if bi.image_hash_algorithms.is_empty() {
+                    bi.image_hash_algorithms = algos.clone();
+                }
+                if algos.iter().any(|a| RE_SIG_ALGO.is_match(a)) {
+                    bi.image_signature_checked = true;
+                    keep_first(&mut bi.image_signature_evidence, &s);
+                }
+            }
+            continue;
+        }
+
+        if RE_FIT_SIG.is_match(line) {
+            bi.image_signature_checked = true;
+            keep_first(&mut bi.image_signature_evidence, &s);
+            continue;
+        }
+
+        if RE_BAD.is_match(line) || RE_BAD_SIG.is_match(line) {
+            keep_first(&mut bi.image_check_failed, &s);
+            continue;
+        }
+
+        if RE_HAB_OFF.is_match(line) {
+            keep_first(&mut bi.hab_fuse, "not_enabled");
+            keep_first(&mut bi.hab_evidence, &s);
+            continue;
+        }
+        if RE_HAB_ON.is_match(line) {
+            keep_first(&mut bi.hab_fuse, "enabled");
+            keep_first(&mut bi.hab_evidence, &s);
+            continue;
+        }
+
+        if RE_ENV_CRC.is_match(line) {
+            keep_first(&mut bi.env_crc_failed, &s);
+            continue;
+        }
+
+        if let Some(caps) = RE_UBIFS_UNAUTH.captures(line) {
+            keep_first(&mut bi.ubifs_unauthenticated, caps[1].trim());
+        }
+    }
+    bi
+}
+
 /// Truncate to `max` CHARACTERS, mirroring Python's `s[:max]`.
 ///
 /// `String::truncate` counts bytes and panics mid-codepoint, and a capture is
@@ -197,7 +365,7 @@ fn v(
 ///
 /// The boot log can say autoboot looks interruptible. The environment says
 /// what happens when you interrupt it, and whether you can change what boots.
-pub fn verdict(s: &UbootSession) -> Vec<Verdict> {
+pub fn verdict(s: &UbootSession, bi: &BootIntegrity) -> Vec<Verdict> {
     let mut out = Vec::new();
     if !s.reached {
         return out;
@@ -219,6 +387,125 @@ pub fn verdict(s: &UbootSession) -> Vec<Verdict> {
             "Set bootdelay=-1 and build with CONFIG_AUTOBOOT_KEYED so the prompt needs a password.",
         ),
     );
+
+    // Image verification, preferring what was observed over what was configured.
+    //
+    // One entry, never two. An earlier version emitted a speculative "unknown"
+    // alongside an explicit verify=no and produced two contradictory verdicts
+    // for one question; the same trap is here in a new form, because a capture
+    // can carry BOTH verify=no and an observed checksum pass. Rather than
+    // silently picking a winner, the entry reports the observation and names the
+    // conflict.
+    //
+    // Read before the environment because none of it depends on a printenv
+    // having been captured: bootintel-7 reaches a prompt, never dumps the
+    // environment, and still reports `hab fuse not enabled`.
+    let verify_off = matches!(
+        s.env
+            .get("verify")
+            .map(|x| x.trim().to_ascii_lowercase())
+            .as_deref(),
+        Some("n") | Some("no") | Some("0") | Some("false")
+    );
+    let conflict = if verify_off {
+        " The environment says verify=no, yet the bootloader still reported a check, so either \
+         this capture predates that setting or a different boot path ran."
+    } else {
+        ""
+    };
+    let observed = bi.image_check.as_deref();
+    let result = bi.image_check_result.as_deref();
+    if bi.image_signature_checked {
+        v(
+            &mut out,
+            "Image verification",
+            "hardened",
+            &format!(
+                "A signature was checked before boot, which establishes that the image is the \
+                    one the signer produced, not merely an uncorrupted one.{conflict}"
+            ),
+            bi.image_signature_evidence
+                .as_deref()
+                .unwrap_or("signature check observed"),
+            "medium",
+            Some(
+                "Confirm the verifying key lives somewhere an attacker with flash write access \
+                cannot replace it.",
+            ),
+        );
+    } else if observed.is_some() && result == Some("passed") {
+        let mechanism = if observed == Some("fit_hash") {
+            let algos = if bi.image_hash_algorithms.is_empty() {
+                "unspecified".to_string()
+            } else {
+                bi.image_hash_algorithms.join(", ")
+            };
+            format!("a FIT hash ({algos})")
+        } else {
+            "a legacy uImage CRC".to_string()
+        };
+        v(
+            &mut out,
+            "Image verification",
+            "confirmed",
+            &format!(
+                "The bootloader checked the image before booting it, using {mechanism}, and \
+                    the check passed. That proves the image was not corrupt. It is not a \
+                    signature: anyone who can write the image can recompute the checksum, so this \
+                    stops bit-rot rather than an attacker.{conflict}"
+            ),
+            bi.image_check_evidence.as_deref().unwrap_or(""),
+            "medium",
+            Some(
+                "Move to signed FIT images (CONFIG_FIT_SIGNATURE) so a deliberate modification is \
+                detected and not just a corrupt one.",
+            ),
+        );
+    } else if observed.is_some() && result == Some("not_captured") {
+        v(
+            &mut out,
+            "Image verification",
+            "unknown",
+            &format!(
+                "The bootloader began an image check but its result is not in the capture, so \
+                    whether it passed is unknown.{conflict}"
+            ),
+            bi.image_check_evidence.as_deref().unwrap_or(""),
+            "info",
+            None,
+        );
+    } else if verify_off {
+        v(
+            &mut out,
+            "Image verification",
+            "exposed",
+            "verify is disabled, so U-Boot will not check image checksums before booting.",
+            &format!(
+                "verify={}",
+                s.env.get("verify").map(String::as_str).unwrap_or("")
+            ),
+            "high",
+            Some("Set verify=yes, and prefer signed FIT images over checksums."),
+        );
+    }
+
+    // The anchor. On i.MX none of the above is enforced while the fuse is unblown.
+    if bi.hab_fuse.as_deref() == Some("not_enabled") {
+        v(
+            &mut out,
+            "Secure boot anchor",
+            "exposed",
+            "The SoC reports the HAB fuse is not enabled, so the boot ROM will run an unsigned \
+           image. Whatever the bootloader does about checksums afterwards is advisory: the chain \
+           has no anchor.",
+            bi.hab_evidence.as_deref().unwrap_or("hab fuse not enabled"),
+            "high",
+            Some(
+                "Blow the HAB fuse and close the device only after a signed image is confirmed to \
+                boot, since the operation is irreversible.",
+            ),
+        );
+    }
 
     if s.env.is_empty() {
         v(
@@ -310,7 +597,9 @@ pub fn verdict(s: &UbootSession) -> Vec<Verdict> {
         );
         let verify_set = s.env.contains_key("verify");
         let boots_image = ["bootm", "bootz", "booti"].iter().any(|t| cmd.contains(t));
-        if boots_image && !verify_set && !cmd.contains("verify") {
+        // Only speculate when the capture contains no observation at all. The
+        // whole point of reading the boot output is to stop guessing here.
+        if boots_image && !verify_set && !cmd.contains("verify") && observed.is_none() {
             v(
                 &mut out,
                 "Image verification",
@@ -321,23 +610,6 @@ pub fn verdict(s: &UbootSession) -> Vec<Verdict> {
                 &format!("bootcmd={short}"),
                 "info",
                 None,
-            );
-        }
-    }
-
-    if let Some(val) = s.env.get("verify") {
-        if matches!(
-            val.trim().to_ascii_lowercase().as_str(),
-            "n" | "no" | "0" | "false"
-        ) {
-            v(
-                &mut out,
-                "Image verification",
-                "exposed",
-                "verify is disabled, so U-Boot will not check image checksums before booting.",
-                &format!("verify={val}"),
-                "high",
-                Some("Set verify=yes, and prefer signed FIT images over checksums."),
             );
         }
     }
@@ -414,8 +686,28 @@ pub fn verdict(s: &UbootSession) -> Vec<Verdict> {
 }
 
 /// Convenience: parse and decide in one call.
-pub fn assess(log: &str) -> (UbootSession, Vec<Verdict>) {
-    let s = parse_session(log);
-    let verdicts = verdict(&s);
-    (s, verdicts)
+/// Everything one capture establishes about the boot chain.
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
+pub struct Assessment {
+    pub session: UbootSession,
+    pub integrity: BootIntegrity,
+    pub verdicts: Vec<Verdict>,
+}
+
+/// Parse and decide in one call.
+///
+/// This replaced a `(UbootSession, Vec<Verdict>)` tuple when integrity reading
+/// landed: a breaking change to a published crate, which under the policy at the
+/// top of CHANGELOG.md moves the minor version pre-1.0. The alternative was a
+/// second name for the same operation, and two entry points differing only in
+/// how much they tell you is worse for whoever reads this next.
+pub fn assess(log: &str) -> Assessment {
+    let session = parse_session(log);
+    let integrity = parse_integrity(log);
+    let verdicts = verdict(&session, &integrity);
+    Assessment {
+        session,
+        integrity,
+        verdicts,
+    }
 }

@@ -1,0 +1,106 @@
+AP_FLAG=0
+filesize=ba3
+LOAD_SENSOR_IMG=0
+MOSTRECENTKERNEL=1
+WATCHDOG_COUNT=0
+stdin=serial
+stdout=serial
+stderr=serial
+mem=130560k
+ver=U-Boot 1.2.0.07-dirty (Apr 20 2017 - 18:13:34)
+
+Environment size: 1650/4091 bytes
+Boot-> help
+?       - alias for 'help'
+autoscr - run script from memory
+base    - print or set address offset
+bdinfo  - print Board Info structure
+boot    - boot default, i.e., run 'bootcmd'
+bootd   - boot default, i.e., run 'bootcmd'
+bootelf - Boot from an ELF image in memory
+bootm   - boot application image from memory
+bootp   - boot image via network using BootP/TFTP protocol
+bootvx  - Boot vxWorks from an ELF image
+chenv   - manipulate environment variables
+cmp     - memory compare
+coninfo - print console devices and information
+cp      - memory copy
+crc32   - checksum calculation
+defenv  - get environment variables from default block
+dhcp    - invoke DHCP client to obtain IP/boot params
+echo    - echo args to console
+erase   - erase FLASH memory
+exit    - exit script
+flashtest  - do flash check from 0xbf000000 to 0xbff00000
+flinfo  - print FLASH memory information
+fsinfo  - print information about filesystems
+fsload  - load binary file from a filesystem image
+go      - start application at address 'addr'
+help    - print online help
+iminfo  - print header information for application image
+imls    - list all images found in flash
+itest   - return true/false on integer compare
+loadb   - load binary file over serial line (kermit mode)
+loads   - load S-Record file over serial line
+loady   - load binary file over serial line (ymodem mode)
+loop    - infinite loop on address range
+ls      - list files in a directory (default /)
+md      - memory display
+mm      - memory modify (auto-incrementing)
+mtest   - simple RAM test
+mw      - memory write (fill)
+nfs     - boot image via network using NFS protocol
+nm      - memory modify (constant address)
+ping    - send ICMP ECHO_REQUEST to network host
+printenv- print environment variables
+protect - enable or disable FLASH write protection
+rarpboot- boot image via network using RARP/TFTP protocol
+reset   - Perform RESET of the CPU
+run     - run commands in an environment variable
+saveenv - save environment variables to persistent storage
+setenv  - set environment variables
+sleep   - delay execution for some time
+test    - minimal test like /bin/sh
+tftpboot- boot image via network using TFTP protocol
+version - print monitor version
+Boot-> bdinfo
+boot_params = 0x87D2EFB0
+memstart    = 0x80000000
+memsize     = 0x08000000
+flashstart  = 0xBF000000
+flashsize   = 0x01000000
+flashoffset = 0x00000000
+ethaddr     = 00:1F:45:F2:B7:3B
+ip_addr     = 192.168.1.20
+baudrate    = 115200 bps
+Boot-> md
+Usage:
+md      - memory display
+
+Boot-> iminfo
+
+## Checking Image at 80100000 ...
+   Bad Magic Number
+Boot-> imls
+Boot-> go
+Usage:
+go      - start application at address 'addr'
+
+Boot-> boot
+### JFFS2 loading 'boot_kernel.img2' to 0x80400000
+Scanning JFFS2 FS: . done.
+### JFFS2 load complete: 2979 bytes loaded to 0x80400000
+
+## Checking Image at 80400000 ...
+   Image Name:   Boot ROM Script
+   Created:      2010-06-21  17:46:19 UTC
+   Image Type:   PowerPC Linux Script (uncompressed)
+   Data Size:    2915 Bytes =  2.8 kB
+   Load Address: 00000000
+   Entry Point:  00000000
+   Verifying Checksum ... OK
+## Executing script at 80400000
+check for watchdog, limit=3...
+check for reset by watchdog...
+no watchdog...
+bSaveEnviron=0 image_order=secondary primary
