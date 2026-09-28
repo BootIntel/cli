@@ -23,6 +23,7 @@ use clap::Args as ClapArgs;
 use std::io::Write;
 
 use bootintel_detectors::boot_chain::{self, BootIntegrity, UbootSession, Verdict};
+use bootintel_detectors::os_hardening::{self, OsHardening};
 
 use crate::analyze::render::sanitize_for_term;
 use crate::output::{self, ColorMode};
@@ -90,6 +91,7 @@ pub fn run(args: Args) -> Result<()> {
     }
 
     let assessment = boot_chain::assess(&log.text);
+    let hardening = os_hardening::parse(&log.text);
     let (session, integrity, verdicts) = (
         &assessment.session,
         &assessment.integrity,
@@ -101,7 +103,7 @@ pub fn run(args: Args) -> Result<()> {
     let mut out = stdout.lock();
 
     if args.json {
-        let payload = json(&log.source_label, session, integrity, verdicts);
+        let payload = json(&log.source_label, session, integrity, &hardening, verdicts);
         if let Err(e) = serde_json::to_writer_pretty(&mut out, &payload)
             .map_err(anyhow::Error::from)
             .and_then(|()| writeln!(out).map_err(anyhow::Error::from))
@@ -117,6 +119,7 @@ pub fn run(args: Args) -> Result<()> {
         &log.source_label,
         session,
         integrity,
+        &hardening,
         verdicts,
         color,
     ) {
@@ -125,8 +128,10 @@ pub fn run(args: Args) -> Result<()> {
         }
     }
 
-    // No session means no answer, which is not the same as a good answer.
-    if !session.reached {
+    // No session means no answer about the BOOT CHAIN. If the kernel reported
+    // its hardening posture, something was assessed and exiting 3 with "nothing
+    // was assessed" would be false.
+    if !session.reached && hardening.is_empty() {
         let _ = out.flush();
         eprintln!(
             "bootintel: no U-Boot session found in {}; nothing was assessed\n  \
@@ -165,6 +170,7 @@ fn json(
     source: &str,
     session: &UbootSession,
     integrity: &BootIntegrity,
+    hardening: &OsHardening,
     verdicts: &[Verdict],
 ) -> serde_json::Value {
     let mut shell = serde_json::Map::new();
@@ -217,10 +223,39 @@ fn json(
         bi.insert("image_signature_checked".into(), true.into());
     }
 
+    // Same key names as the engine's `os_hardening`.
+    let mut hard = serde_json::Map::new();
+    if let Some(m) = &hardening.mem_auto_init {
+        hard.insert(
+            "mem_auto_init".into(),
+            serde_json::json!({
+                "stack": m.stack, "heap_alloc": m.heap_alloc, "heap_free": m.heap_free
+            }),
+        );
+    }
+    let mut put_hard = |k: &str, val: Option<&str>| {
+        if let Some(x) = val {
+            hard.insert(k.into(), x.into());
+        }
+    };
+    put_hard("kaslr", hardening.kaslr.as_deref());
+    put_hard("kaslr_reason", hardening.kaslr_reason.as_deref());
+    put_hard("selinux", hardening.selinux.as_deref());
+    put_hard("apparmor", hardening.apparmor.as_deref());
+    put_hard(
+        "ignored_kernel_parameters",
+        hardening.ignored_kernel_parameters.as_deref(),
+    );
+    if !hardening.lsm.is_empty() {
+        hard.insert("lsm".into(), hardening.lsm.clone().into());
+        hard.insert("mac_modules".into(), hardening.mac_modules.clone().into());
+    }
+
     serde_json::json!({
         "source": source,
         "uboot_shell": shell,
         "boot_integrity": bi,
+        "os_hardening": hard,
         "uboot_env": session.env.iter()
             .map(|(k, v)| (k.clone(), serde_json::Value::from(v.clone())))
             .collect::<serde_json::Map<String, serde_json::Value>>(),
@@ -249,12 +284,17 @@ pub(crate) fn write_text<W: Write>(
     source: &str,
     session: &UbootSession,
     integrity: &BootIntegrity,
+    hardening: &OsHardening,
     verdicts: &[Verdict],
     color: ColorMode,
 ) -> Result<()> {
     let on = color == ColorMode::On;
     if !session.reached {
         writeln!(out, "no U-Boot session in {source}")?;
+        // A capture with no prompt can still have told us what the kernel
+        // enforces, and saying nothing about it would be discarding the half of
+        // the answer we do have.
+        write_hardening(out, hardening, on)?;
         return Ok(());
     }
     // Everything below is device-controlled text, so it is sanitized before it
@@ -329,5 +369,65 @@ pub(crate) fn write_text<W: Write>(
         }
         writeln!(out)?;
     }
+    write_hardening(out, hardening, on)?;
+    Ok(())
+}
+
+/// What the kernel said it enforces. Facts, not verdicts: the engine raises the
+/// findings, and repeating them here as decisions would be a second opinion
+/// nobody asked for.
+fn write_hardening<W: Write>(out: &mut W, h: &OsHardening, on: bool) -> Result<()> {
+    if h.is_empty() {
+        return Ok(());
+    }
+    writeln!(
+        out,
+        "  {}",
+        output::wrap("kernel hardening", output::ANSI_BOLD_CYAN, on)
+    )?;
+    if let Some(m) = &h.mem_auto_init {
+        writeln!(
+            out,
+            "    memory init  stack:{}  heap alloc:{}  heap free:{}",
+            sanitize_for_term(&m.stack),
+            sanitize_for_term(&m.heap_alloc),
+            sanitize_for_term(&m.heap_free)
+        )?;
+    }
+    if let Some(k) = &h.kaslr {
+        let reason = h
+            .kaslr_reason
+            .as_deref()
+            .map(|r| format!(" ({})", sanitize_for_term(r)))
+            .unwrap_or_default();
+        writeln!(out, "    KASLR        {}{reason}", sanitize_for_term(k))?;
+    }
+    if !h.lsm.is_empty() {
+        let mac = if h.mac_modules.is_empty() {
+            "none provide mandatory access control".to_string()
+        } else {
+            format!("MAC: {}", h.mac_modules.join(", "))
+        };
+        writeln!(
+            out,
+            "    LSM          {}  ({})",
+            sanitize_for_term(&h.lsm.join(", ")),
+            sanitize_for_term(&mac)
+        )?;
+    }
+    for (label, value) in [("SELinux", &h.selinux), ("AppArmor", &h.apparmor)] {
+        if let Some(v) = value {
+            writeln!(out, "    {label:<12} {}", sanitize_for_term(v))?;
+        }
+    }
+    if let Some(ignored) = &h.ignored_kernel_parameters {
+        writeln!(
+            out,
+            "    ignored      {} {}",
+            sanitize_for_term(ignored),
+            output::wrap("(the kernel did not apply these)", output::ANSI_DIM, on)
+        )?;
+    }
+    writeln!(out)?;
     Ok(())
 }

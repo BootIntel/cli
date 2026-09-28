@@ -287,3 +287,25 @@
     evidence Environment size: 1650/4091 bytes
     detail The environment occupies 1650 of 4091 bytes of writable storage, so `saveenv` can persist a change across reboots.
     remediation Build with a read-only or signed environment for production.
+## fixture selinux-ignored.log fnv1a64=dbd9548b004fc0d9
+  reached false
+  evidence
+  env_bytes
+  hardening mem_auto_init=stack:off heap_alloc:off heap_free:off
+  hardening selinux=not_supported
+  hardening ignored_kernel_parameters=stmmaceth=chain_mode:1 selinux=0
+## fixture kernel-hardening.log fnv1a64=911e3c25d07b2c10
+  reached false
+  evidence
+  env_bytes
+  hardening mem_auto_init=stack:off heap_alloc:off heap_free:off
+  hardening kaslr=enabled
+  hardening lsm=capability, integrity
+  hardening mac_modules=
+## fixture kaslr-no-seed.log fnv1a64=61d971aeed51f185
+  reached false
+  evidence
+  env_bytes
+  hardening mem_auto_init=stack:off heap_alloc:off heap_free:off
+  hardening kaslr=disabled
+  hardening kaslr_reason=lack of seed

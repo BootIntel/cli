@@ -18,7 +18,7 @@
 use std::fs;
 use std::path::PathBuf;
 
-use bootintel_detectors::boot_chain;
+use bootintel_detectors::{boot_chain, os_hardening};
 
 fn fixtures() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/boot_chain")
@@ -115,6 +115,40 @@ fn render(name: &str, log: &str) -> Vec<String> {
         integrity.ubifs_unauthenticated.as_deref(),
     );
     integ("env_crc_failed", integrity.env_crc_failed.as_deref());
+    // Hardening, in the same field order as `analysis_engine/parity_render.py`.
+    // `mac_modules` renders even when empty, because "an LSM line was seen and
+    // none of them provide mandatory access control" is a real finding and a
+    // different claim from "no LSM line was seen at all". It is therefore keyed
+    // off `lsm` being present, which is how the engine's dict distinguishes them.
+    let h = os_hardening::parse(log);
+    if let Some(m) = &h.mem_auto_init {
+        field(
+            &mut out,
+            "  ",
+            "hardening",
+            &format!(
+                "mem_auto_init=stack:{} heap_alloc:{} heap_free:{}",
+                m.stack, m.heap_alloc, m.heap_free
+            ),
+        );
+    }
+    let mut hard = |k: &str, val: Option<&str>| {
+        if let Some(x) = val {
+            field(&mut out, "  ", "hardening", &format!("{k}={x}"));
+        }
+    };
+    hard("kaslr", h.kaslr.as_deref());
+    hard("kaslr_reason", h.kaslr_reason.as_deref());
+    if !h.lsm.is_empty() {
+        hard("lsm", Some(h.lsm.join(", ").as_str()));
+        hard("mac_modules", Some(h.mac_modules.join(", ").as_str()));
+    }
+    hard("selinux", h.selinux.as_deref());
+    hard("apparmor", h.apparmor.as_deref());
+    hard(
+        "ignored_kernel_parameters",
+        h.ignored_kernel_parameters.as_deref(),
+    );
     for (key, value) in &session.env {
         field(&mut out, "  ", "env", &format!("{key}={value}"));
     }

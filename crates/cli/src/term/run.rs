@@ -1553,6 +1553,9 @@ fn apply_autoboot<W: Write>(
                     continue;
                 };
                 let assessment = bootintel_detectors::boot_chain::assess(analyzer.log_so_far());
+                // The same capture also says what the kernel enforces, if the
+                // board got that far before the operator took the prompt.
+                let hardening = bootintel_detectors::os_hardening::parse(analyzer.log_so_far());
                 let _ = write!(out, "\r\n");
                 let color = if use_color {
                     crate::output::ColorMode::On
@@ -1565,6 +1568,7 @@ fn apply_autoboot<W: Write>(
                     source,
                     &assessment.session,
                     &assessment.integrity,
+                    &hardening,
                     &assessment.verdicts,
                     color,
                 );

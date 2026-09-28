@@ -8,6 +8,32 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+### Added
+- **`bootintel verdict` now reports the kernel hardening posture** alongside the
+  boot chain: mandatory access control, memory initialisation, and kernel address
+  randomisation, read from what the kernel itself announced at boot. Ported from
+  the engine and pinned against it by three new kernel-stage fixtures in the
+  shared expectation.
+
+  It keeps the distinction that decides whether the output is trustworthy:
+  `selinux=0` on a command line means SELinux was switched off, while `selinux=0`
+  under `Unknown command line parameters:` means the kernel ignored it and SELinux
+  is not compiled in at all. A different, worse fact. Likewise `capability` in the
+  LSM list is not access control, so `lsm=capability,integrity` is reported as
+  having no MAC while `lsm=capability,yama,apparmor` is not.
+
+  Absence is never evidence: a capture that does not mention KASLR is not a
+  capture proving it off, and nothing is reported on that basis.
+
+### Changed
+- **`verdict` exits 3 only when a capture yields neither a U-Boot session nor a
+  hardening posture.** It previously exited 3 whenever there was no session, which
+  became wrong once a plain boot log could produce a real answer: "nothing was
+  assessed" would have been false, and a CI job keyed on that code would treat an
+  answer as a failure to answer. A capture with neither still exits 3.
+- `verdict --json` gained an `os_hardening` object, mirroring the engine's key
+  names.
+
 ## [0.9.0] — 2026-09-28 — the verdict reads the boot output, not just the environment
 
 Both halves of the boot-chain verdict now agree about the same device: the engine and

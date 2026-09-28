@@ -1,0 +1,78 @@
+[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd083]
+[    0.000000] Linux version 6.7.9-gentoo (root@hammer) (gcc (Gentoo 13.2.1_p202                                                                                                                                                       40113-r1 p12) 13.2.1 20240113, GNU ld (Gentoo 2.41 p5) 2.41.0) #2 SMP PREEMPT Tu                                                                                                                                                       e Mar 12 20:19:44 EDT 2024
+[    0.000000] KASLR enabled
+[    0.000000] Machine model: SolidRun LX2160A Clearfog CX
+[    0.000000] earlycon: pl11 at MMIO32 0x00000000021c0000 (options '')
+[    0.000000] printk: legacy bootconsole [pl11] enabled
+[    0.000000] efi: UEFI not found.
+[    0.000000] OF: reserved mem: 0x0000000080000000..0x00000000801fffff (2048 Ki                                                                                                                                                       B) map non-reusable lpi_rd_table@80000000
+[    0.000000] NUMA: No NUMA configuration found
+[    0.000000] NUMA: Faking a node at [mem 0x0000000080000000-0x0000002f7fffffff                                                                                                                                                       ]
+[    0.000000] NUMA: NODE_DATA [mem 0x2f783a8ac0-0x2f783aafff]
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000080000000-0x00000000ffffffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   [mem 0x0000000100000000-0x0000002f7fffffff]
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000080000000-0x00000000fbdfffff]
+[    0.000000]   node   0: [mem 0x0000002080000000-0x0000002f7fffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x0000002f7fffffff]
+[    0.000000] On node 0, zone Normal: 16896 pages in unavailable ranges
+[    0.000000] cma: Reserved 32 MiB at 0x00000000f9e00000 on node -1
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv1.1 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: MIGRATE_INFO_TYPE not supported.
+[    0.000000] psci: SMC Calling Convention v1.2
+[    0.000000] percpu: Embedded 31 pages/cpu s87848 r8192 d30936 u126976
+[    0.000000] Detected PIPT I-cache on CPU0
+[    0.000000] CPU features: detected: GIC system register CPU interface
+[    0.000000] CPU features: detected: Spectre-v2
+[    0.000000] CPU features: detected: Spectre-v3a
+[    0.000000] CPU features: detected: Spectre-BHB
+[    0.000000] CPU features: kernel page table isolation forced ON by KASLR
+[    0.000000] CPU features: detected: Kernel page table isolation (KPTI)
+[    0.000000] CPU features: detected: ARM erratum 1742098
+[    0.000000] CPU features: detected: ARM errata 1165522, 1319367, or 1530923
+[    0.000000] alternatives: applying boot alternatives
+[    0.000000] Kernel command line: console=ttyAMA0,115200 earlycon=pl011,mmio32                                                                                                                                                       ,0x21c0000 default_hugepagesz=1024m hugepagesz=1024m hugepages=2 pci=pcie_bus_pe                                                                                                                                                       rf root=PARTUUID=eb5175f3-e261-744f-8d80-66ab1ea0ce67 rw rootwait
+[    0.000000] Dentry cache hash table entries: 8388608 (order: 14, 67108864 byt                                                                                                                                                       es, linear)
+[    0.000000] Inode-cache hash table entries: 4194304 (order: 13, 33554432 byte                                                                                                                                                       s, linear)
+[    0.000000] Fallback order for Node 0: 0
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 15982080
+[    0.000000] Policy zone: Normal
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] software IO TLB: area num 16.
+[    0.000000] software IO TLB: mapped [mem 0x00000000f5e00000-0x00000000f9e0000                                                                                                                                                       0] (64MB)
+[    0.000000] Memory: 61452876K/64944128K available (21952K kernel code, 4876K                                                                                                                                                        rwdata, 11852K rodata, 9984K init, 562K bss, 3458484K reserved, 32768K cma-reser                                                                                                                                                       ved)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=16, Nodes=1
+[    0.000000] trace event string verifier disabled
+[    0.000000] rcu: Preemptible hierarchical RCU implementation.
+[    0.000000] rcu:     RCU event tracing is enabled.
+[    0.000000]  Trampoline variant of Tasks RCU enabled.
+[    0.000000]  Tracing variant of Tasks RCU enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 25 jif                                                                                                                                                       fies.
+[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+[    0.000000] GICv3: GIC: Using split EOI/Deactivate mode
+[    0.000000] GICv3: 256 SPIs implemented
+[    0.000000] GICv3: 0 Extended SPIs implemented
+[    0.000000] Root IRQ handler: gic_handle_irq
+[    0.000000] GICv3: GICv3 features: 16 PPIs
+[    0.000000] GICv3: CPU0: found redistributor 0 region 0:0x0000000006200000
+[    0.000000] ITS [mem 0x06020000-0x0603ffff]
+[    0.000000] ITS@0x0000000006020000: allocated 65536 Devices @2080180000 (flat                                                                                                                                                       , esz 8, psz 64K, shr 0)
+[    0.000000] ITS: using cache flushing for cmd queue
+[    0.000000] GICv3: Using preallocated redistributor tables
+[    0.000000] GICv3: using LPI property table @0x0000000080000000
+[    0.000000] GICv3: CPU0: using reserved LPI pending table @0x0000000080010000
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000000] arch_timer: cp15 timer(s) running at 25.00MHz (phys).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles:                                                                                                                                                        0x5c409fb33, max_idle_ns: 440795203156 ns
+[    0.000000] sched_clock: 56 bits at 25MHz, resolution 39ns, wraps every 43980                                                                                                                                                       46511103ns
+[    0.008499] Console: colour dummy device 80x25
+[    0.013034] Calibrating delay loop (skipped), value calculated using timer fr                                                                                                                                                       equency.. 50.00 BogoMIPS (lpj=100000)
+[    0.023504] pid_max: default: 32768 minimum: 301
+[    0.028197] LSM: initializing lsm=capability,integrity
+[    0.033505] Mount-cache hash table entries: 131072 (order: 8, 1048576 bytes,                                                                                                                                                        linear)
+[    0.041410] Mountpoint-cache hash table entries: 131072 (order: 8, 1048576 by                                                                                                                                                       tes, linear)

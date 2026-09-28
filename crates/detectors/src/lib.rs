@@ -18,6 +18,7 @@
 use regex::Regex;
 use std::sync::LazyLock;
 pub mod boot_chain;
+pub mod os_hardening;
 
 /// A single detector's output.
 ///
