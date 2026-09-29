@@ -99,6 +99,10 @@ enum Cmd {
     Share(cmd::share::Args),
     /// List serial ports available on this machine.
     Ports(cmd::ports::Args),
+    /// Serve the offline analysis to an MCP client over stdio, so your own
+    /// assistant can read boot logs. Read-only: no tool opens a port or writes
+    /// to a device, and nothing is uploaded.
+    Mcp(cmd::mcp::Args),
     /// Scan every log file in a directory and print a per-file +
     /// rollup report. Text / JSON / CSV output. Non-recursive by
     /// default; --recursive walks into subdirs.
@@ -195,6 +199,7 @@ fn main() -> Result<()> {
         Cmd::Analyze(args) => cmd::analyze::run(args),
         Cmd::Share(args) => cmd::share::run(args),
         Cmd::Ports(args) => cmd::ports::run(args),
+        Cmd::Mcp(args) => cmd::mcp::run(args),
         Cmd::Batch(args) => cmd::batch::run(args),
         Cmd::Diff(args) => cmd::diff::run(args),
         Cmd::Watch(args) => cmd::watch::run(args),

@@ -8,6 +8,27 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+### Added
+- **`bootintel mcp`**: serve the offline analysis to an MCP client over stdio, so
+  an assistant can do the reasoning half of reading a boot log while this binary
+  does the reading half. Four tools: `scan_log`, `boot_chain_verdict`,
+  `list_detectors`, `sample_log`.
+
+  It runs locally on purpose. The model is the operator's own, under whatever
+  agreement they already work under, and no capture leaves the machine. A hosted
+  version would have to receive the log, which is the thing an NDA-bound
+  consultancy cannot do.
+
+  **Every tool is read-only.** None opens a serial port, writes to a device, or
+  reaches the network, and a test asserts the tool list rather than trusting
+  that, so adding a write is a deliberate edit rather than something that
+  arrives unnoticed. Captures are passed as text rather than a path, so the
+  caller decides what is disclosed.
+
+  The honesty the engine is careful about survives the trip: an empty finding
+  list says that the capture was not recognised rather than that the device is
+  clean, and the verdict names the value each entry was read from.
+
 ## [0.12.0] — 2026-09-29 — the dashboard can take the prompt too
 
 ### Added
