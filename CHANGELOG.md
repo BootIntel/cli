@@ -8,6 +8,8 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+## [0.12.0] — 2026-09-29 — the dashboard can take the prompt too
+
 ### Added
 - **`--interrupt-autoboot` works with `--tui`.** It was refused there rather than
   silently ignored, which was the right call while it was unwired, but it left
@@ -752,7 +754,8 @@ Initial release. All six subcommands live; five branch-based milestones (M1-M5) 
 - PDF report download subcommand — server-side endpoint exists but no client-side wrapper yet.
 - Windows support — the Rust code compiles for Windows and the release workflow builds it, but install.sh doesn't handle Windows yet (`.ps1` installer is a follow-up).
 
-[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.11.0...HEAD
+[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.12.0...HEAD
+[0.12.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.12.0
 [0.11.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.11.0
 [0.10.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.10.0
 [0.9.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.9.0
