@@ -8,6 +8,8 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+## [0.13.0] — 2026-09-29 — read boot logs from your own assistant
+
 ### Added
 - **`bootintel mcp`**: serve the offline analysis to an MCP client over stdio, so
   an assistant can do the reasoning half of reading a boot log while this binary
@@ -775,7 +777,8 @@ Initial release. All six subcommands live; five branch-based milestones (M1-M5) 
 - PDF report download subcommand — server-side endpoint exists but no client-side wrapper yet.
 - Windows support — the Rust code compiles for Windows and the release workflow builds it, but install.sh doesn't handle Windows yet (`.ps1` installer is a follow-up).
 
-[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.12.0...HEAD
+[Unreleased]: https://github.com/bootintel/cli/compare/cli-v0.13.0...HEAD
+[0.13.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.13.0
 [0.12.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.12.0
 [0.11.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.11.0
 [0.10.0]: https://github.com/bootintel/cli/releases/tag/cli-v0.10.0
