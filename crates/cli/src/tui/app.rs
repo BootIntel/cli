@@ -123,6 +123,13 @@ pub struct App {
     /// of the serial port. Renderer draws a bottom-line input row when
     /// this is Some.
     pub input_prompt: Option<InputPrompt>,
+
+    /// Verdicts from `--interrupt-autoboot`, once the prompt was taken and the
+    /// environment pulled. Rendered at the top of the findings pane because
+    /// that is what they are: conclusions about the device. The server pane
+    /// would have been the wrong home, since its title says "server" and this
+    /// is decided entirely locally.
+    pub boot_chain: Vec<bootintel_detectors::boot_chain::Verdict>,
 }
 
 /// Bottom-line input modal state. Small enough to keep inline in App;
@@ -189,6 +196,7 @@ impl App {
             hex_mode: false,
             hex_bytes: std::collections::VecDeque::with_capacity(HEX_RING_CAP),
             input_prompt: None,
+            boot_chain: Vec::new(),
         }
     }
 

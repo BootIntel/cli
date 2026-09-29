@@ -108,7 +108,8 @@ pub struct Args {
     no_live_display: bool,
 
     /// Interrupt autoboot on connect, take the U-Boot prompt, pull the
-    /// environment, and print what the boot chain permits.
+    /// environment, and report what the boot chain permits. Works with --tui,
+    /// where the verdicts appear at the top of the findings pane.
     ///
     /// Hammers the interrupt key from the moment the port opens rather than
     /// waiting to see a countdown: with `bootdelay=0` U-Boot checks for a
@@ -324,11 +325,6 @@ fn build_interrupt_config(args: &Args) -> Result<Option<autoboot::Config>> {
             );
         }
         return Ok(None);
-    }
-    if args.tui {
-        bail!(
-            "--interrupt-autoboot is not wired into the --tui dashboard yet, and silently \n               ignoring it would look like a board that refused to stop. Drop --tui for now."
-        );
     }
     let defaults = autoboot::Config::default();
     let key = match &args.interrupt_key {

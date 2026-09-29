@@ -8,6 +8,20 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+### Added
+- **`--interrupt-autoboot` works with `--tui`.** It was refused there rather than
+  silently ignored, which was the right call while it was unwired, but it left
+  the dashboard as the one mode that could not take the prompt.
+
+  The verdicts appear at the top of the findings pane, above the detector
+  findings, because they were read from the device at the prompt and that is
+  better evidence than anything matched out of the scrollback. Operator notes go
+  to the status bar and the miss explanation stays there long enough to act on.
+
+  The tool's own notes never pass through the analyzer. Feeding them back would
+  let a detector match bootintel's output and report it as evidence about the
+  device, which is asserted in a test rather than left to care.
+
 ## [0.11.0] — 2026-09-28 — board info and the flash partition table
 
 ### Added

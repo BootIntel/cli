@@ -137,21 +137,58 @@ fn render_findings_pane(f: &mut Frame, area: Rect, app: &App) {
     let block = Block::default()
         .borders(Borders::ALL)
         .border_style(border_style)
-        .title(format!(
-            " findings (client) — {} ",
-            app.analyzer.findings_snapshot().len()
-        ));
+        .title(if app.boot_chain.is_empty() {
+            format!(
+                " findings (client) — {} ",
+                app.analyzer.findings_snapshot().len()
+            )
+        } else {
+            format!(
+                " findings (client) — {} + {} boot chain ",
+                app.analyzer.findings_snapshot().len(),
+                app.boot_chain.len()
+            )
+        });
     let inner = block.inner(area);
     f.render_widget(block, area);
 
-    let items: Vec<ListItem> = app
-        .analyzer
-        .findings_snapshot()
-        .iter()
-        .map(finding_to_list_item)
-        .collect();
+    // Boot-chain verdicts first: they were read from the device at the prompt,
+    // which is better evidence than anything matched out of the scrollback, and
+    // burying them under the detector list would invert that.
+    let mut items: Vec<ListItem> = app.boot_chain.iter().map(verdict_to_list_item).collect();
+    items.extend(
+        app.analyzer
+            .findings_snapshot()
+            .iter()
+            .map(finding_to_list_item),
+    );
     let list = List::new(items);
     f.render_widget(list, inner);
+}
+
+/// A verdict, styled by what the reader has to do about it rather than by the
+/// severity word: `exposed` is the one that needs acting on.
+fn verdict_to_list_item(v: &bootintel_detectors::boot_chain::Verdict) -> ListItem<'static> {
+    let (glyph, style) = match v.state.as_str() {
+        "exposed" => ("!", Style::default().fg(ratatui::style::Color::Yellow)),
+        "hardened" => ("+", Style::default().fg(ratatui::style::Color::Green)),
+        "confirmed" => ("*", Style::default().fg(ratatui::style::Color::Cyan)),
+        _ => ("?", Style::default().fg(ratatui::style::Color::DarkGray)),
+    };
+    ListItem::new(Line::from(vec![
+        Span::styled(format!("{glyph} "), style),
+        Span::styled(v.title.clone(), style),
+        Span::raw(" "),
+        // The evidence travels with the claim here as everywhere else, trimmed
+        // to what a narrow pane can show.
+        Span::styled(
+            sanitize_for_term(&v.evidence)
+                .chars()
+                .take(48)
+                .collect::<String>(),
+            Style::default().fg(ratatui::style::Color::DarkGray),
+        ),
+    ]))
 }
 
 fn finding_to_list_item(f: &Finding) -> ListItem<'_> {
