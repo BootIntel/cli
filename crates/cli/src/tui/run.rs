@@ -107,6 +107,47 @@ pub fn run_session(opts: TermOptions) -> Result<()> {
         .context("cloning serial port for reader thread")?;
     let mut serial_thread = spawn_serial_reader(read_port, tx.clone(), reader_shutdown.clone());
 
+    // Autoboot interrupter, armed here for the same reason as in the plain
+    // terminal: the key has to be in the board's receiver before U-Boot looks
+    // at it, so there is nothing to react to and nothing to wait for. See
+    // crate::term::autoboot.
+    let hammer_on = Arc::new(AtomicBool::new(false));
+    let mut interrupter = match &opts.interrupt {
+        None => None,
+        Some(cfg) => {
+            let mut hammer_port = port
+                .try_clone()
+                .context("cloning serial port for the autoboot hammer")?;
+            let key = cfg.key.clone();
+            let interval = cfg.interval;
+            let flag = hammer_on.clone();
+            let hammer_shutdown = shutdown.clone();
+            thread::spawn(move || {
+                let mut was_armed = false;
+                while !hammer_shutdown.load(Ordering::Relaxed) {
+                    let armed = flag.load(Ordering::Relaxed);
+                    if armed {
+                        // A burst on the arming edge: a board whose autoboot
+                        // check runs once needs a byte already waiting.
+                        let reps = if was_armed { 1 } else { 8 };
+                        for _ in 0..reps {
+                            if hammer_port.write_all(&key).is_err() {
+                                return;
+                            }
+                        }
+                        let _ = hammer_port.flush();
+                    }
+                    was_armed = armed;
+                    thread::sleep(interval);
+                }
+            });
+            Some(crate::term::autoboot::Interrupter::new(
+                cfg.clone(),
+                Instant::now(),
+            ))
+        }
+    };
+
     // Keyboard reader thread.
     let kb_tx = tx.clone();
     let kb_shutdown = shutdown.clone();
@@ -127,6 +168,17 @@ pub fn run_session(opts: TermOptions) -> Result<()> {
         }
     });
 
+    if let Some(it) = interrupter.as_mut() {
+        let actions = it.begin();
+        apply_autoboot_tui(
+            actions,
+            &mut port,
+            &mut app,
+            &hammer_on,
+            opts.interrupt.as_ref(),
+        );
+    }
+
     let mut hotkey = HotkeyState::new(app.escape_prefix);
     let mut last_draw = Instant::now();
     let exit_reason = loop {
@@ -141,6 +193,23 @@ pub fn run_session(opts: TermOptions) -> Result<()> {
             Ok(e) => e,
             Err(mpsc::RecvTimeoutError::Timeout) => {
                 app.tick_status_message();
+                // A quiet line is what the interrupter is usually waiting for.
+                let actions = interrupter
+                    .as_mut()
+                    .map(|it| it.poll(Instant::now(), &[]))
+                    .unwrap_or_default();
+                if !actions.is_empty() {
+                    apply_autoboot_tui(
+                        actions,
+                        &mut port,
+                        &mut app,
+                        &hammer_on,
+                        opts.interrupt.as_ref(),
+                    );
+                }
+                if interrupter.as_ref().is_some_and(|it| it.is_finished()) {
+                    interrupter = None;
+                }
                 continue;
             }
             Err(mpsc::RecvTimeoutError::Disconnected) => {
@@ -156,6 +225,26 @@ pub fn run_session(opts: TermOptions) -> Result<()> {
                 // as one-line-per-message here too.
                 let mapped = app.rx_newline_mode.rewrite(&bytes);
                 app.feed_bytes(&mapped);
+                // The interrupter sees the same bytes. Its own notes never go
+                // through feed_bytes: that would put the tool's output into the
+                // analyzer and let it detect its own messages as device
+                // evidence.
+                let actions = interrupter
+                    .as_mut()
+                    .map(|it| it.poll(Instant::now(), &bytes))
+                    .unwrap_or_default();
+                if !actions.is_empty() {
+                    apply_autoboot_tui(
+                        actions,
+                        &mut port,
+                        &mut app,
+                        &hammer_on,
+                        opts.interrupt.as_ref(),
+                    );
+                }
+                if interrupter.as_ref().is_some_and(|it| it.is_finished()) {
+                    interrupter = None;
+                }
             }
             Ev::KeyPress(k) => {
                 // Input-prompt mode swallows keystrokes: nothing goes
@@ -692,5 +781,182 @@ fn change_baud(app: &mut App, port: &mut Box<dyn SerialPort>, input: &str) {
             app.set_status_message(format!("baud rate now {rate}"));
         }
         Err(e) => app.set_status_message(format!("set_baud_rate failed: {e}")),
+    }
+}
+
+/// Carry out what the interrupter decided, in TUI terms.
+///
+/// The plain terminal writes its notes to stdout; here they go to the status
+/// bar, and the verdict lands in the findings pane. What neither does is feed
+/// them back through the analyzer: the tool's own messages are not evidence
+/// about the device, and a detector matching one would be a finding invented
+/// out of our own output.
+fn apply_autoboot_tui(
+    actions: Vec<crate::term::autoboot::Action>,
+    port: &mut Box<dyn serialport::SerialPort>,
+    app: &mut App,
+    hammer_on: &AtomicBool,
+    cfg: Option<&crate::term::autoboot::Config>,
+) {
+    use crate::term::autoboot::{Action, ResetLine};
+    for action in actions {
+        match action {
+            Action::StartHammer => hammer_on.store(true, Ordering::Relaxed),
+            Action::StopHammer => hammer_on.store(false, Ordering::Relaxed),
+            Action::PulseReset => {
+                let (line, hold) = match cfg {
+                    Some(c) => (c.reset_line, c.reset_hold),
+                    None => (ResetLine::None, Duration::from_millis(0)),
+                };
+                let applied = match line {
+                    ResetLine::Dtr => {
+                        let r = port.write_data_terminal_ready(false);
+                        thread::sleep(hold);
+                        let _ = port.write_data_terminal_ready(true);
+                        app.dtr_state = true;
+                        r
+                    }
+                    ResetLine::Rts => {
+                        let r = port.write_request_to_send(false);
+                        thread::sleep(hold);
+                        let _ = port.write_request_to_send(true);
+                        app.rts_state = true;
+                        r
+                    }
+                    ResetLine::None => Ok(()),
+                };
+                if let Err(e) = applied {
+                    app.set_status_message_with_ttl(
+                        format!("could not drive the reset line: {e}. Power-cycle by hand; the hammer is running."),
+                        AUTOBOOT_NOTE_TTL,
+                    );
+                }
+            }
+            Action::Send(bytes) => {
+                if port.write_all(&bytes).and_then(|()| port.flush()).is_err() {
+                    app.set_status_message_with_ttl(
+                        "could not write to the port; giving up on the prompt".to_string(),
+                        AUTOBOOT_NOTE_TTL,
+                    );
+                    hammer_on.store(false, Ordering::Relaxed);
+                }
+            }
+            Action::Note(text) => {
+                app.set_status_message_with_ttl(text, AUTOBOOT_NOTE_TTL);
+            }
+            Action::GaveUp(reason) => {
+                hammer_on.store(false, Ordering::Relaxed);
+                // The miss explanation is several lines; the status bar is one.
+                // First line only, and the rest stays in the log the operator
+                // still has.
+                let first = reason.lines().next().unwrap_or(&reason).to_string();
+                app.set_status_message_with_ttl(first, AUTOBOOT_GAVE_UP_TTL);
+            }
+            Action::Done => record_boot_chain(app),
+        }
+    }
+}
+
+/// Put the verdict where the operator will see it, from the session the
+/// analyzer has been accumulating all along.
+///
+/// Separate from the action loop because this is the part with a decision in
+/// it and the rest is thin I/O, so this is what the tests below drive.
+fn record_boot_chain(app: &mut App) {
+    let assessment = bootintel_detectors::boot_chain::assess(app.analyzer.log_so_far());
+    app.boot_chain = assessment.verdicts;
+    let exposed = app
+        .boot_chain
+        .iter()
+        .filter(|v| v.state == "exposed")
+        .count();
+    app.set_status_message_with_ttl(
+        format!(
+            "environment captured: {} verdict{}, {exposed} exposed. The prompt is yours.",
+            app.boot_chain.len(),
+            if app.boot_chain.len() == 1 { "" } else { "s" }
+        ),
+        AUTOBOOT_GAVE_UP_TTL,
+    );
+}
+
+/// Long enough to read while a board is booting past it.
+const AUTOBOOT_NOTE_TTL: Duration = Duration::from_secs(12);
+/// Longer still: these are the two the operator has to act on.
+const AUTOBOOT_GAVE_UP_TTL: Duration = Duration::from_secs(45);
+
+#[cfg(test)]
+mod autoboot_tests {
+    use super::*;
+    use crate::analyze::state::AnalyzeState;
+    use crate::term::hotkey::EscapePrefix;
+
+    fn app_with(log: &str) -> App {
+        let mut analyzer = AnalyzeState::new(None);
+        analyzer.feed(log.as_bytes());
+        App::new(
+            "/dev/null".into(),
+            115200,
+            analyzer,
+            None,
+            EscapePrefix::DEFAULT,
+        )
+    }
+
+    /// The payoff of the feature in this mode: the verdict has to reach the
+    /// pane, not just the log the operator would have to read themselves.
+    #[test]
+    fn the_verdict_reaches_the_findings_pane() {
+        let mut app = app_with(
+            "hab fuse not enabled\n=> printenv\nbootdelay=3\nbootcmd=bootm 0x82000000\n\
+             verify=no\nEnvironment size: 40/65532 bytes\n=>\n",
+        );
+        assert!(
+            app.boot_chain.is_empty(),
+            "nothing before the sequence runs"
+        );
+        record_boot_chain(&mut app);
+        let titles: Vec<&str> = app.boot_chain.iter().map(|v| v.title.as_str()).collect();
+        assert!(titles.contains(&"U-Boot shell reached"), "{titles:?}");
+        assert!(titles.contains(&"Secure boot anchor"), "{titles:?}");
+        let msg = app
+            .status_message
+            .as_ref()
+            .expect("a status message")
+            .0
+            .clone();
+        assert!(msg.contains("exposed"), "{msg}");
+        assert!(msg.contains("The prompt is yours"), "{msg}");
+    }
+
+    /// A session with nothing in it must not fill the pane with claims.
+    #[test]
+    fn a_log_with_no_session_records_no_verdicts() {
+        let mut app =
+            app_with("U-Boot 2020.10\nBooting from flash...\nbootcmd=not an environment\n");
+        record_boot_chain(&mut app);
+        assert!(
+            app.boot_chain.is_empty(),
+            "invented verdicts: {:?}",
+            app.boot_chain
+        );
+    }
+
+    /// The tool's own notes go to the status bar and never through the
+    /// analyzer. Feeding them back would let a detector match bootintel's own
+    /// output and report it as evidence about the device.
+    #[test]
+    fn notes_do_not_become_analyzer_input() {
+        let mut app = app_with("U-Boot 2020.10\n");
+        let before = app.analyzer.captured_bytes();
+        app.set_status_message_with_ttl(
+            "hammering space now: POWER-CYCLE THE BOARD".to_string(),
+            AUTOBOOT_NOTE_TTL,
+        );
+        assert_eq!(
+            app.analyzer.captured_bytes(),
+            before,
+            "a note reached the analyzer"
+        );
     }
 }
