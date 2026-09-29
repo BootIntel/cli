@@ -15,6 +15,7 @@ pub mod history;
 pub mod init;
 pub mod login;
 pub mod manpage;
+pub mod mcp;
 pub mod ports;
 pub mod replay;
 pub mod scan;

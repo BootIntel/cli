@@ -66,6 +66,43 @@ Use `bootintel term` when you want a clean terminal and `bootintel analyze` when
 | Gate a build artifact | `bootintel scan boot.log --format sarif --gate-critical` | Emits CI-friendly output and exits non-zero for critical findings. |
 | Request richer analysis | `bootintel scan --api --preview boot.log` | Explicitly sends the log to BootIntel's API using the anonymous preview quota. |
 
+## Using it from an assistant
+
+`bootintel mcp` speaks the Model Context Protocol over stdio, which lets an
+assistant do the reasoning half of reading a boot log while this binary does the
+reading half. It runs on your machine: the model is yours, under whatever
+agreement you already work under, and no capture leaves.
+
+Claude Code:
+
+```sh
+claude mcp add bootintel -- bootintel mcp
+```
+
+Claude Desktop, in `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "bootintel": { "command": "bootintel", "args": ["mcp"] }
+  }
+}
+```
+
+Then ask for what you actually want to know:
+
+> Here is a boot log from a router I am assessing. What should I look at first,
+> and what can you not tell from this capture?
+
+**Every tool is read-only.** None of them opens a serial port, writes to a
+device, or reaches the network. An agent that can type at a U-Boot prompt on a
+client's only sample of a device is a different product with a different risk;
+`analyze --interrupt-autoboot` exists for a human who wants that, with the
+safety rails that come with it.
+
+The tools pass the capture as text rather than a path, so you decide what is
+disclosed rather than the server reading whatever it likes off your disk.
+
 ## Privacy and terminal safety
 
 - Local detection runs on your machine and never requires an account.
@@ -165,6 +202,7 @@ cargo build --release
 | `bootintel verdict <file>` | Assess what a capture establishes about the boot: the U-Boot session if it contains one, and the kernel hardening posture if the boot got that far. For the session half it reads a `printenv` dump taken at the prompt Reads a `printenv` dump taken at the prompt and reports what the boot chain permits: whether autoboot is interruptible, whether images are verified, whether a netboot path is pre-configured, whether `bootargs` can be rewritten, and whether `saveenv` makes any of it stick. Every entry names the variable it was read from. `--json` mirrors the server's `uboot_shell` / `uboot_env` / `boot_chain_verdict` keys; `--gate-exposed` exits 1 on any exposed verdict. Runs entirely offline: a U-Boot environment holds a client's internal addressing, so nothing is uploaded. Reports what the kernel announced about mandatory access control, memory initialisation and KASLR, including the distinction between `selinux=0` on a command line (switched off) and `selinux=0` under `Unknown command line parameters:` (not compiled in at all). Exits 3 only when the capture yields neither, because "could not assess" must not look like "nothing wrong". |
 | `bootintel share <file>` | Print a bootintel.com share URL with the log embedded via lz-string compression. Nothing is uploaded — the log lives in the URL itself. |
 | `bootintel ports` | List serial ports on this machine with USB VID/PID + product info when known. |
+| `bootintel mcp` | Serve the offline analysis to an MCP client over stdio, so your own assistant can read boot logs. Four read-only tools: `scan_log`, `boot_chain_verdict`, `list_detectors`, `sample_log`. Nothing is uploaded and no tool opens a serial port or writes to a device. `--list-tools` prints the definitions without serving. See [Using it from an assistant](#using-it-from-an-assistant). |
 | `bootintel version` | Version, detector count, build metadata. |
 | `bootintel term <port>` | Interactive picocom-shaped UART terminal. `--baud` / `--data-bits` / `--parity` / `--stop-bits` / `--flow-control` for serial config. `--log-file <path>` captures raw bytes in parallel. Ctrl-A q to quit, Ctrl-A ? for help, Ctrl-A Ctrl-A to send literal 0x01. |
 | `bootintel analyze <port>` | Term + streaming client-side detector analysis. Findings surface as `[bootintel] ● Bootloader: U-Boot 2020.10` inline lines interleaved with the raw serial stream. All `term` flags plus `--no-live-display` to suppress inline output. Extra Ctrl-A hotkeys: `l` toggle live display, `c` clear + re-scan, `s` save findings JSON, `u` copy share URL to clipboard, `f` full server-side analysis when armed with `--api` / `--api --preview`. `--tui` renders a split-screen ratatui dashboard instead of the inline picocom-shaped output; PgUp/PgDn/Home/End scroll the serial pane (needs the `tui` build feature). |
