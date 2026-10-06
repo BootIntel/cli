@@ -103,8 +103,16 @@ jobs:
           - target: x86_64-apple-darwin
             os: macos-latest
             asset_name: bootintel-v${{ inputs.version }}-x86_64-macos.tar.gz
+          # macos-latest, not the macos-14 this pinned until 2026-10-05.
+          # GitHub retires the macOS 14 image on 2026-11-02 and fails
+          # macos-14 jobs during brownouts before then, so a release cut in
+          # the meantime would have lost its Apple Silicon artifact. Both
+          # macos-14 and macos-15 are arm64, so aarch64-apple-darwin builds
+          # natively on either and there was never a reason to pin one.
+          # Using the same label as the x86_64 row above also means the next
+          # image retirement needs no change here.
           - target: aarch64-apple-darwin
-            os: macos-14
+            os: macos-latest
             asset_name: bootintel-v${{ inputs.version }}-aarch64-macos.tar.gz
           - target: x86_64-pc-windows-msvc
             os: windows-latest
