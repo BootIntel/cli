@@ -43,6 +43,36 @@ pub fn scan_url(base: &str) -> String {
     )
 }
 
+/// Saved-scan endpoints.
+///
+/// Distinct from `scan_url` above, and the difference matters: that one is
+/// `/analysis/scan`, documented server-side as "stateless inline log analysis
+/// without device_id/database persistence". It returns a freshly minted uuid as
+/// its `scan_id` which names no row, so there is nothing to export from. These
+/// routes create and read a real ScanSession, which is what the server-side
+/// artifacts (SBOM, evidence pack, PDF, JSON report) are built from.
+///
+/// A saved scan consumes the account's monthly scan quota. The stateless route
+/// does not. Callers must not reach for these silently.
+pub fn devices_url(base: &str) -> String {
+    format!("{}{}/devices/", base.trim_end_matches('/'), path_prefix())
+}
+
+pub fn scans_url(base: &str) -> String {
+    format!("{}{}/scans/", base.trim_end_matches('/'), path_prefix())
+}
+
+/// `/scans/{id}/{artifact}` where artifact is e.g. `sbom.json`.
+pub fn scan_artifact_url(base: &str, scan_id: &str, artifact: &str) -> String {
+    format!(
+        "{}{}/scans/{}/{}",
+        base.trim_end_matches('/'),
+        path_prefix(),
+        scan_id,
+        artifact
+    )
+}
+
 /// Result of `check_plaintext_base`. Callers use this to decide whether
 /// to abort (auth path) or emit a warning (preview path).
 #[derive(Debug, PartialEq, Eq)]

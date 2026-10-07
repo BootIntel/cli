@@ -21,6 +21,7 @@ pub mod replay;
 pub mod scan;
 pub mod schema;
 pub mod share;
+pub mod submit;
 pub mod term;
 pub mod verdict;
 pub mod version;

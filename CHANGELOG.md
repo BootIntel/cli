@@ -8,6 +8,27 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+### Added
+- **`bootintel submit`**: save a boot log to your BootIntel account as a persisted
+  scan and download the server-side artifacts in one step: the CycloneDX 1.6 SBOM
+  (`--sbom`), evidence pack (`--evidence`), PDF report (`--pdf`) and JSON report
+  (`--json-report`). `--json` prints the scan id and written paths for scripting.
+
+  Separate from `scan --api` on purpose. That posts to `/analysis/scan`, which the
+  server documents as stateless and returns a freshly minted uuid naming no row,
+  so there is nothing to export from; artifacts are built from a real scan, which
+  only `POST /scans/` creates. A saved scan consumes the monthly quota, so this is
+  opt-in rather than a flag, and the command says what it is about to spend
+  immediately before spending it.
+
+  Requires **Pro** or higher. The export endpoints are gated at Researcher, but
+  API-key authentication is itself Pro-gated, so a Researcher account can download
+  these from the dashboard and not from here.
+
+  Reuses an existing device with the same name rather than creating one per run,
+  because the server accepts duplicates and a nightly CI job would otherwise add
+  a device a day.
+
 ## [0.13.0] — 2026-09-29 — read boot logs from your own assistant
 
 ### Added
