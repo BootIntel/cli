@@ -147,6 +147,13 @@ enum Cmd {
     /// bug reports / support tickets. No PII is collected — output
     /// only carries what a support engineer needs to reproduce.
     Export(cmd::export::Args),
+    /// Save a scan to your BootIntel account and download its server-side
+    /// artifacts: CycloneDX SBOM, evidence pack, PDF and JSON report.
+    /// Needs a Pro plan or higher: API-key authentication is itself Pro-gated,
+    /// so a Researcher account can reach the artifacts from the dashboard but
+    /// not from here. Consumes one scan from your monthly quota; `scan` stays
+    /// offline and free.
+    Submit(cmd::submit::Args),
     /// Re-render an archived `scan --format json` (or `export`
     /// bundle) in any output format. Handy when you kept the JSON
     /// but not the original log.
@@ -212,6 +219,7 @@ fn main() -> Result<()> {
         Cmd::EncodeShare(args) => cmd::encode_share::run(args),
         Cmd::DecodeShare(args) => cmd::decode_share::run(args),
         Cmd::Export(args) => cmd::export::run(args),
+        Cmd::Submit(args) => cmd::submit::run(args),
         Cmd::View(args) => cmd::view::run(args),
         Cmd::Demo(args) => cmd::demo::run(args),
         Cmd::Init(args) => cmd::init::run(args),

@@ -64,6 +64,7 @@ Use `bootintel term` when you want a clean terminal and `bootintel analyze` when
 | Assess what the boot chain permits | `bootintel verdict session.log` | Reads a `printenv` dump taken at the U-Boot prompt and says what it permits. Entirely offline. |
 | Compare firmware boots | `bootintel diff before.log after.log` | Shows meaningful boot-log changes between two captures. |
 | Gate a build artifact | `bootintel scan boot.log --format sarif --gate-critical` | Emits CI-friendly output and exits non-zero for critical findings. |
+| Produce an SBOM for a boot log | `bootintel submit boot.log --sbom device.cdx.json` | Saves the scan to your account and downloads a CycloneDX 1.6 SBOM built from the server's CVE and KEV data. Needs a Pro plan (API-key auth is Pro-gated) and uses one scan from the monthly quota. `--evidence`, `--pdf` and `--json-report` fetch the other artifacts in the same run. |
 | Request richer analysis | `bootintel scan --api --preview boot.log` | Explicitly sends the log to BootIntel's API using the anonymous preview quota. |
 
 ## Using it from an assistant
