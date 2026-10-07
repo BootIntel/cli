@@ -8,6 +8,8 @@ All notable changes to bootintel-cli are documented here. Format follows [Keep a
 
 ## [Unreleased]
 
+## [0.14.0] — 2026-10-07 — an SBOM for hardware you did not build
+
 ### Added
 - **`bootintel submit`**: save a boot log to your BootIntel account as a persisted
   scan and download the server-side artifacts in one step: the CycloneDX 1.6 SBOM
