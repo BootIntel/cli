@@ -166,7 +166,16 @@ jobs:
           mkdir -p dist
           cp target/${{ matrix.target }}/release/bootintel dist/
           cp README.md dist/
-          cp ../LICENSE dist/ 2>/dev/null || echo "LICENSE not found at repo root; skipping"
+          # LICENSE, not ../LICENSE. The step runs at the repo root, so the old
+          # path pointed outside the checkout, never matched, and the
+          # `2>/dev/null || echo skipping` turned that into a log line nobody
+          # read. Every release from here back shipped with no licence file
+          # while this workflow's header claimed it bundled one, and Apache 2.0
+          # section 4(a) requires giving recipients a copy with the work.
+          #
+          # No fallback now: if the licence is missing the release should fail,
+          # because a silent skip is what hid this.
+          cp LICENSE dist/
           tar -czf ${{ matrix.asset_name }} -C dist .
 
       - name: Package (Windows)
@@ -177,7 +186,10 @@ jobs:
           New-Item -ItemType Directory -Force -Path dist | Out-Null
           Copy-Item "target\${{ matrix.target }}\release\bootintel.exe" -Destination "dist\"
           Copy-Item README.md -Destination "dist\"
-          if (Test-Path "..\LICENSE") { Copy-Item "..\LICENSE" -Destination "dist\" }
+          # Same bug, same reason: ..\LICENSE is outside the checkout, and the
+          # Test-Path guard made the miss invisible. Unguarded now so a missing
+          # licence fails the build.
+          Copy-Item LICENSE -Destination "dist\"
           Compress-Archive -Path "dist\*" -DestinationPath ${{ matrix.asset_name }}
 
       - name: Compute SHA256
