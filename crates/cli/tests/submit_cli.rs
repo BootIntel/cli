@@ -118,14 +118,22 @@ fn http(status: u16, content_type: &str, body: &[u8]) -> Vec<u8> {
     out
 }
 
-fn log_file() -> PathBuf {
-    let p = tmpdir().join("boot.log");
+/// A log file unique to the calling test.
+///
+/// Every test used to write the same `boot.log`. Rust runs tests in parallel
+/// threads, and `fs::write` truncates before it writes, so one test's spawned
+/// process could read the file in the instant another test had emptied it. The
+/// failure was `boot.log is empty; nothing to submit` in CI while the suite
+/// passed locally -- the shape of a race that reddens a build intermittently
+/// rather than once, which is the kind that survives.
+fn log_file(tag: &str) -> PathBuf {
+    let p = tmpdir().join(format!("{tag}.log"));
     std::fs::write(&p, "U-Boot 2016.01\nLinux version 4.4.60\n").unwrap();
     p
 }
 
-fn run(base: &str, extra: &[&str]) -> std::process::Output {
-    let log = log_file();
+fn run(tag: &str, base: &str, extra: &[&str]) -> std::process::Output {
+    let log = log_file(tag);
     let mut cmd = Command::new(BIN);
     cmd.arg("submit")
         .arg(&log)
@@ -158,7 +166,7 @@ fn an_existing_device_with_the_same_name_is_reused() {
         },
         4,
     );
-    let out = run(&mock.base, &["--device-name", "lab-router"]);
+    let out = run("reuse", &mock.base, &["--device-name", "lab-router"]);
     assert!(
         out.status.success(),
         "stderr: {}",
@@ -191,7 +199,7 @@ fn a_device_is_created_when_none_matches() {
         },
         5,
     );
-    let out = run(&mock.base, &["--device-name", "new-board"]);
+    let out = run("create", &mock.base, &["--device-name", "new-board"]);
     assert!(
         out.status.success(),
         "stderr: {}",
@@ -228,7 +236,7 @@ fn a_binary_artifact_reaches_disk_byte_for_byte() {
         },
         6,
     );
-    let out = run(&mock.base, &["--pdf", dest.to_str().unwrap()]);
+    let out = run("binary", &mock.base, &["--pdf", dest.to_str().unwrap()]);
     assert!(
         out.status.success(),
         "stderr: {}",
@@ -251,6 +259,7 @@ fn a_403_exits_77_and_surfaces_the_servers_reason() {
         3,
     );
     let out = run(
+        "forbidden",
         &mock.base,
         &["--sbom", tmpdir().join("x.json").to_str().unwrap()],
     );
@@ -271,6 +280,7 @@ fn the_quota_notice_is_not_printed_when_the_run_fails_before_the_spend() {
         3,
     );
     let out = run(
+        "noquota",
         &mock.base,
         &["--sbom", tmpdir().join("y.json").to_str().unwrap()],
     );
@@ -306,7 +316,11 @@ fn json_mode_emits_parseable_stdout() {
         },
         6,
     );
-    let out = run(&mock.base, &["--sbom", dest.to_str().unwrap(), "--json"]);
+    let out = run(
+        "jsonmode",
+        &mock.base,
+        &["--sbom", dest.to_str().unwrap(), "--json"],
+    );
     assert!(
         out.status.success(),
         "stderr: {}",
@@ -321,6 +335,7 @@ fn json_mode_emits_parseable_stdout() {
 #[test]
 fn plaintext_non_loopback_is_refused_before_any_request() {
     let out = run(
+        "plaintext",
         "http://example.invalid",
         &["--sbom", tmpdir().join("z.json").to_str().unwrap()],
     );
