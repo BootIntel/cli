@@ -17,28 +17,28 @@
 class Bootintel < Formula
   desc "Interactive UART capture and streaming boot-log analysis"
   homepage "https://bootintel.com"
-  version "0.13.0"
+  version "0.14.0"
   license "Apache-2.0"
 
   on_macos do
     on_arm do
       url "https://github.com/BootIntel/cli/releases/download/cli-v#{version}/bootintel-v#{version}-aarch64-macos.tar.gz"
-      sha256 "8f7f6b588a65ec683fa9cf3dfd7e397a750e08619f5af95a3f5d1b185aa79046"
+      sha256 "efa35e020ef288e6b04a0b8f5137a8d3309ffd73c3e9a4c2e602e56012d60c65"
     end
     on_intel do
       url "https://github.com/BootIntel/cli/releases/download/cli-v#{version}/bootintel-v#{version}-x86_64-macos.tar.gz"
-      sha256 "de219222b70013ee2a3b28ae07479f438dcc297ee14f95c3a7f4e4064c222dd4"
+      sha256 "adb7e73f60047c56f498ec2b925bc24f75f7270655e10dbbf2653d7ded368b72"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/BootIntel/cli/releases/download/cli-v#{version}/bootintel-v#{version}-aarch64-linux.tar.gz"
-      sha256 "7376741baa7c70de58659275d30193ab5af6b679a1455a7006d5bc78fcb88620"
+      sha256 "e6f8261ac9aebe1b7af98a9e33f52e1cb447c837843a1a275b5c23bf755fa39e"
     end
     on_intel do
       url "https://github.com/BootIntel/cli/releases/download/cli-v#{version}/bootintel-v#{version}-x86_64-linux.tar.gz"
-      sha256 "a23f16104344d578c6c99b3e8ea6ab6f15dbfbe26163c48582ce00810aa5442c"
+      sha256 "16eacce91051be2edaf72a19bd22d6296b4363ff87300975eeecc4d0093b1620"
     end
   end
 
